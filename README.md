@@ -1,6 +1,6 @@
 # Rhombus AI pipeline drift test repository
 
-This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, a Playwright UI journey, direct backend API tests, a data validator, and one observation record per drift case. The cloud journey and drift outcomes require Rhombus, AWS, and GCP accounts. **They have not been run yet.** No outcome below is presented as an observed Rhombus result.
+This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, a Playwright UI journey, direct backend API tests, a data validator, and one observation record per drift case. A manual pipeline execution and downloaded export have now been observed; the export failed baseline validation. **The scheduled baseline and drift cases have not been run yet.** Outcomes below distinguish observed results from pending tests.
 
 ## Current status and findings
 
@@ -8,15 +8,16 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 | --- | --- |
 | Direct backend API tests | 3 passed against public unauthenticated endpoints on 2026-09-30 |
 | Validator unit tests | 8 passed locally on 2026-09-30 |
-| Authenticated UI journey and scheduled baseline | Not run; account and cloud access unavailable |
+| Manual baseline run | Execution reported Success; downloaded output failed validation (9 rows instead of 5). [Evidence and analysis](observations/baseline-manual.md) |
+| Authenticated UI test and scheduled baseline | Not run; the scheduled reference run is still needed |
 | Drifted scheduled runs and evidence | Not run |
 | Demo video | Pending; add link after recording a real walkthrough |
 
 Three preliminary findings:
 
-1. The observed backend paths `/api/accounts/users/profile` and `/api/accounts/users/project-limit` return HTTP 401 with `{"detail":"Unauthorized"}` without a session. The [API suite](api-tests/backend.spec.ts) asserts both status and body.
-2. Rhombus [documents that backend error text appears in exported execution history CSV](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/), so each drift record asks for that export as evidence. This has not been checked in a live account.
-3. Rhombus [documents timestamped GCS exports at the bucket root](https://doc.rhombusai.com/docs/Integrations/gcp-storage-connection/). The validator therefore takes the exact object URI from each execution; it does not assume a stable output filename.
+1. A manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. See the [baseline observation](observations/baseline-manual.md). The reason for the mismatch is not yet established.
+2. The observed backend paths `/api/accounts/users/profile` and `/api/accounts/users/project-limit` return HTTP 401 with `{"detail":"Unauthorized"}` without a session. The [API suite](api-tests/backend.spec.ts) asserts both status and body.
+3. Rhombus [documents that backend error text appears in exported execution history CSV](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/), so each drift record asks for that export as evidence. This has not been checked in a scheduled run.
 
 ## Cleaning contract
 
@@ -100,7 +101,7 @@ Severity should be assigned from observed impact: **critical** for silent materi
 
 The public documentation is helpful: it distinguishes Analysis from `/pipeline` mode and explains that creating nodes does not run them automatically. The source, destination, and scheduling guides also give concrete steps and permissions, which made the test procedure possible to specify.
 
-Hands-on feedback about the builder, logs, and chatbot is pending an account and actual pipeline runs. The most useful improvement visible from the documentation would be to show the backend error message directly in execution history, because the guide currently directs users to export CSV to read it. This is a documentation-grounded suggestion, not a claim about an observed failure.
+The manual run exposed a usability issue: the log reported a successful execution while the downloaded output failed the cleaning contract. A visible data-quality summary in execution history would make this difference easier to detect. Feedback on the chatbot's diagnosis and on scheduled failures remains pending. The [scheduling guide](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) also says backend error text is available in exported history CSV rather than the table.
 
 ## Demo video
 

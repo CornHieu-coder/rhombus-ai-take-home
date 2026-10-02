@@ -47,3 +47,7 @@ The manual control verifies the manual pipeline and GCS delivery path. It does n
 ## Acceptance after repair
 
 Allow an automatic run of the unchanged baseline, then verify an execution ID and successful status, actual completion of the three nodes, a new GCS object associated with that run, and a passing validator result. Only then mark the scheduled baseline successful and proceed with drift runs.
+
+## Work that can continue during investigation
+
+Manual baseline repeats and manual schema/semantic drift tests can provide supplementary evidence about cleaning, data validation and chatbot repair. Label their trigger type explicitly and leave scheduled coverage unverified. The [continuation plan](../README.md#continuing-while-scheduled-delivery-is-unresolved) preserves the required automatic baseline and later scheduled repeats; it does not treat the fallback as completion of those requirements.

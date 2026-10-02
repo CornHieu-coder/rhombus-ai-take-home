@@ -113,6 +113,19 @@ Add `--repeat-output gs://...` twice to compare three executions of the same inp
 
 For each case, use the same S3 key configured in the pipeline. Restore the baseline and confirm a successful scheduled run. Replace that object with the case dataset before the next scheduled trigger and choose **Refresh access** in the S3 source. Record the execution ID, time, status, output URI or lack of output, relevant node logs, and the exported schedule-history CSV. Ask the chatbot to diagnose the exact error; apply any proposed repair using the AI builder and verify it on a later run. Run the data validator against the S3 and GCS objects from each run. Restore baseline between cases to isolate effects. [Scheduling documentation](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) describes execution history, failure nodes, and the effect of saved pipeline changes on later runs.
 
+### Continuing while scheduled delivery is unresolved
+
+The take-home says a clear, reproducible write-up of a failure is a strong result. The scheduler failure is therefore evidence to report, while the successful scheduled baseline remains an unmet requirement. The following fallback is planned; drift runs have not yet been performed.
+
+1. Share the [prepared scheduler report](observations/scheduler-support-report.md) with the take-home contact. Ask them to investigate the schedule deployments, provide a working environment, or advise whether a manual fallback is acceptable. The report has not been sent automatically.
+2. Repeat the unchanged baseline manually under one saved pipeline configuration until three actual outputs are available. Validate each and compare them for determinism. Preserve timestamps and cloud objects, and label the triggers manual.
+3. Replace the same S3 object with each of the four individual schema changes, the combined change, and the two semantic changes. Refresh the source in Rhombus, click Run and retrieve any fresh GCS export. Restore the baseline and original AI-built cleaning configuration between cases.
+4. For each manual case, record the source change, node outcome or error, actual output or missing delivery, validator result, chatbot diagnosis, proposed repair and the result of a manual repeat. Apply transformation repairs through the AI Builder only. A baseline export cannot substitute for a missing drift output.
+5. Keep scheduled delivery and behavior after a scheduled repair marked **unverified because scheduling is unresolved**. Manual results are supplementary evidence and do not satisfy those scheduled requirements. After Rhombus resolves scheduling, establish the automatic baseline and repeat the cases through real automatic triggers.
+6. Complete the remaining UI journey automation and demo video using observed behavior, including failures and unfinished coverage. The current provisioning scaffold is still unverified; these planned steps are not completed results.
+
+Replacing source objects requires an authenticated AWS S3 session or configured AWS CLI credentials. The current local CLI has no configured profile; direct GCS access and the authenticated Rhombus test session are available.
+
 | Drift case | Change | Pipeline stopped? | Chatbot fix worked? | Severity |
 | --- | --- | --- | --- | --- |
 | [Drop column](observations/schema-drop-column.md) | Remove `amount_usd` | Not observed | Not observed | Pending |

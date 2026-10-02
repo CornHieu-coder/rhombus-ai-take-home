@@ -51,6 +51,12 @@ In a later screenshot follow-up received on 2 October 2026, both node previews s
 
 The follow-up log still visibly begins with `input_df_1.copy()`. Although [the Custom node documentation](https://doc.rhombusai.com/docs/transformer-references/custom-nodes/llm-transform/) names `input_df` as the primary input, the screenshots do not establish that the different variable name caused the earlier mismatch. The exact repair, chatbot diagnosis, complete executed code, and fresh GCS export have not been supplied.
 
+## Schedule creation follow-up
+
+The user showed an Active Hourly schedule at minute 00, with an enabled switch. Its history table is empty and its `Next run` field has no visible value. A separate log reports execution start and success at 10:04:26 PM, but does not link that execution to the schedule. The supplied GCS listing contains `RhombusAI_output_1790940577138.csv`, created on 2 October 2026 at 9:29:38 PM; that timestamp matches the earlier five-row preview run. No later export is visible in the screenshot. See the [schedule and object-list transcription](evidence/baseline-schedule-visible-evidence.md).
+
+The creation time, saved timezone, trigger type, and freshness of the two listings are unknown. The empty history therefore does not yet establish a missed scheduled run. A scheduled execution and its output still need to be linked and validated.
+
 ## Interpretation and next checks
 
 **Observed:** the earlier exported CSV failed validation despite execution Success; the latest two node previews now match the expected baseline table. **Pending:** validation of a fresh GCS export and evidence of an automatically scheduled run. The earlier failure remains part of the record. Preserve the chatbot's diagnosis and repair response, validate the next real export, and obtain a successful scheduled run on the unchanged baseline as the reference for drift tests.

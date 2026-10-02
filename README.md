@@ -9,7 +9,8 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 | Direct backend API tests | 3 passed against public unauthenticated endpoints on 2026-09-30 |
 | Validator unit tests | 8 passed locally on 2026-09-30 |
 | Manual baseline run | Earlier downloaded output failed validation (9 rows instead of 5); later previews match 5 expected rows. Fresh GCS export validation pending. [Evidence and analysis](observations/baseline-manual.md) |
-| Authenticated UI test and scheduled baseline | Not run; the scheduled reference run is still needed |
+| Schedule and scheduled baseline | Active Hourly schedule at minute 00 observed; history is empty and Next run is blank in the supplied screenshot. No scheduled execution or export verified. [Evidence](observations/evidence/baseline-schedule-visible-evidence.md) |
+| Authenticated UI test | Not run |
 | Drifted scheduled runs and evidence | Not run |
 | Demo video | Pending; add link after recording a real walkthrough |
 

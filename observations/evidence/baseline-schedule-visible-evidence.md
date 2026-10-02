@@ -1,6 +1,6 @@
-# Baseline schedule: created, execution not yet linked
+# Baseline schedule: automatic run reports Success without history or export
 
-This is a transcription of three screenshots supplied in chat on 2 October 2026. Original screenshot files and a schedule-history export are not archived here.
+This is a transcription of three screenshots supplied in chat on 2 October 2026, followed by the user's confirmation that the 10:04 PM execution was triggered by the schedule. Original screenshot files and a schedule-history export are not archived here.
 
 ## Visible state
 
@@ -11,8 +11,12 @@ This is a transcription of three screenshots supplied in chat on 2 October 2026.
 - The GCS object list shows `RhombusAI_output_1790940577138.csv`, created Oct 2, 2026, at 9:29:38 PM. This time corresponds to the earlier five-row preview run whose displayed logs span 9:29:36 to 9:29:42 PM. An older object is also visible, created Oct 1, 2026, at 9:13:08 PM.
 - No object created around 10:04 PM is visible in the supplied GCS listing. The listing's freshness and whether other objects or versions exist have not been established.
 
+## User confirmation
+
+The user explicitly confirmed: "The run is from the schedule. Basically it run a schedule at 10:04pm but showed nothing on the schedule history and gcs output." The trigger type is therefore recorded as scheduled, based on the user's account. The automatic run occurred; the missing results are the issue under investigation.
+
 ## Limits and next checks
 
-The schedule creation time, saved timezone, and whether the 10:04 PM run was automatic or manually triggered are unknown. An hourly minute-00 schedule created after 10:00 PM would not normally have its first trigger until the next hour; these screenshots alone do not establish a missed trigger or a scheduler failure.
+The schedule creation time, saved timezone, complete execution logs, saved pipeline snapshot, and backend history/export responses have not been collected. GCS absence is supported by the supplied listing and user confirmation, rather than an independent cloud API query. Whether the history is missing in the backend or only in the UI is unknown. The cause of the missing export and Success status is also unknown.
 
-Refresh the project and GCS listings, reopen this schedule's history, and establish whether a configured trigger time has passed. Link a scheduled execution record to its exported object before treating it as the scheduled baseline. Independently validate the real CSV bytes; a Success log is not sufficient data-quality evidence.
+Refresh both listings, inspect the complete execution log and the history request/response, ask the chatbot to diagnose the contradiction, and repeat the automatic run on unchanged baseline input. Preserve this failing result before applying an AI Builder repair. See the [scheduled baseline observation](../baseline-scheduled.md) and [missing-output validator report](baseline-scheduled-output-missing.json).

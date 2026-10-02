@@ -1,0 +1,47 @@
+{
+  "scenario": "baseline",
+  "passed": false,
+  "source_rows": 9,
+  "expected_rows": 5,
+  "output_rows": null,
+  "source_extra_columns": [],
+  "checks": [
+    {
+      "name": "source_schema",
+      "passed": true,
+      "detail": "missing=[]; extra=[]"
+    },
+    {
+      "name": "new_invalid_values",
+      "passed": true,
+      "detail": "new rejected order_ids=[]; baseline rejected=['1002', '1003', '1004', '1009']"
+    },
+    {
+      "name": "output_exists",
+      "passed": false,
+      "detail": "no output object"
+    },
+    {
+      "name": "output_schema",
+      "passed": null,
+      "detail": "expected=['order_id', 'customer_email', 'customer_name', 'amount_usd', 'order_date', 'country']; actual=[]"
+    },
+    {
+      "name": "row_count",
+      "passed": null,
+      "detail": "expected=5; actual=0"
+    },
+    {
+      "name": "cleaning_rules",
+      "passed": null,
+      "detail": "not evaluated"
+    },
+    {
+      "name": "determinism",
+      "passed": null,
+      "detail": "not evaluated; supply two repeat outputs for three runs"
+    }
+  ],
+  "source_uri": "datasets/baseline.csv",
+  "output_uri": null
+}

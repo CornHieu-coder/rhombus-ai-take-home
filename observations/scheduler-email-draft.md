@@ -20,8 +20,10 @@ Could you check whether those schedules dispatched jobs, whether workers receive
 
 Thank you.
 
-## Attachments for sending
+## Evidence for the first email
 
-Attach `rhombus-scheduler-evidence-2026-10-03.zip`. It contains the reproduction report, selected schedule/API evidence and screenshots, the chatbot diagnosis, actual baseline source and three manual GCS outputs, and the passing determinism report. Account tokens and cloud keys are excluded.
+Use the direct support-report link already included in the email. It gives the project and schedule IDs, UTC windows, reproduction steps and questions for backend investigation, with links to supporting evidence.
+
+Optionally attach the [empty-history screenshot](https://raw.githubusercontent.com/CornHieu-coder/rhombus-ai-take-home/main/observations/evidence/baseline-schedule-edited-repeat-2026-10-02.png). The full 15-file ZIP can be offered if they request the raw evidence; it is not needed as an initial attachment.
 
 The project and schedule IDs in the email are enough to start investigation. If support needs your account email or full cloud object URIs, supply those directly in the private email thread.

@@ -1,6 +1,6 @@
 # Rhombus AI pipeline drift test repository
 
-This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, a Playwright UI journey, direct backend API tests, a data validator, and one observation record per drift case. A manual pipeline execution and downloaded export have now been observed; the export failed baseline validation. **The scheduled baseline and drift cases have not been run yet.** Outcomes below distinguish observed results from pending tests.
+This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, a Playwright UI journey, direct backend API tests, a data validator, and one observation record per drift case. An earlier manual export failed baseline validation; later Custom and Data Output previews match the expected five-row result, but the fresh export has not been validated. **The scheduled baseline and drift cases have not been observed yet.** Outcomes below distinguish observed results from pending tests.
 
 ## Current status and findings
 
@@ -8,14 +8,14 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 | --- | --- |
 | Direct backend API tests | 3 passed against public unauthenticated endpoints on 2026-09-30 |
 | Validator unit tests | 8 passed locally on 2026-09-30 |
-| Manual baseline run | Execution reported Success; downloaded output failed validation (9 rows instead of 5). [Evidence and analysis](observations/baseline-manual.md) |
+| Manual baseline run | Earlier downloaded output failed validation (9 rows instead of 5); later previews match 5 expected rows. Fresh GCS export validation pending. [Evidence and analysis](observations/baseline-manual.md) |
 | Authenticated UI test and scheduled baseline | Not run; the scheduled reference run is still needed |
 | Drifted scheduled runs and evidence | Not run |
 | Demo video | Pending; add link after recording a real walkthrough |
 
 Three preliminary findings:
 
-1. A manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. See the [baseline observation](observations/baseline-manual.md). The reason for the mismatch is not yet established.
+1. A manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. Later node previews show the expected five rows; the fresh GCS export, exact repair, and cause of the earlier mismatch remain unverified. See the [baseline observation](observations/baseline-manual.md).
 2. The observed backend paths `/api/accounts/users/profile` and `/api/accounts/users/project-limit` return HTTP 401 with `{"detail":"Unauthorized"}` without a session. The [API suite](api-tests/backend.spec.ts) asserts both status and body.
 3. Rhombus [documents that backend error text appears in exported execution history CSV](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/), so each drift record asks for that export as evidence. This has not been checked in a scheduled run.
 

@@ -1,4 +1,4 @@
-# Manual baseline run: execution succeeded, cleaning validation failed
+# Manual baseline: failed export followed by a matching node preview
 
 ## Scope and provenance
 
@@ -43,6 +43,14 @@ The [validator report](evidence/baseline-manual-validation.json) fails: actual o
 
 The export contains float-like amounts such as `42.5`; a CSV cannot establish whether the in-memory float was rounded to two decimals. This baseline has no missing `order_id`, nonpositive amount, or disallowed country, so those branches are not independently tested by this result.
 
+## Follow-up node inspection
+
+The user subsequently supplied screenshots of the Custom and Data Output previews, each still showing the same nine uncleaned rows. This places the visible mismatch at the Custom node rather than only in the downloaded export. The supplied Edit Code excerpt starts with `df = input_df_1.copy()` and ends after country standardization; it does not include the final three requested steps or an assignment to `output_df`. The excerpt may be incomplete, so it does not establish that those lines are absent from the full generated code.
+
+In a later screenshot follow-up received on 2 October 2026, both node previews show the expected five rows, lowercase emails, `Unknown` for order `1006`, all countries `US`, and ISO date strings. Visible logs show execution start at 9:29:36 PM and successful completion at 9:29:42 PM. The screenshot does not establish the execution date, timezone, ID, or trigger type. See the [transcribed follow-up evidence](evidence/baseline-follow-up-visible-evidence.md).
+
+The follow-up log still visibly begins with `input_df_1.copy()`. Although [the Custom node documentation](https://doc.rhombusai.com/docs/transformer-references/custom-nodes/llm-transform/) names `input_df` as the primary input, the screenshots do not establish that the different variable name caused the earlier mismatch. The exact repair, chatbot diagnosis, complete executed code, and fresh GCS export have not been supplied.
+
 ## Interpretation and next checks
 
-**Observed:** Rhombus reported a successful manual execution while the downloaded output failed the cleaning contract. **Unconfirmed:** whether the Custom node produced these rows or the Data Output wrote different contents. Inspect the Custom node's output preview and configuration, and if cloud access permits, compare the confirmed GCS object directly with the downloaded CSV. Ask the chatbot to diagnose this mismatch before applying its fix through the AI Builder. A clean manual rerun is a useful preflight; the take-home still requires a successful *scheduled* run on the unchanged baseline as the reference for drift tests.
+**Observed:** the earlier exported CSV failed validation despite execution Success; the latest two node previews now match the expected baseline table. **Pending:** validation of a fresh GCS export and evidence of an automatically scheduled run. The earlier failure remains part of the record. Preserve the chatbot's diagnosis and repair response, validate the next real export, and obtain a successful scheduled run on the unchanged baseline as the reference for drift tests.

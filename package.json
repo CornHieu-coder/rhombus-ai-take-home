@@ -7,7 +7,8 @@
     "test:api": "playwright test api-tests",
     "test:all": "playwright test",
     "test:validator": "python -m unittest discover -s data-validation/tests -v",
-    "capture:network": "node api-tests/capture-network.mjs"
+    "capture:network": "node api-tests/capture-network.mjs",
+    "capture:schedule": "node api-tests/capture-schedule.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

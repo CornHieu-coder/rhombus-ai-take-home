@@ -6,11 +6,12 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 
 | Area | Status |
 | --- | --- |
-| Direct backend API tests | 3 passed against public unauthenticated endpoints on 2026-09-30 |
+| Direct backend API tests | 4 passed, 1 failed on 2026-10-02: authenticated schedule configuration passes; history regression fails with total=0 |
 | Validator unit tests | 8 passed locally on 2026-09-30 |
 | Manual baseline run | Earlier downloaded output failed validation (9 rows instead of 5); later previews match 5 expected rows. Fresh GCS export validation pending. [Evidence and analysis](observations/baseline-manual.md) |
 | Schedule and scheduled baseline | Success log without history or new GCS output at 10:04 PM; same visible symptoms repeat at 10:30 PM after editing minute 00 to 25. Missing-output checks fail; cause and repair pending. [Observation](observations/baseline-scheduled.md) |
-| Authenticated UI test | Not run |
+| Authenticated UI tests | 1 passed, 2 failed on 2026-10-02: connected canvas passes; Next run and history regressions fail |
+| Full provisioning journey | Scaffold only; skipped in the live run, locators not verified |
 | Drifted scheduled runs and evidence | Not run |
 | Demo video | Pending; add link after recording a real walkthrough |
 
@@ -18,11 +19,11 @@ Three preliminary findings:
 
 1. A manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. Later node previews show the expected five rows; the fresh GCS export, exact repair, and cause of the earlier mismatch remain unverified. See the [baseline observation](observations/baseline-manual.md).
 2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. The same visible symptoms repeated after editing the schedule minute. The [scheduled baseline observation](observations/baseline-scheduled.md) records both attempts; the root cause and repair remain unverified.
-3. The observed backend paths `/api/accounts/users/profile` and `/api/accounts/users/project-limit` return HTTP 401 with `{"detail":"Unauthorized"}` without a session. The [API suite](api-tests/backend.spec.ts) asserts both status and body.
+3. An enabled schedule's `Next run:` is blank even though the authenticated backend returns a timestamp. That timestamp is already in the past and `last_run_at` is null. [Captured API and UI evidence](observations/evidence/baseline-schedule-playwright-2026-10-02.json) separates the display mismatch from the missing backend history; the underlying scheduler cause is unknown.
 
 ## Cleaning contract
 
-The AI builder prompt in the UI test requests the following transformations. The [validator](data-validation/validate.py) independently computes the expected result from the S3 source object.
+The saved AI Builder cleaning prompt requests the following transformations. The [validator](data-validation/validate.py) independently computes the expected result from the S3 source object.
 
 - Trim text, lowercase email, retain the first row per `order_id`, and fill missing `customer_name` with `Unknown`.
 - Reject rows with missing `order_id` or email, invalid or nonpositive `amount_usd`, invalid date, or a country other than `US`, `usa`, or `United States`.
@@ -54,7 +55,21 @@ Sign in once in a local Playwright browser and save a gitignored session:
 node ui-tests/save-auth.mjs
 ```
 
-The UI test creates or opens the named test project, connects the pre-authorized S3 source, asks the AI builder for the transformations, configures GCS, creates an hourly schedule, and polls execution history for a new run. It uses UI locators and outcome assertions, with no fixed sleeps. Because no authenticated account was available during development, **the authenticated locators need a first live check**; adjust them if the account's UI differs. If an account lacks Third Party Sources or connector slots, the [Rhombus quick start](https://doc.rhombusai.com/docs/getting-started/pipeline-quickstart/) says that integration may be unavailable.
+If Google rejects sign-in in Chrome for Testing, authenticate manually in normal Chrome using a dedicated test profile. Google [may reject browsers controlled by automation](https://support.google.com/accounts/answer/7675428?hl=en). On Windows, open this command from Run (Win+R), adjusting the Chrome path if needed:
+
+```text
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="%LOCALAPPDATA%\RhombusTakeHome\Chrome" --remote-debugging-address=127.0.0.1 --remote-debugging-port=9333 --new-window https://rhombusai.com
+```
+
+Complete the sign-in yourself, leave the Rhombus project open, then run:
+
+```bash
+node ui-tests/save-auth.mjs --cdp
+```
+
+The helper attaches after the manual sign-in, checks the Rhombus session, and saves only Rhombus cookies and storage to the gitignored auth file. It excludes Google browser state. `RHOMBUS_CDP_URL` can override the loopback endpoint. Use a dedicated profile because [Chrome requires a non-default profile for remote debugging](https://developer.chrome.com/blog/remote-debugging-port). Close this test-profile Chrome window when setup is finished. This sign-in path and subsequent headless authenticated tests were verified on 2026-10-02.
+
+The verified [existing-project UI tests](ui-tests/existing-project.spec.ts) open the named project, check the connected S3 input, AI transformation and configured CSV output, then assert schedule display and history outcomes. These tests reuse configured connections and need only the saved session and project name. They do not provision connections or establish correct GCS contents. The separate [full provisioning journey](ui-tests/pipeline-journey.spec.ts) remains an unverified scaffold and was skipped; its locators need inspection before use. If an account lacks Third Party Sources or connector slots, the [Rhombus quick start](https://doc.rhombusai.com/docs/getting-started/pipeline-quickstart/) says that integration may be unavailable.
 
 ## Run the suites
 
@@ -64,9 +79,17 @@ npm run test:ui
 npm run test:validator
 ```
 
-`test:api` runs three direct HTTP tests against paths captured from the browser's fetch traffic by [`capture-network.mjs`](api-tests/capture-network.mjs); the two protected backend endpoints deliberately use empty authentication state. Re-run `npm run capture:network` after sign-in to discover authenticated paths for further API coverage. The script prints paths, methods, and status codes without request bodies or query strings.
+`test:api` includes three unauthenticated HTTP tests and two [authenticated backend tests](api-tests/authenticated.spec.ts). The authenticated tests obtain the app's authorization header in memory from an observed UI request, then call the actual schedule/history APIs directly and assert status and body. No tokens are printed. Set `RHOMBUS_EXPECT_SCHEDULE_HISTORY=1` only after allowing at least one automatic attempt; this enables the history regressions. The history contract deliberately fails while the defect persists.
 
-`test:ui` skips the live journey when required environment settings are absent. A green command with that skip is **not** evidence that the pipeline worked. The hourly run may take up to one hour to trigger; the test polls for a new execution rather than sleeping for a fixed duration. Check `test-results/` and `playwright-report/` locally if it fails; these paths are ignored by git.
+`test:ui` runs the existing-project regressions with the saved session. It skips the provisioning scaffold when cloud settings are absent. A green command with a skip is **not** evidence that the pipeline worked. Check `test-results/` and `playwright-report/` locally if it fails; these paths are ignored because traces can contain session headers. On 2026-10-02, `npm run test:all -- --workers=1` completed with **5 passed, 3 failed, 1 skipped**. The failures reproduce the blank Next run and missing history, rather than being marked expected failures.
+
+Capture redacted schedule API responses and a screenshot with:
+
+```bash
+npm run capture:schedule -- observations/evidence/my-schedule-capture
+```
+
+This read-only command records selected non-secret fields and masks visible email addresses. Review the artifacts before publishing them.
 
 To smoke-test the validator without clouds:
 
@@ -102,7 +125,7 @@ Severity should be assigned from observed impact: **critical** for silent materi
 
 The public documentation is helpful: it distinguishes Analysis from `/pipeline` mode and explains that creating nodes does not run them automatically. The source, destination, and scheduling guides also give concrete steps and permissions, which made the test procedure possible to specify.
 
-The manual run exposed a usability issue: the log reported a successful execution while the downloaded output failed the cleaning contract. A later automatic run reported Success without a visible history record or new GCS export. A data-quality summary, explicit export result, and execution link in the log would make these outcomes easier to investigate. Feedback on the chatbot's diagnosis remains pending. The [scheduling guide](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) also says backend error text is available in exported history CSV rather than the table.
+The manual run exposed a usability issue: the log reported a successful execution while the downloaded output failed the cleaning contract. A later automatic run reported Success without a visible history record or new GCS export. A data-quality summary, explicit export result, and execution link in the log would make these outcomes easier to investigate. The chatbot accurately stated its access limits, then promised that disabling sampling would restore GCS writes without inspecting scheduler logs or credentials. That explanation needs verification. The [captured exchange](observations/evidence/baseline-schedule-chatbot-2026-10-02.md) preserves both the limits and the promise. The [scheduling guide](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) also says backend error text is available in exported history CSV rather than the table.
 
 ## Demo video
 

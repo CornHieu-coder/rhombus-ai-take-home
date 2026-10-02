@@ -1,0 +1,115 @@
+{
+  "started_at": "2026-10-02T13:23:59.394Z",
+  "samples": [
+    {
+      "captured_at": "2026-10-02T13:24:06.426Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:24:06.720Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:24:36.974Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:25:07.366Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:25:37.629Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:26:07.873Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:26:38.127Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:27:08.385Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:27:38.614Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:28:08.860Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:28:39.229Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:29:09.440Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:29:39.666Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:30:09.970Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:30:40.205Z",
+      "next_run_at": "2026-10-02T12:25:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    }
+  ],
+  "outcome": "no_new_execution_record_within_observation_window",
+  "input_sampling_enabled": false,
+  "schedule_id": 202,
+  "cron_expression": "25 * * * *",
+  "finished_at": "2026-10-02T13:30:40.206Z"
+}

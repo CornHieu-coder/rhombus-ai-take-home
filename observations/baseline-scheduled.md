@@ -4,7 +4,7 @@
 
 **Outcome:** the user confirmed an automatic scheduled execution at 10:04 PM. Rhombus reported successful completion, but the schedule-specific history remained empty and no new GCS output was found. A later repeat showed the same visible symptoms at 10:30:05 PM after the schedule's minute setting changed from 00 to 25. A successful scheduled ETL baseline has not been demonstrated.
 
-**Severity: High, provisional.** The expected data delivery is missing while the platform reports Success, and the execution history does not provide a record to investigate. Backend state and the cause have not yet been independently inspected.
+**Severity: High, provisional.** The expected data delivery is missing while the platform reports Success, and the execution history does not provide a record to investigate. Authenticated Playwright inspection independently confirms an empty backend history. The underlying cause and direct GCS verification remain unresolved.
 
 ## Setup and reproduction
 
@@ -34,10 +34,30 @@ Run the saved three-node pipeline, write a fresh GCS output with the five expect
 
 ## Chatbot diagnosis and repair
 
-Pending. Ask the chatbot why a scheduled run reports Success while neither its history record nor its GCS export appears. Check the saved pipeline/schedule association, execution snapshot, node execution details, and export result before accepting a diagnosis. Apply any repair through the AI Builder and verify on a later automatic run.
+The [captured AI Builder exchange](evidence/baseline-schedule-chatbot-2026-10-02.md) is now available from the authenticated chat-history API. At `2026-10-02T12:37:25.262Z` the builder persisted a source-node change from sampling enabled to disabled. It confirmed the three-node wiring and all 12 cleaning steps, and stated it could not access scheduler node logs, GCS contents, scheduler credential scope, or the executed pipeline snapshot.
+
+The builder attributed missing export/history to sampling and promised the next run would write GCS. This is a hypothesis, not a verified cause. The saved source configuration independently reads `sampling_enabled=false`; verification of scheduled behavior is recorded below.
+
+## Authenticated automated inspection
+
+On 2026-10-02, the signed-in Playwright session read the real backend APIs and opened the schedule history. [Selected API fields](evidence/baseline-schedule-playwright-2026-10-02.json) and a [redacted screenshot](evidence/baseline-schedule-playwright-2026-10-02.png) show:
+
+- Schedule ID `202`, project ID `4266`, enabled, hourly cron `25 * * * *`, failure notification enabled.
+- History endpoint returned HTTP 200, `executions=[]`, `total=0`. The empty table agrees with the backend; it is not solely a table-rendering symptom.
+- Backend `next_run_at=2026-10-02T12:25:00Z`, already in the past at capture time `13:26:02Z`; `last_run_at=null`.
+- The UI renders `Next run:` without a value despite the backend's non-null field. This is a distinct display mismatch.
+- The saved S3 input, cleaning transformation and configured CSV output remain connected. Sampling is disabled.
+
+`npm run test:all -- --workers=1` completed with 5 passed, 3 failed, 1 skipped. The direct history assertion failed because `total=0`; the UI Next run assertion failed on the blank value; the UI history assertion failed on the visible `No results.` cell. The full provisioning scaffold was skipped because cloud setup settings are absent. An intermittent Ad Blocker dialog is handled by choosing Continue Anyway; it is not counted as the history defect.
+
+### Repeat after the chatbot repair
+
+The [bounded automatic-run observation](evidence/baseline-schedule-after-chatbot-2026-10-02.json) polled the real schedule and history APIs every 30 seconds from `13:24:06Z` through `13:30:40Z` (11:24:06–11:30:40 PM Sydney). This spans the next hourly minute-25 boundary and allows roughly six minutes afterward. Sampling was already disabled; no manual run or schedule edit was performed during this window.
+
+Every observed history response remained `total=0`, with `last_run_at=null` and unchanged, stale `next_run_at=12:25Z`. The chatbot change did **not restore execution history within this observation window**. This does not prove a scheduled job executed, rule out a longer delay, or independently establish whether GCS received an object. The scheduled baseline remains unverified, and the sampling explanation remains unsupported by a successful repeat.
 
 ## Next checks and limits
 
-The visible symptom has repeated. Inspect complete execution logs and the backend response that supplies schedule history to distinguish an empty backend result from a UI display issue. Ask the chatbot to diagnose both attempts, including which pipeline snapshot and nodes executed and whether the GCS write was attempted. Preserve its exact response, apply any justified repair through the AI Builder, and verify on a later automatic run using unchanged baseline input.
+The backend history has now been inspected and the chatbot exchange preserved. Complete scheduler node logs and export results are still needed to identify the failed component. No execution ID can be recorded while the history API returns no executions. Fresh GCS contents have not been independently queried by this automated inspection.
 
 This is an observed delivery/history mismatch with a user-confirmed scheduled trigger. It does not establish which backend component failed, whether the export was skipped or rejected, or why Success was reported. Drift tests have not yet been performed.

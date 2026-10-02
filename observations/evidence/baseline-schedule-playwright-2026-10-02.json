@@ -1,0 +1,78 @@
+{
+  "captured_at": "2026-10-02T13:26:02.539Z",
+  "api_base": "https://api.rhombusai.com",
+  "project_id": 4266,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/dataset/analyzer/v2/projects/4266/pipeline/schedules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/dataset/analyzer/v2/projects/4266/pipeline/schedules/202/executions",
+      "status": 200
+    }
+  ],
+  "schedule": {
+    "id": 202,
+    "project_id": 4266,
+    "frequency": "hourly",
+    "cron_expression": "25 * * * *",
+    "schedule_time_utc": "*:25",
+    "enabled": true,
+    "notify_on_failure": true,
+    "next_run_at": "2026-10-02T12:25:00Z",
+    "last_run_at": null,
+    "created_at": "2026-10-02T11:45:08.764Z",
+    "skipped_runs_count": 0
+  },
+  "history": {
+    "total": 0,
+    "page": 1,
+    "page_size": 20,
+    "executions": []
+  },
+  "nodes": [
+    {
+      "name": "1790770097808",
+      "inputs": [],
+      "outputs": [
+        "input_071b4ee2cb631e77a9c79e8e019216db_df",
+        "input_071b4ee2cb631e77a9c79e8e019216db_mask"
+      ],
+      "transformation_type": "input",
+      "source_type": "s3",
+      "sampling_enabled": false,
+      "destination_configured": false
+    },
+    {
+      "name": "llm_node_1",
+      "inputs": [
+        "input_071b4ee2cb631e77a9c79e8e019216db_df",
+        "input_071b4ee2cb631e77a9c79e8e019216db_mask"
+      ],
+      "outputs": [
+        "llm_03f157e42ac84feecb57b32d8c64dba3_df",
+        "llm_03f157e42ac84feecb57b32d8c64dba3_mask"
+      ],
+      "transformation_type": "llm",
+      "destination_configured": false
+    },
+    {
+      "name": "1790835794793",
+      "inputs": [
+        "llm_03f157e42ac84feecb57b32d8c64dba3_df",
+        "llm_03f157e42ac84feecb57b32d8c64dba3_mask"
+      ],
+      "outputs": [
+        "output_56476ae598111bf801df686a4946d047_df",
+        "output_56476ae598111bf801df686a4946d047_mask"
+      ],
+      "transformation_type": "output",
+      "destination_configured": true
+    }
+  ],
+  "visible_next_run": "Next run:",
+  "visible_empty_history": true
+}

@@ -67,6 +67,14 @@ The authenticated GCS console then contained a new object, `RhombusAI_output_179
 
 This verifies that the current pipeline can clean the baseline and deliver to GCS through a manual run. It does not establish that the scheduled worker has the same credential context. The downloaded result matches the earlier corrected CSV, but those runs used different sampling settings; repeat determinism under one unchanged configuration is still unevaluated. Source comparisons use the repository baseline; the S3 object's bytes were not independently fetched in this session.
 
+## Verified source and manual determinism
+
+On 3 October 2026 Sydney time, Playwright downloaded the actual S3 `baseline.csv` through its browser-observed download link. Its 531 bytes are identical to `datasets/baseline.csv`, SHA-256 `6bc9a17c1734676986c1d48ad1122b132e3d71e1b60c3867f6687b3d8d08139e`. The [archived source bytes](evidence/baseline-source-fetched-2026-10-03.csv) and [repeat provenance](evidence/baseline-manual-repeats-2026-10-03.json) establish this comparison.
+
+With schedules paused, two further manual runs at `14:35:18Z` and `14:35:44Z` produced fresh GCS exports. Their [first](evidence/baseline-manual-repeat-1-2026-10-03.csv) and [second](evidence/baseline-manual-repeat-2-2026-10-03.csv) actual downloads are each 320 bytes and have the same SHA-256 as the manual control at `13:49:53Z`. The three captured process requests have an identical canonical fingerprint of runtime node names, wiring, transformation types and parameters; this comparison excludes UI metadata and redacts account secrets.
+
+The [three-output validation report](evidence/baseline-manual-determinism-validation.json) passes all seven checks, including ordered determinism. The earlier corrected 9:29 PM export is not used in this comparison because its sampling configuration differed. This establishes manual baseline consistency under the compared configuration; scheduled consistency remains unverified.
+
 ## Schedule creation follow-up
 
 The user showed an Active Hourly schedule at minute 00, with an enabled switch. Its history table is empty and its `Next run` field has no visible value. A separate log reports execution start and success at 10:04:26 PM, but does not link that execution to the schedule. The supplied GCS listing contains `RhombusAI_output_1790940577138.csv`, created on 2 October 2026 at 9:29:38 PM; that timestamp matches the earlier five-row preview run. No later export is visible in the screenshot. See the [schedule and object-list transcription](evidence/baseline-schedule-visible-evidence.md).
@@ -75,4 +83,4 @@ The user subsequently confirmed that the 10:04 PM execution came from the schedu
 
 ## Interpretation and next checks
 
-**Observed:** the earlier exported CSV failed validation despite execution Success; the corrected manual CSV passes all evaluated baseline checks. A later automated manual control directly downloaded another valid GCS export. User-confirmed scheduled attempts and subsequent controlled schedule comparisons left no history record or fresh GCS object. **Pending:** a verified scheduled delivery, repeat determinism, and drift runs. The chatbot exchange, configuration edit and fresh-schedule comparison are preserved in the [scheduled observation](baseline-scheduled.md). Scheduler and worker logs are needed to determine the cause.
+**Observed:** the earlier exported CSV failed validation despite execution Success; corrected manual exports now pass the baseline checks. Actual S3 bytes match the repository baseline, and three manual outputs with matching runtime configuration pass ordered determinism. User-confirmed scheduled attempts and subsequent controlled schedule comparisons left no history record or fresh GCS object. **Pending:** verified scheduled delivery and scheduled drift runs. The chatbot exchange, configuration edit and fresh-schedule comparison are preserved in the [scheduled observation](baseline-scheduled.md). Scheduler and worker logs are needed to determine the cause. Supplementary manual drift results are recorded in the individual case files as they are completed.

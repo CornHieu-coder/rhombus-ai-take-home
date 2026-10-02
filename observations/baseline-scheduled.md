@@ -76,8 +76,14 @@ Afterward the diagnostic every-minute schedule was disabled and retained for inv
 
 The [final API capture](evidence/baseline-schedule-final-2026-10-03.json) and [reviewed screenshot](evidence/baseline-schedule-final-2026-10-03.png) at `14:21Z` show `next_run_at=14:25Z` and visible `Next run: in 3 mins` after restoration. This shows the UI can render a future timestamp; it does not verify the next automatic run. The earlier blank value coincided with a stale backend timestamp. The history regression was rerun with its button scoped to the enabled schedule, since the paused diagnostic card also has a history button. It reaches the real history table and still fails on `No results.`; the capture command succeeds with both cards present.
 
+## User's later schedule check
+
+The user later replaced schedules 202/208 with schedule 209 and changed it to hourly minute 16. Baseline was uploaded successfully at `15:15:48Z`, before the `15:16Z` boundary; its actual downloaded bytes matched the repository baseline. A read-only watcher recorded enabled samples at `15:17:05Z` and `15:17:22Z`, both with zero history, null `last_run_at`, unchanged `next_run_at=15:16Z`, and no new GCS object. The user then paused the schedule and confirmed that action. [Selected samples and limits](evidence/baseline-schedule-user-repeat-2026-10-03.json).
+
+The watcher did not toggle schedules or click Run. Later paused samples do not add active scheduling coverage; this short check should not be described as five minutes with an active schedule. The earlier minute-10 boundary is not assessed because the schedule's state changed around it. Current schedule 209 is left paused as the user set it.
+
 ## Next checks and limits
 
 The backend history and GCS contents have now been independently inspected, and the chatbot exchange preserved. The configuration edit and fresh creation did not restore scheduled delivery. Complete scheduler, deployment and worker logs are needed to identify where work stops; this account exposes no such logs. No execution ID can be recorded while the history API returns no executions. A [prepared investigation report](scheduler-support-report.md) contains project/schedule identifiers, UTC windows and the specific backend questions. It has not been sent to support.
 
-These bounded observations do not prove that a job was dispatched, identify which backend component failed, rule out a longer delay, or explain the earlier Success logs. Drift tests have not yet been performed. A successful automatic run, real execution record and validated fresh GCS object are still required to establish the scheduled baseline.
+These bounded observations do not prove that a job was dispatched, identify which backend component failed, rule out a longer delay, or explain the earlier Success logs. Three supplementary manual drift cases are now documented individually; scheduled drift tests remain pending. A successful automatic run, real execution record and validated fresh GCS object are still required to establish the scheduled baseline. The [email draft](scheduler-email-draft.md) is ready for the user to send; no email has been sent automatically.

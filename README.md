@@ -8,18 +8,19 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 | --- | --- |
 | Direct backend API tests | 4 passed, 1 failed on 2026-10-02: authenticated schedule configuration passes; history regression fails with total=0 |
 | Validator unit tests | 12 passed locally on 2026-10-02, including numeric serialization and wrong-amount regressions |
-| Manual baseline run | Earlier export fails (9 rows instead of 5); corrected CSV and a later automated manual control pass all evaluated baseline checks. The control's actual 320 GCS bytes were downloaded directly. Repeat determinism remains unevaluated. [Evidence and analysis](observations/baseline-manual.md) |
-| Schedule and scheduled baseline | Empty history and no new GCS output persist after editing the original schedule and creating a fresh schedule with the current graph. Original hourly minute-25 settings restored; diagnostic schedule disabled. Cause and repair pending. [Observation](observations/baseline-scheduled.md), [prepared backend investigation report](observations/scheduler-support-report.md) |
+| Manual baseline run | Actual S3 baseline bytes match the repository. Three manual outputs with matching runtime configuration pass all seven checks, including ordered determinism. [Evidence and analysis](observations/baseline-manual.md) |
+| Schedule and scheduled baseline | Controlled edited and fresh schedules leave empty history and no new GCS output. The user later replaced them with schedule 209, tried minute 16 and paused it. Cause and repair pending. [Observation](observations/baseline-scheduled.md), [prepared backend investigation report](observations/scheduler-support-report.md) |
 | Authenticated UI tests | 1 passed, 2 failed on 2026-10-02: connected canvas passes; Next run and history regressions fail |
 | Full provisioning journey | Scaffold only; skipped in the live run, locators not verified |
 | Drifted scheduled runs and evidence | Not run |
+| Supplementary manual drift runs | Three completed: added column passes, changed type is correctly filtered with a new-input alert, missing amount fails with contradictory Success logging. Four original cases and chatbot diagnoses/repairs remain pending. |
 | Demo video | Pending; add link after recording a real walkthrough |
 
 Three preliminary findings:
 
 1. An earlier manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. The corrected manual download now passes the baseline validator. The original mismatch's cause remains unverified. See the [baseline observation](observations/baseline-manual.md).
 2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. Controlled comparisons after editing the original schedule and creating a fresh one also return zero history records and unchanged GCS listings, while a manual control produces a valid export. The [scheduled baseline observation](observations/baseline-scheduled.md) records the comparison; scheduler and worker logs are needed to identify the cause.
-3. The schedule card previously displayed blank `Next run:` while its backend timestamp was in the past and `last_run_at` remained null. After editing to a future time, the [final capture](observations/evidence/baseline-schedule-final-2026-10-03.json) shows `Next run: in 3 mins`. An overdue-schedule warning would make this state easier to investigate; an independent rendering defect is not established, and scheduled delivery remains unverified.
+3. A manual missing-column run produces a `cleaned_orders` failure and a generic `Pipeline execution completed successfully.` message at the same visible time, with no fresh GCS export in the bounded check. The [drop-column observation](observations/schema-drop-column.md) preserves both messages and the actual incompatible source. Async process HTTP 200 means task acceptance, so it cannot substitute for a worker success result.
 
 ## Cleaning contract
 
@@ -115,7 +116,7 @@ For each case, use the same S3 key configured in the pipeline. Restore the basel
 
 ### Continuing while scheduled delivery is unresolved
 
-The take-home says a clear, reproducible write-up of a failure is a strong result. The scheduler failure is therefore evidence to report, while the successful scheduled baseline remains an unmet requirement. The following fallback is planned; drift runs have not yet been performed.
+The take-home says a clear, reproducible write-up of a failure is a strong result. The scheduler failure is therefore evidence to report, while the successful scheduled baseline remains an unmet requirement. Three manual baseline outputs establish determinism, and three manual drift cases are completed below. The remaining fallback work is still pending.
 
 1. Share the [prepared scheduler report](observations/scheduler-support-report.md) with the take-home contact. Ask them to investigate the schedule deployments, provide a working environment, or advise whether a manual fallback is acceptable. The report has not been sent automatically.
 2. Repeat the unchanged baseline manually under one saved pipeline configuration until three actual outputs are available. Validate each and compare them for determinism. Preserve timestamps and cloud objects, and label the triggers manual.
@@ -124,14 +125,14 @@ The take-home says a clear, reproducible write-up of a failure is a strong resul
 5. Keep scheduled delivery and behavior after a scheduled repair marked **unverified because scheduling is unresolved**. Manual results are supplementary evidence and do not satisfy those scheduled requirements. After Rhombus resolves scheduling, establish the automatic baseline and repeat the cases through real automatic triggers.
 6. Complete the remaining UI journey automation and demo video using observed behavior, including failures and unfinished coverage. The current provisioning scaffold is still unverified; these planned steps are not completed results.
 
-Replacing source objects requires an authenticated AWS S3 session or configured AWS CLI credentials. The current local CLI has no configured profile; direct GCS access and the authenticated Rhombus test session are available.
+The user authenticated the dedicated test browser in AWS S3. Playwright overwrites the same test key and downloads it again to verify exact case bytes. Baseline is restored between cases and after a stopped probe. The current local CLI has no configured AWS profile. Schedule 209 is currently paused by the user; no later schedule toggle was sent by the read-only watcher. The [email draft](observations/scheduler-email-draft.md) is prepared for the user to send, not sent automatically.
 
 | Drift case | Change | Pipeline stopped? | Chatbot fix worked? | Severity |
 | --- | --- | --- | --- | --- |
-| [Drop column](observations/schema-drop-column.md) | Remove `amount_usd` | Not observed | Not observed | Pending |
+| [Drop column](observations/schema-drop-column.md) | Remove `amount_usd` | Yes, manual; contradictory Success log | Pending | Medium schema failure; high status-reporting defect |
 | [Rename column](observations/schema-rename-column.md) | `customer_email` → `email` | Not observed | Not observed | Pending |
-| [Change type](observations/schema-change-type.md) | One numeric amount becomes words | Not observed | Not observed | Pending |
-| [Add column](observations/schema-add-column.md) | Add `coupon_code` | Not observed | Not observed | Pending |
+| [Change type](observations/schema-change-type.md) | One numeric amount becomes words | No, manual; correct four-row export | Pending diagnosis; filtering follows contract | Low observability gap |
+| [Add column](observations/schema-add-column.md) | Add `coupon_code` | No, manual; correct five-row export | No repair needed; diagnosis pending | No data defect observed |
 | [Combined](observations/schema-combined.md) | Drop, rename, type change, add | Not observed | Not observed | Pending |
 | [Cents](observations/semantic-cents.md) | USD values become cents | Not observed | Not observed | Pending |
 | [Day/month](observations/semantic-day-month.md) | Date interpretation switches | Not observed | Not observed | Pending |

@@ -1,0 +1,50 @@
+- text: Logs 5 visible 1
+- button:
+  - img
+- img
+- button "All"
+- button "4":
+  - img
+  - text: "4"
+- button "0":
+  - img
+  - text: "0"
+- button "1":
+  - img
+  - text: "1"
+- button:
+  - img
+- img
+- img
+- text: 12:58:46 AM
+- button "Collapse log":
+  - img
+- paragraph: "Pipeline failed at cleaned_orders: LLM execution failed (code_sha=94f81f0a1036): 'amount_usd' --- Generated code --- import pandas as pd import numpy as np def _safe_to_timedelta_wrapper(arg, *args, **kwargs): try: arg_series = pd.Series(arg) except Exception: arg_serie…"
+- button "Ask Chatbot":
+  - img
+  - text: Ask Chatbot
+- text: "{ \"kind\": \"pipeline_summary\", \"status\": \"error\", \"failure\": { \"message\": \"Pipeline failed at cleaned_orders: LLM execution failed (code_sha=94f81f0a1036): 'amount_usd'\\n--- Generated code ---\\nimport pandas as pd\\nimport numpy as np\\ndef _safe_to_timedelta_wrapper(arg, *args, **kwargs):\\n try:\\n arg_series = pd.Series(arg)\\n except Exception:\\n arg_serie…\", \"reason\": \"LLM execution failed (code_sha=94f81f0a1036): 'amount_usd'\\n--- Generated code ---\\nimport pandas as pd\\nimport numpy as np\\ndef _safe_to_timedelta_wrapper(arg, *args, **kwargs):\\n try:\\n arg_series = pd.Series(arg)\\n except Exception:\\n arg_serie…\", \"nodeId\": \"llm_node_1\", \"nodeLabel\": \"cleaned_orders\", \"nodeRef\": \"llm_03f157e42ac84feecb57b32d8c64dba3\" }, \"nodeId\": \"llm_node_1\", \"nodeName\": \"cleaned_orders\" }"
+- img
+- img
+- text: 12:58:46 AM
+- button "Collapse log":
+  - img
+- paragraph: Pipeline execution completed successfully.
+- img
+- img
+- text: 12:58:45 AM
+- button "Collapse log":
+  - img
+- paragraph: Pipeline execution started.
+- img
+- img
+- text: 12:58:38 AM
+- button "Collapse log":
+  - img
+- paragraph: Pipeline execution completed successfully.
+- img
+- img
+- text: 12:58:38 AM
+- button "Collapse log":
+  - img
+- paragraph: Pipeline execution started.

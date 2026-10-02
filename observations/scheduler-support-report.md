@@ -27,6 +27,10 @@ This report is prepared for Rhombus investigation; it has not been sent to suppo
 
 All timestamps above are UTC. The fresh diagnostic occurred shortly after midnight on 3 October in Australia/Sydney. No manual run occurred during either scheduled observation. The short-interval diagnostic is disabled after the bounded check; the original hourly minute-25 configuration is restored.
 
+These restoration settings describe the end of that controlled experiment. The user later replaced schedules 202/208 with schedule **209**, changed it to hourly minute 16, and paused it. The baseline upload completed at `15:15:48Z`, before the `15:16Z` boundary; actual downloaded source bytes were verified afterward. Enabled samples at `15:17:05Z` and `15:17:22Z` show zero history and no fresh GCS object. Later samples are paused, so this is a short observation rather than five minutes of active scheduling coverage. [Selected evidence and limits](evidence/baseline-schedule-user-repeat-2026-10-03.json). No schedule toggles were sent by this watcher.
+
+Three manual baseline outputs with matching runtime configuration now pass ordered determinism as well as the cleaning checks. Actual S3 source bytes match the repository baseline. [Source and three-run provenance](evidence/baseline-manual-repeats-2026-10-03.json), [validator report](evidence/baseline-manual-determinism-validation.json).
+
 ## Expected
 
 An automatic trigger runs the saved graph, writes a fresh valid five-row GCS CSV and creates a retrievable execution record. A failed trigger or node should expose a failure status and error. Rhombus's [scheduling documentation](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) describes execution records and captured pipeline configuration for scheduled runs.

@@ -1,0 +1,476 @@
+{
+  "started_at": "2026-10-02T15:17:01.702Z",
+  "finished_at": "2026-10-02T15:22:01.495Z",
+  "trigger": "automatic observation; no Run click",
+  "source_verification": {
+    "at": "2026-10-02T15:16:00.403Z",
+    "scenario": "baseline",
+    "source_key": "baseline.csv",
+    "http_status": 200,
+    "source_bytes": 531,
+    "source_sha256": "6bc9a17c1734676986c1d48ad1122b132e3d71e1b60c3867f6687b3d8d08139e",
+    "dataset_sha256": "6bc9a17c1734676986c1d48ad1122b132e3d71e1b60c3867f6687b3d8d08139e",
+    "byte_identical": true
+  },
+  "baseline_upload_finished_at": "2026-10-02T15:15:48.755Z",
+  "samples": [
+    {
+      "at": "2026-10-02T15:17:05.308Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": true,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:17:22.044Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": true,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:17:38.449Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:17:54.723Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:18:11.223Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:18:27.491Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:18:43.742Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:18:59.993Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:19:16.258Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:19:32.526Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:19:48.779Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:20:05.623Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:20:22.320Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:20:38.588Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:20:54.941Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:21:11.202Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:21:27.522Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:21:43.828Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T15:22:00.189Z",
+      "schedules_http_status": 200,
+      "schedules": [
+        {
+          "configuration": {
+            "id": 209,
+            "enabled": false,
+            "cron_expression": "16 * * * *",
+            "next_run_at": "2026-10-02T15:16:00Z",
+            "last_run_at": null,
+            "created_at": "2026-10-02T15:06:58.765Z"
+          },
+          "history_http_status": 200,
+          "history": {
+            "executions": [],
+            "total": 0,
+            "page": 1,
+            "page_size": 20
+          }
+        }
+      ],
+      "new_objects": []
+    }
+  ],
+  "outcome": "No verified automatic delivery within this observation window.",
+  "limits": "The user paused schedule 209 during observation. Enabled samples at 15:17:05 and 15:17:22 UTC show no history or fresh GCS object; later paused samples do not establish additional active trigger coverage. Minute-10 behavior is not assessed because schedule state changed around that boundary."
+}

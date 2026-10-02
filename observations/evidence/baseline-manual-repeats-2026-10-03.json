@@ -1,0 +1,57 @@
+{
+  "project_id": 4266,
+  "trigger": "manual",
+  "started_at": "2026-10-02T14:35:14.258Z",
+  "finished_at": "2026-10-02T14:35:58.796Z",
+  "source_verification": {
+    "at": "2026-10-02T14:36:31.086Z",
+    "source_key": "baseline.csv",
+    "download_method": "Authenticated browser-observed download URL",
+    "source_bytes": 531,
+    "source_sha256": "6bc9a17c1734676986c1d48ad1122b132e3d71e1b60c3867f6687b3d8d08139e",
+    "repository_sha256": "6bc9a17c1734676986c1d48ad1122b132e3d71e1b60c3867f6687b3d8d08139e",
+    "byte_identical": true
+  },
+  "schedule_pause": {
+    "at": "2026-10-02T14:31:50.381Z",
+    "previously_enabled": [
+      202
+    ],
+    "paused": [
+      {
+        "id": 202,
+        "status": 200,
+        "enabled": false
+      }
+    ]
+  },
+  "previous_control": {
+    "at": "2026-10-02T13:49:53.588Z",
+    "object": "RhombusAI_output_1790948994643.csv",
+    "config_fingerprint": "88e52ce85a867167e2a67f5dbca1f1beb957da758722d2c0afce1249f2e98c61"
+  },
+  "runs": [
+    {
+      "clicked_at": "2026-10-02T14:35:18.175Z",
+      "process_http_status": 200,
+      "config_fingerprint": "88e52ce85a867167e2a67f5dbca1f1beb957da758722d2c0afce1249f2e98c61",
+      "gcs_object": "RhombusAI_output_1790951722682.csv",
+      "download_http_status": 200,
+      "bytes": 320,
+      "sha256": "89cdb162f7d43e9f21ce0a8ae077295575837aa7d46580e8bc067940ab2b63bb",
+      "finished_at": "2026-10-02T14:35:40.068Z"
+    },
+    {
+      "clicked_at": "2026-10-02T14:35:44.190Z",
+      "process_http_status": 200,
+      "config_fingerprint": "88e52ce85a867167e2a67f5dbca1f1beb957da758722d2c0afce1249f2e98c61",
+      "gcs_object": "RhombusAI_output_1790951748444.csv",
+      "download_http_status": 200,
+      "bytes": 320,
+      "sha256": "89cdb162f7d43e9f21ce0a8ae077295575837aa7d46580e8bc067940ab2b63bb",
+      "finished_at": "2026-10-02T14:35:58.795Z"
+    }
+  ],
+  "configuration_comparison": "SHA-256 of a canonical, redacted representation of runtime node names, wiring, transformation type and parameters. All three process requests match.",
+  "result": "Actual S3 baseline bytes match the repository; three actual GCS outputs pass baseline validation and ordered determinism."
+}

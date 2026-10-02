@@ -47,6 +47,37 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(report["output_rows"], 5)
         self.assertTrue(check(report, "cleaning_rules")["passed"])
 
+    def test_float_amount_serialization_does_not_require_trailing_zeroes(self):
+        rows = [row.copy() for row in BASELINE_ROWS]
+        for row, amount in zip(rows, ["19.95", "42.5", "120.0", "8.4", "199.0"]):
+            row[3] = amount
+        report = validate(source("baseline.csv"), output(rows), "baseline")
+        self.assertTrue(report["passed"], report["checks"])
+
+    def test_numeric_comparison_still_rejects_wrong_or_invalid_amounts(self):
+        for amount in ["42.51", "42.501", "not-a-number", "NaN", "Infinity", ""]:
+            with self.subTest(amount=amount):
+                rows = [row.copy() for row in BASELINE_ROWS]
+                rows[1][3] = amount
+                report = validate(source("baseline.csv"), output(rows), "baseline")
+                self.assertFalse(check(report, "cleaning_rules")["passed"])
+
+    def test_positive_amount_above_500_is_kept_by_the_cleaning_contract(self):
+        changed_source = source("baseline.csv").replace("199.00", "999.95")
+        rows = [row.copy() for row in BASELINE_ROWS]
+        rows[-1][3] = "999.95"
+        report = validate(changed_source, output(rows), "baseline")
+        self.assertTrue(report["passed"], report["checks"])
+        self.assertEqual(report["expected_rows"], 5)
+
+    def test_determinism_compares_numeric_amount_values(self):
+        rows = [row.copy() for row in BASELINE_ROWS]
+        for row, amount in zip(rows, ["19.95", "42.5", "120.0", "8.4", "199.0"]):
+            row[3] = amount
+        report = validate(source("baseline.csv"), output(BASELINE_ROWS), "baseline",
+                          [output(rows), output(BASELINE_ROWS)])
+        self.assertTrue(check(report, "determinism")["passed"])
+
     def test_dropped_column_is_reported_even_without_output(self):
         report = validate(source("schema-drop-column.csv"), None, "schema-drop-column")
         self.assertFalse(report["passed"])

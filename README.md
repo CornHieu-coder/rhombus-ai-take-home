@@ -1,14 +1,14 @@
 # Rhombus AI pipeline drift test repository
 
-This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, a Playwright UI journey, direct backend API tests, a data validator, and one observation record per drift case. An earlier manual export failed baseline validation; later node previews match the expected five-row result. A user-confirmed scheduled run reported Success without a history entry or new GCS output. **A successful scheduled ETL baseline and drift cases remain pending.** Outcomes below distinguish observed results from pending tests.
+This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, Playwright UI tests, direct backend API tests, a data validator, and one observation record per drift case. An earlier manual export failed baseline validation; the corrected manual CSV now passes all evaluated baseline checks. A user-confirmed scheduled run reported Success without a history entry or new GCS output. **A successful scheduled ETL baseline and drift cases remain pending.** Outcomes below distinguish observed results from pending tests.
 
 ## Current status and findings
 
 | Area | Status |
 | --- | --- |
 | Direct backend API tests | 4 passed, 1 failed on 2026-10-02: authenticated schedule configuration passes; history regression fails with total=0 |
-| Validator unit tests | 8 passed locally on 2026-09-30 |
-| Manual baseline run | Earlier downloaded output failed validation (9 rows instead of 5); later previews match 5 expected rows. Fresh GCS export validation pending. [Evidence and analysis](observations/baseline-manual.md) |
+| Validator unit tests | 12 passed locally on 2026-10-02, including numeric serialization and wrong-amount regressions |
+| Manual baseline run | Earlier export fails (9 rows instead of 5); corrected 320-byte CSV passes all evaluated baseline checks. Repeat determinism remains unevaluated. [Evidence and analysis](observations/baseline-manual.md) |
 | Schedule and scheduled baseline | Success log without history or new GCS output at 10:04 PM; same visible symptoms repeat at 10:30 PM after editing minute 00 to 25. Missing-output checks fail; cause and repair pending. [Observation](observations/baseline-scheduled.md) |
 | Authenticated UI tests | 1 passed, 2 failed on 2026-10-02: connected canvas passes; Next run and history regressions fail |
 | Full provisioning journey | Scaffold only; skipped in the live run, locators not verified |
@@ -17,7 +17,7 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 
 Three preliminary findings:
 
-1. A manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. Later node previews show the expected five rows; the fresh GCS export, exact repair, and cause of the earlier mismatch remain unverified. See the [baseline observation](observations/baseline-manual.md).
+1. An earlier manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. The corrected manual download now passes the baseline validator. The original mismatch's cause remains unverified. See the [baseline observation](observations/baseline-manual.md).
 2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. The same visible symptoms repeated after editing the schedule minute. The [scheduled baseline observation](observations/baseline-scheduled.md) records both attempts; the root cause and repair remain unverified.
 3. An enabled schedule's `Next run:` is blank even though the authenticated backend returns a timestamp. That timestamp is already in the past and `last_run_at` is null. [Captured API and UI evidence](observations/evidence/baseline-schedule-playwright-2026-10-02.json) separates the display mismatch from the missing backend history; the underlying scheduler cause is unknown.
 
@@ -29,6 +29,8 @@ The saved AI Builder cleaning prompt requests the following transformations. The
 - Reject rows with missing `order_id` or email, invalid or nonpositive `amount_usd`, invalid date, or a country other than `US`, `usa`, or `United States`.
 - Emit `country=US`, two-decimal USD amounts, ISO `YYYY-MM-DD` dates, and exactly `order_id,customer_email,customer_name,amount_usd,order_date,country`.
 - The nine-row baseline should yield five rows. The [local expected output](data-validation/tests/fixtures/expected-baseline-output.csv) is an oracle fixture, **not a Rhombus output**.
+
+Amounts are compared numerically: `42.5` equals `42.50`, as required by float rounding. Incorrect values or extra nonzero decimal precision still fail; no unsupported USD 500 cap is applied. Determinism compares ordered row values with the same numeric treatment. The [corrected real download](observations/evidence/baseline-manual-corrected-output-2026-10-02-2129.csv) is separate from the oracle fixture; its [validation report](observations/evidence/baseline-manual-corrected-validation.json) passes the six evaluated checks and leaves determinism unevaluated.
 
 The two semantic drift datasets retain the baseline headers. `semantic-cents.csv` expresses amounts in cents; `semantic-day-month.csv` switches dates from MM/DD/YYYY to DD/MM/YYYY. Their validator cases compute the intended USD amounts and calendar dates independently, so a pipeline that silently keeps the old interpretation fails.
 

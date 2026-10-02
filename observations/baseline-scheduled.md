@@ -9,7 +9,7 @@
 ## Setup and reproduction
 
 1. Use the unchanged nine-row `datasets/baseline.csv` at the S3 key configured in the project.
-2. Use the connected S3 Data Input → Custom cleaning transformation → GCS Data Output pipeline. The preceding node previews showed the expected five cleaned rows, and a GCS object was created at 9:29:38 PM. That object's CSV bytes have not yet been validated.
+2. Use the connected S3 Data Input → Custom cleaning transformation → GCS Data Output pipeline. The preceding node previews showed the expected five cleaned rows, and a GCS object was created at 9:29:38 PM. The user-provided download of that earlier object now passes all evaluated baseline checks; see the [manual observation](baseline-manual.md).
 3. Enable a recurring schedule. The supplied schedule card shows Hourly at minute 00, Active, with its enable switch on.
 4. Allow an automatic execution rather than clicking Run. The user confirmed that the 10:04 PM execution came from the schedule; the screenshot alone does not identify its trigger or execution date.
 5. Compare the execution log, schedule history, and GCS object listing. The supplied screenshots show successful completion at 10:04:26 PM, no schedule-history rows, and no object newer than the earlier 9:29 PM export.

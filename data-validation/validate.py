@@ -23,6 +23,17 @@ def parse_csv(value):
     return list(reader.fieldnames or []), list(reader)
 
 
+def canonical_row(row):
+    """Compare numeric amounts by value without rounding away output errors."""
+    try:
+        amount = Decimal(row.get("amount_usd"))
+    except (InvalidOperation, TypeError, ValueError):
+        return row
+    if not amount.is_finite():
+        return row
+    return {**row, "amount_usd": amount}
+
+
 def expected_rows(rows, scenario):
     result = []
     rejected = {}
@@ -41,7 +52,7 @@ def expected_rows(rows, scenario):
             amount = Decimal((row["amount_usd"] or "").strip())
             if scenario == "semantic-cents":
                 amount /= 100
-            if not amount.is_finite() or amount <= 0 or amount > 500:
+            if not amount.is_finite() or amount <= 0:
                 raise InvalidOperation
             amount = amount.quantize(Decimal("0.01"))
         except (InvalidOperation, ValueError):
@@ -98,17 +109,25 @@ def validate(source_text, output_text, scenario, repeat_outputs=()):
         f"expected={len(expected)}; actual={len(output_rows)}")
     actual_by_id = {row.get("order_id", ""): row for row in output_rows}
     expected_by_id = {row["order_id"]: row for row in expected}
+    actual_values = {key: canonical_row(row) for key, row in actual_by_id.items()}
+    expected_values = {key: canonical_row(row) for key, row in expected_by_id.items()}
     matches = (
         output_text is not None and not missing and output_columns == COLUMNS
         and len(actual_by_id) == len(output_rows)
-        and actual_by_id == expected_by_id
+        and actual_values == expected_values
     )
     add("cleaning_rules", matches if output_text is not None and not missing else None,
         f"expected={expected_by_id}; actual={actual_by_id}" if not matches and output_text is not None else "canonical rows match" if matches else "not evaluated")
 
     if repeat_outputs:
         all_outputs = [output_text, *repeat_outputs]
-        comparable = [parse_csv(item) if item is not None else None for item in all_outputs]
+        comparable = []
+        for item in all_outputs:
+            if item is None:
+                comparable.append(None)
+            else:
+                columns, rows = parse_csv(item)
+                comparable.append((columns, [canonical_row(row) for row in rows]))
         deterministic = len(repeat_outputs) >= 2 and comparable[0] is not None and all(item == comparable[0] for item in comparable[1:])
         add("determinism", deterministic, f"compared {len(all_outputs)} ordered CSV results; identical={deterministic}")
     else:

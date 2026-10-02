@@ -1,4 +1,4 @@
-# Manual baseline: failed export followed by a matching node preview
+# Manual baseline: failed export followed by a validated corrected CSV
 
 ## Scope and provenance
 
@@ -49,14 +49,22 @@ The user subsequently supplied screenshots of the Custom and Data Output preview
 
 In a later screenshot follow-up received on 2 October 2026, both node previews show the expected five rows, lowercase emails, `Unknown` for order `1006`, all countries `US`, and ISO date strings. Visible logs show execution start at 9:29:36 PM and successful completion at 9:29:42 PM. The screenshot does not establish the execution date, timezone, ID, or trigger type. See the [transcribed follow-up evidence](evidence/baseline-follow-up-visible-evidence.md).
 
-The follow-up log still visibly begins with `input_df_1.copy()`. Although [the Custom node documentation](https://doc.rhombusai.com/docs/transformer-references/custom-nodes/llm-transform/) names `input_df` as the primary input, the screenshots do not establish that the different variable name caused the earlier mismatch. The exact repair, chatbot diagnosis, complete executed code, and fresh GCS export have not been supplied.
+The follow-up log still visibly begins with `input_df_1.copy()`. Although [the Custom node documentation](https://doc.rhombusai.com/docs/transformer-references/custom-nodes/llm-transform/) names `input_df` as the primary input, the screenshots do not establish that the different variable name caused the earlier mismatch. Later authenticated inspection confirms the saved code includes all 12 steps, begins with `input_df_1.copy()`, and assigns the six requested columns to `output_df`. This establishes the current saved code, not the cause of the original failure.
+
+## Corrected manual export validation
+
+On 2 October 2026, the user supplied the actual 320-byte download `RhombusAI_output_1790940577138.csv`. Its filename and size match the previously shown GCS object created at 9:29:38 PM. The [archived original bytes](evidence/baseline-manual-corrected-output-2026-10-02-2129.csv) have SHA-256 `89cdb162f7d43e9f21ce0a8ae077295575837aa7d46580e8bc067940ab2b63bb`. The GCS checksum was not independently queried.
+
+The [corrected validation report](evidence/baseline-manual-corrected-validation.json) passes all six evaluated checks against the repository baseline: source schema, newly invalid values, output existence, exact output schema, five-row count and cleaning rules. It contains the expected IDs `1001`, `1002`, `1006`, `1007`, `1008`, lowercase emails, `Unknown` for the missing name, ISO dates and country `US`. Determinism is unevaluated because only one corrected output was supplied. Rules for missing order IDs, nonpositive amounts, excluded countries and rounding values with extra precision are not independently exercised by this nine-row source.
+
+The first validator run incorrectly rejected float CSV representations such as `42.5` versus `42.50`. The validator now compares exact numeric values while preserving text and schema checks; it does not round the output before comparison. Regression tests first reproduced the false failure, then passed after the fix. Tests also reject `42.51`, `42.501`, invalid amounts and nonfinite values, and verify that the prompt imposes no USD 500 cap. All 12 validator unit tests pass. Rechecking the earlier nine-row output still fails the row count and cleaning rules.
 
 ## Schedule creation follow-up
 
 The user showed an Active Hourly schedule at minute 00, with an enabled switch. Its history table is empty and its `Next run` field has no visible value. A separate log reports execution start and success at 10:04:26 PM, but does not link that execution to the schedule. The supplied GCS listing contains `RhombusAI_output_1790940577138.csv`, created on 2 October 2026 at 9:29:38 PM; that timestamp matches the earlier five-row preview run. No later export is visible in the screenshot. See the [schedule and object-list transcription](evidence/baseline-schedule-visible-evidence.md).
 
-The user subsequently confirmed that the 10:04 PM execution came from the schedule and that neither a history record nor a GCS output appeared. The scheduled trigger is user-confirmed; the backend state and cause remain unverified. This is now tracked in the [scheduled baseline observation](baseline-scheduled.md).
+The user subsequently confirmed that the 10:04 PM execution came from the schedule and that neither a history record nor a GCS output appeared. The scheduled trigger is user-confirmed; subsequent authenticated API inspection confirms zero history records. The cause remains unverified. This is tracked in the [scheduled baseline observation](baseline-scheduled.md).
 
 ## Interpretation and next checks
 
-**Observed:** the earlier exported CSV failed validation despite execution Success; the latest two node previews now match the expected baseline table. A later user-confirmed scheduled execution reported Success without a history record or new GCS output. **Pending:** validation of the corrected manual export and a scheduled run that actually delivers its output. Preserve the chatbot's diagnosis and repair response and verify any repair on unchanged baseline input before the drift tests.
+**Observed:** the earlier exported CSV failed validation despite execution Success; the corrected manual CSV passes all evaluated baseline checks. A later user-confirmed scheduled execution reported Success without a history record or new GCS output. **Pending:** a verified scheduled delivery, repeat determinism, and drift runs. The chatbot exchange and subsequent schedule API polling are preserved in the [scheduled observation](baseline-scheduled.md); disabling sampling did not restore history within that bounded observation window.

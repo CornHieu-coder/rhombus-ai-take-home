@@ -2,7 +2,7 @@
 
 ## Result and severity
 
-**Outcome:** the user confirmed an automatic scheduled execution at 10:04 PM. Rhombus reported successful completion, but the schedule-specific history remained empty and no new GCS output was found. This run does not satisfy the successful scheduled ETL baseline.
+**Outcome:** the user confirmed an automatic scheduled execution at 10:04 PM. Rhombus reported successful completion, but the schedule-specific history remained empty and no new GCS output was found. A later repeat showed the same visible symptoms at 10:30:05 PM after the schedule's minute setting changed from 00 to 25. A successful scheduled ETL baseline has not been demonstrated.
 
 **Severity: High, provisional.** The expected data delivery is missing while the platform reports Success, and the execution history does not provide a record to investigate. Backend state and the cause have not yet been independently inspected.
 
@@ -14,7 +14,9 @@
 4. Allow an automatic execution rather than clicking Run. The user confirmed that the 10:04 PM execution came from the schedule; the screenshot alone does not identify its trigger or execution date.
 5. Compare the execution log, schedule history, and GCS object listing. The supplied screenshots show successful completion at 10:04:26 PM, no schedule-history rows, and no object newer than the earlier 9:29 PM export.
 
-The saved timezone, configuration at the exact trigger, and schedule creation time have not been captured. A repeat is needed to establish reproducibility.
+6. Edit the existing schedule's minute setting from 00 to 25 and allow the next automatic attempt while retaining the baseline pipeline. The follow-up screenshots show another generic start/Success pair at 10:30:05 PM, an empty history, and the same two earlier GCS objects.
+
+The saved timezone, configuration at the exact trigger, schedule update time, and creation time have not been captured. The second attempt repeats the visible mismatch; its trigger field is inferred from the ongoing automatic-repeat procedure rather than independently retrieved.
 
 ## Expected behavior
 
@@ -28,6 +30,7 @@ Run the saved three-node pipeline, write a fresh GCS output with the five expect
 - The newest visible GCS object is `RhombusAI_output_1790940577138.csv`, created on 2 October 2026 at 9:29:38 PM. The user confirmed no output appeared for the scheduled execution.
 - [Screenshot transcription and user confirmation](evidence/baseline-schedule-visible-evidence.md).
 - [Missing-output validator report](evidence/baseline-scheduled-output-missing.json): `passed=false`, `output_exists=false`, `expected_rows=5`, `output_rows=null`. The validator used the repository's baseline source and the explicit `--output-missing` flag; it did not query GCS. Output schema, row count, cleaning rules, and determinism were not evaluated.
+- [Repeat screenshot transcription](evidence/baseline-schedule-repeat-visible-evidence.md): minute 25, Success at 10:30:05 PM, no history rows, blank Next run, and no visible new object. The [repeat missing-output report](evidence/baseline-scheduled-repeat-output-missing.json) also fails the output-exists check; row-level output checks remain unevaluated.
 
 ## Chatbot diagnosis and repair
 
@@ -35,6 +38,6 @@ Pending. Ask the chatbot why a scheduled run reports Success while neither its h
 
 ## Next checks and limits
 
-Refresh both pages to exclude stale views. Inspect the complete execution logs and, if needed, the backend response that supplies schedule history to distinguish an empty backend result from a UI display issue. Keep the baseline input and pipeline configuration unchanged for one repeat scheduled run before applying a repair. Record both the trigger and whether a fresh object appears.
+The visible symptom has repeated. Inspect complete execution logs and the backend response that supplies schedule history to distinguish an empty backend result from a UI display issue. Ask the chatbot to diagnose both attempts, including which pipeline snapshot and nodes executed and whether the GCS write was attempted. Preserve its exact response, apply any justified repair through the AI Builder, and verify on a later automatic run using unchanged baseline input.
 
 This is an observed delivery/history mismatch with a user-confirmed scheduled trigger. It does not establish which backend component failed, whether the export was skipped or rejected, or why Success was reported. Drift tests have not yet been performed.

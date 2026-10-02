@@ -9,7 +9,7 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 | Direct backend API tests | 3 passed against public unauthenticated endpoints on 2026-09-30 |
 | Validator unit tests | 8 passed locally on 2026-09-30 |
 | Manual baseline run | Earlier downloaded output failed validation (9 rows instead of 5); later previews match 5 expected rows. Fresh GCS export validation pending. [Evidence and analysis](observations/baseline-manual.md) |
-| Schedule and scheduled baseline | Automatic trigger user-confirmed at 10:04 PM; Success log, empty history, no new GCS output. Missing-output validation failed; cause and repair pending. [Observation](observations/baseline-scheduled.md) |
+| Schedule and scheduled baseline | Success log without history or new GCS output at 10:04 PM; same visible symptoms repeat at 10:30 PM after editing minute 00 to 25. Missing-output checks fail; cause and repair pending. [Observation](observations/baseline-scheduled.md) |
 | Authenticated UI test | Not run |
 | Drifted scheduled runs and evidence | Not run |
 | Demo video | Pending; add link after recording a real walkthrough |
@@ -17,7 +17,7 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 Three preliminary findings:
 
 1. A manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. Later node previews show the expected five rows; the fresh GCS export, exact repair, and cause of the earlier mismatch remain unverified. See the [baseline observation](observations/baseline-manual.md).
-2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. The [scheduled baseline observation](observations/baseline-scheduled.md) records this delivery/history mismatch; the root cause and repeatability remain unverified.
+2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. The same visible symptoms repeated after editing the schedule minute. The [scheduled baseline observation](observations/baseline-scheduled.md) records both attempts; the root cause and repair remain unverified.
 3. The observed backend paths `/api/accounts/users/profile` and `/api/accounts/users/project-limit` return HTTP 401 with `{"detail":"Unauthorized"}` without a session. The [API suite](api-tests/backend.spec.ts) asserts both status and body.
 
 ## Cleaning contract

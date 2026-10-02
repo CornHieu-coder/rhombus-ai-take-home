@@ -14,7 +14,7 @@ The chatbot suggested disabling input sampling. That saved change did not resolv
 
 As a control, three manual runs with matching runtime configuration produced actual five-row GCS CSVs that pass the cleaning validator and determinism comparison. The actual S3 baseline bytes also match the repository dataset.
 
-The [documented scheduling failure](https://github.com/CornHieu-coder/rhombus-ai-take-home/blob/main/observations/baseline-scheduled.md) includes reproduction steps, schedule IDs, UTC times, screenshots, API results, GCS observations and the chatbot's attempted repair.
+The [scheduler support report](https://github.com/CornHieu-coder/rhombus-ai-take-home/blob/main/observations/scheduler-support-report.md) includes reproduction steps, project and schedule IDs, UTC observation windows, links to the evidence, and specific questions for investigating the scheduler and workers.
 
 Could you check whether those schedules dispatched jobs, whether workers received them, and why no execution records or export errors are visible? Please also advise whether I should use a different environment or submit clearly labelled manual drift results while this is unresolved. I’m keeping the successful scheduled baseline requirement marked incomplete.
 

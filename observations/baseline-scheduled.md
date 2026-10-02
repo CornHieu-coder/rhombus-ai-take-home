@@ -4,7 +4,7 @@
 
 **Outcome:** the user confirmed an automatic scheduled execution at 10:04 PM. Rhombus reported successful completion, but the schedule-specific history remained empty and no new GCS output was found. A later repeat showed the same visible symptoms at 10:30:05 PM after the schedule's minute setting changed from 00 to 25. A successful scheduled ETL baseline has not been demonstrated.
 
-**Severity: High, provisional.** The expected data delivery is missing while the platform reports Success, and the execution history does not provide a record to investigate. Authenticated Playwright inspection independently confirms an empty backend history. The underlying cause and direct GCS verification remain unresolved.
+**Severity: High, provisional.** The expected data delivery is missing while earlier logs report Success, and the execution history does not provide a record to investigate. Authenticated Playwright inspection independently confirms an empty backend history. Later controlled observations directly refresh GCS and find no new output. The underlying cause remains unresolved.
 
 ## Setup and reproduction
 
@@ -45,7 +45,7 @@ On 2026-10-02, the signed-in Playwright session read the real backend APIs and o
 - Schedule ID `202`, project ID `4266`, enabled, hourly cron `25 * * * *`, failure notification enabled.
 - History endpoint returned HTTP 200, `executions=[]`, `total=0`. The empty table agrees with the backend; it is not solely a table-rendering symptom.
 - Backend `next_run_at=2026-10-02T12:25:00Z`, already in the past at capture time `13:26:02Z`; `last_run_at=null`.
-- The UI renders `Next run:` without a value despite the backend's non-null field. This is a distinct display mismatch.
+- The UI renders `Next run:` without a value while the backend's non-null timestamp is in the past. This is a monitoring symptom; the later future timestamp does render, so an independent rendering defect is not established.
 - The saved S3 input, cleaning transformation and configured CSV output remain connected. Sampling is disabled.
 
 `npm run test:all -- --workers=1` completed with 5 passed, 3 failed, 1 skipped. The direct history assertion failed because `total=0`; the UI Next run assertion failed on the blank value; the UI history assertion failed on the visible `No results.` cell. The full provisioning scaffold was skipped because cloud setup settings are absent. An intermittent Ad Blocker dialog is handled by choosing Continue Anyway; it is not counted as the history defect.
@@ -56,8 +56,28 @@ The [bounded automatic-run observation](evidence/baseline-schedule-after-chatbot
 
 Every observed history response remained `total=0`, with `last_run_at=null` and unchanged, stale `next_run_at=12:25Z`. The chatbot change did **not restore execution history within this observation window**. This does not prove a scheduled job executed, rule out a longer delay, or independently establish whether GCS received an object. The scheduled baseline remains unverified, and the sampling explanation remains unsupported by a successful repeat.
 
+## Controlled manual run and schedule comparisons
+
+The [manual control](baseline-manual.md#automated-manual-control-and-direct-gcs-verification) ran the same current saved pipeline with sampling disabled at `2026-10-02T13:49:53.588Z`, while the only schedule was paused. It produced a new GCS object whose actual downloaded bytes pass all evaluated baseline checks. This verifies the manual delivery path; it does not establish the scheduled worker's credential scope.
+
+### Existing schedule after an edit
+
+Playwright edited schedule `202` to hourly minute 56. The update returned HTTP 200 and a future `next_run_at=2026-10-02T13:56:00Z`. [Selected responses and polling samples](evidence/baseline-schedule-edited-repeat-2026-10-02.json) show empty histories from `13:53:03Z` through `14:03:41Z`, including more than seven minutes after the trigger boundary. `last_run_at` remained null and the next-run timestamp stopped advancing. The [redacted screenshot](evidence/baseline-schedule-edited-repeat-2026-10-02.png) shows the empty history and blank Next run value.
+
+Independent authenticated GCS refreshes from `13:52:57Z` through `14:04:58Z` returned the same three object names, with the manual control object remaining newest. No manual pipeline run occurred during this window. The final GCS element screenshot timed out after those successful listings; no final GCS screenshot is claimed.
+
+### Newly created schedule with the saved graph
+
+With `202` disabled, Playwright created fresh schedule `208` through the real UI using custom cron `* * * * *`. The creation request included all three current pipeline nodes and returned HTTP 200. The saved schedule initially had `next_run_at=14:11Z` and `last_run_at=null`.
+
+The [fresh-schedule evidence](evidence/baseline-schedule-fresh-repeat-2026-10-03.json) contains 14 history and GCS samples from `14:10:19Z` through `14:17:06Z` (12:10–12:17 AM on 3 October in Sydney). Every history remained `total=0`, `executions=[]`, and every refreshed GCS listing contained the same three earlier objects. The next-run timestamp stayed at `14:11Z` and `last_run_at` stayed null. No manual run occurred during this comparison. Recreating the schedule did **not restore history or delivery within the observation window**.
+
+Afterward the diagnostic every-minute schedule was disabled and retained for investigation. The original schedule `202` was restored to enabled, hourly minute 25, with failure notifications enabled. Final direct reads returned HTTP 200 and empty histories for both schedules. The final configuration and cleanup responses are included in the fresh-schedule capture.
+
+The [final API capture](evidence/baseline-schedule-final-2026-10-03.json) and [reviewed screenshot](evidence/baseline-schedule-final-2026-10-03.png) at `14:21Z` show `next_run_at=14:25Z` and visible `Next run: in 3 mins` after restoration. This shows the UI can render a future timestamp; it does not verify the next automatic run. The earlier blank value coincided with a stale backend timestamp. The history regression was rerun with its button scoped to the enabled schedule, since the paused diagnostic card also has a history button. It reaches the real history table and still fails on `No results.`; the capture command succeeds with both cards present.
+
 ## Next checks and limits
 
-The backend history has now been inspected and the chatbot exchange preserved. Complete scheduler node logs and export results are still needed to identify the failed component. No execution ID can be recorded while the history API returns no executions. Fresh GCS contents have not been independently queried by this automated inspection.
+The backend history and GCS contents have now been independently inspected, and the chatbot exchange preserved. The configuration edit and fresh creation did not restore scheduled delivery. Complete scheduler, deployment and worker logs are needed to identify where work stops; this account exposes no such logs. No execution ID can be recorded while the history API returns no executions. A [prepared investigation report](scheduler-support-report.md) contains project/schedule identifiers, UTC windows and the specific backend questions. It has not been sent to support.
 
-This is an observed delivery/history mismatch with a user-confirmed scheduled trigger. It does not establish which backend component failed, whether the export was skipped or rejected, or why Success was reported. Drift tests have not yet been performed.
+These bounded observations do not prove that a job was dispatched, identify which backend component failed, rule out a longer delay, or explain the earlier Success logs. Drift tests have not yet been performed. A successful automatic run, real execution record and validated fresh GCS object are still required to establish the scheduled baseline.

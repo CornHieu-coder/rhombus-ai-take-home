@@ -1,0 +1,23 @@
+{
+  "project_id": 4266,
+  "trigger": "manual",
+  "started_at": "2026-10-02T13:49:48.569Z",
+  "schedule_disabled_at": "2026-10-02T13:49:53.245Z",
+  "manual_run_clicked_at": "2026-10-02T13:49:53.588Z",
+  "schedule_reenabled_at": "2026-10-02T13:50:00.793Z",
+  "finished_at": "2026-10-02T13:50:00.793Z",
+  "ui_outcome": "manual_success_message",
+  "request_path": "/api/dataset/analyzer/v2/projects/4266/pipeline/process",
+  "pipeline_nodes_count": 3,
+  "gcs_object": "RhombusAI_output_1790948994643.csv",
+  "download_http_status": 200,
+  "actual_bytes": 320,
+  "sha256": "89cdb162f7d43e9f21ce0a8ae077295575837aa7d46580e8bc067940ab2b63bb",
+  "archived_output": "observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv",
+  "provenance": "Downloaded directly from the authenticated GCS console object link using the existing browser session. The original schedule was temporarily disabled, and no other schedule existed during the manual run.",
+  "limitations": [
+    "Compared with the repository baseline; the S3 object bytes were not independently downloaded in this session.",
+    "The manual control does not verify scheduled credentials or scheduled delivery.",
+    "A console reporting error occurred after the evidence was saved and the original schedule resumed; it did not affect the captured output."
+  ]
+}

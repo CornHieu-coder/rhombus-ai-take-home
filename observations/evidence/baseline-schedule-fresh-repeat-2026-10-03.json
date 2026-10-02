@@ -1,0 +1,341 @@
+{
+  "project_id": 4266,
+  "started_at": "2026-10-02T14:09:57.396Z",
+  "finished_at": "2026-10-02T14:17:07.560Z",
+  "create": {
+    "at": "2026-10-02T14:10:18.289Z",
+    "status": 200,
+    "request": {
+      "frequency": "custom",
+      "custom_cron": "* * * * *",
+      "notify_on_failure": true,
+      "pipeline_nodes_count": 3,
+      "nodes": [
+        {
+          "name": "input_071b4ee2cb631e77a9c79e8e019216db",
+          "inputs": [],
+          "outputs": [
+            "input_071b4ee2cb631e77a9c79e8e019216db_df",
+            "input_071b4ee2cb631e77a9c79e8e019216db_mask"
+          ]
+        },
+        {
+          "name": "llm_03f157e42ac84feecb57b32d8c64dba3",
+          "inputs": [
+            "input_071b4ee2cb631e77a9c79e8e019216db_df",
+            "input_071b4ee2cb631e77a9c79e8e019216db_mask"
+          ],
+          "outputs": [
+            "llm_03f157e42ac84feecb57b32d8c64dba3_df",
+            "llm_03f157e42ac84feecb57b32d8c64dba3_mask"
+          ]
+        },
+        {
+          "name": "output_56476ae598111bf801df686a4946d047",
+          "inputs": [
+            "llm_03f157e42ac84feecb57b32d8c64dba3_df",
+            "llm_03f157e42ac84feecb57b32d8c64dba3_mask"
+          ],
+          "outputs": [
+            "output_56476ae598111bf801df686a4946d047_df",
+            "output_56476ae598111bf801df686a4946d047_mask"
+          ]
+        }
+      ]
+    }
+  },
+  "schedule": {
+    "id": 208,
+    "project_id": 4266,
+    "frequency": "custom",
+    "schedule_time_utc": "custom",
+    "cron_expression": "* * * * *",
+    "enabled": true,
+    "notify_on_failure": true,
+    "next_run_at": "2026-10-02T14:11:00Z",
+    "last_run_at": null,
+    "created_at": "2026-10-02T14:10:15.399Z",
+    "skipped_runs_count": 0
+  },
+  "old_schedule": {
+    "id": 202,
+    "project_id": 4266,
+    "frequency": "hourly",
+    "schedule_time_utc": "*:56",
+    "cron_expression": "56 * * * *",
+    "enabled": true,
+    "notify_on_failure": true,
+    "next_run_at": "2026-10-02T13:56:00Z",
+    "last_run_at": null,
+    "created_at": "2026-10-02T11:45:08.764Z",
+    "skipped_runs_count": 0
+  },
+  "initial_gcs_objects": [
+    "RhombusAI_output_1790853187148.csv",
+    "RhombusAI_output_1790940577138.csv",
+    "RhombusAI_output_1790948994643.csv"
+  ],
+  "samples": [
+    {
+      "at": "2026-10-02T14:10:19.639Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:10:50.876Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:11:22.113Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:11:53.381Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:12:24.657Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:12:55.949Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:13:27.263Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:13:58.508Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:14:29.746Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:15:00.988Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:15:32.326Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:16:04.279Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:16:35.514Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    },
+    {
+      "at": "2026-10-02T14:17:06.857Z",
+      "next_run_at": "2026-10-02T14:11:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": [],
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ],
+      "new_objects": []
+    }
+  ],
+  "outcome": "scheduled_delivery_not_verified",
+  "cleanup": {
+    "mutations": [
+      {
+        "at": "2026-10-02T14:10:05.656Z",
+        "method": "patch",
+        "path": "/pipeline/schedules/202/toggle",
+        "status": 200,
+        "enabled": false
+      },
+      {
+        "at": "2026-10-02T14:17:07.255Z",
+        "method": "patch",
+        "path": "/pipeline/schedules/208/toggle",
+        "status": 200,
+        "enabled": false
+      },
+      {
+        "at": "2026-10-02T14:17:07.488Z",
+        "method": "patch",
+        "path": "/pipeline/schedules/202/toggle",
+        "status": 200,
+        "enabled": true
+      }
+    ],
+    "error": null
+  },
+  "final_verification": {
+    "captured_at": "2026-10-02T14:18:42.194Z",
+    "project_id": 4266,
+    "mutations": [
+      {
+        "at": "2026-10-02T14:18:55.684Z",
+        "method": "PATCH",
+        "path": "/api/dataset/analyzer/v2/projects/4266/pipeline/schedules/202",
+        "status": 200,
+        "restored_minute": 25
+      }
+    ],
+    "schedules": [
+      {
+        "id": 208,
+        "frequency": "custom",
+        "cron_expression": "* * * * *",
+        "enabled": false,
+        "notify_on_failure": true,
+        "next_run_at": "2026-10-02T14:11:00Z",
+        "last_run_at": null
+      },
+      {
+        "id": 202,
+        "frequency": "hourly",
+        "cron_expression": "25 * * * *",
+        "enabled": true,
+        "notify_on_failure": true,
+        "next_run_at": "2026-10-02T14:25:00Z",
+        "last_run_at": null
+      }
+    ],
+    "history_202": {
+      "http_status": 200,
+      "total": 0,
+      "executions": []
+    },
+    "history_208": {
+      "http_status": 200,
+      "total": 0,
+      "executions": []
+    },
+    "outcome": "Original hourly minute-25 schedule enabled; diagnostic every-minute schedule disabled. Both histories remain empty.",
+    "finished_at": "2026-10-02T14:19:06.598Z"
+  },
+  "limitations": [
+    "The diagnostic schedule used the current saved pipeline and sampling was disabled.",
+    "The original schedule was disabled throughout this automatic observation.",
+    "No manual pipeline run occurred in this window.",
+    "No execution ID exists in the returned empty histories.",
+    "No claim is made about internal scheduler dispatch or worker activity."
+  ]
+}

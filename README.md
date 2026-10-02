@@ -8,8 +8,8 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 | --- | --- |
 | Direct backend API tests | 4 passed, 1 failed on 2026-10-02: authenticated schedule configuration passes; history regression fails with total=0 |
 | Validator unit tests | 12 passed locally on 2026-10-02, including numeric serialization and wrong-amount regressions |
-| Manual baseline run | Earlier export fails (9 rows instead of 5); corrected 320-byte CSV passes all evaluated baseline checks. Repeat determinism remains unevaluated. [Evidence and analysis](observations/baseline-manual.md) |
-| Schedule and scheduled baseline | Success log without history or new GCS output at 10:04 PM; same visible symptoms repeat at 10:30 PM after editing minute 00 to 25. Missing-output checks fail; cause and repair pending. [Observation](observations/baseline-scheduled.md) |
+| Manual baseline run | Earlier export fails (9 rows instead of 5); corrected CSV and a later automated manual control pass all evaluated baseline checks. The control's actual 320 GCS bytes were downloaded directly. Repeat determinism remains unevaluated. [Evidence and analysis](observations/baseline-manual.md) |
+| Schedule and scheduled baseline | Empty history and no new GCS output persist after editing the original schedule and creating a fresh schedule with the current graph. Original hourly minute-25 settings restored; diagnostic schedule disabled. Cause and repair pending. [Observation](observations/baseline-scheduled.md), [prepared backend investigation report](observations/scheduler-support-report.md) |
 | Authenticated UI tests | 1 passed, 2 failed on 2026-10-02: connected canvas passes; Next run and history regressions fail |
 | Full provisioning journey | Scaffold only; skipped in the live run, locators not verified |
 | Drifted scheduled runs and evidence | Not run |
@@ -18,8 +18,8 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 Three preliminary findings:
 
 1. An earlier manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. The corrected manual download now passes the baseline validator. The original mismatch's cause remains unverified. See the [baseline observation](observations/baseline-manual.md).
-2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. The same visible symptoms repeated after editing the schedule minute. The [scheduled baseline observation](observations/baseline-scheduled.md) records both attempts; the root cause and repair remain unverified.
-3. An enabled schedule's `Next run:` is blank even though the authenticated backend returns a timestamp. That timestamp is already in the past and `last_run_at` is null. [Captured API and UI evidence](observations/evidence/baseline-schedule-playwright-2026-10-02.json) separates the display mismatch from the missing backend history; the underlying scheduler cause is unknown.
+2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. Controlled comparisons after editing the original schedule and creating a fresh one also return zero history records and unchanged GCS listings, while a manual control produces a valid export. The [scheduled baseline observation](observations/baseline-scheduled.md) records the comparison; scheduler and worker logs are needed to identify the cause.
+3. The schedule card previously displayed blank `Next run:` while its backend timestamp was in the past and `last_run_at` remained null. After editing to a future time, the [final capture](observations/evidence/baseline-schedule-final-2026-10-03.json) shows `Next run: in 3 mins`. An overdue-schedule warning would make this state easier to investigate; an independent rendering defect is not established, and scheduled delivery remains unverified.
 
 ## Cleaning contract
 
@@ -92,6 +92,8 @@ npm run capture:schedule -- observations/evidence/my-schedule-capture
 ```
 
 This read-only command records selected non-secret fields and masks visible email addresses. Review the artifacts before publishing them.
+
+On 3 October 2026 Sydney time, a targeted history regression still failed on the real `No results.` cell. Its selector and the capture command now open the enabled schedule's history when a paused diagnostic schedule is also present. The final capture command succeeded; the earlier full-suite counts above are retained as dated results, not rerun counts.
 
 To smoke-test the validator without clouds:
 

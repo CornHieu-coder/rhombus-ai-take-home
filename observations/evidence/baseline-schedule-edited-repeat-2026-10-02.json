@@ -1,0 +1,425 @@
+{
+  "project_id": 4266,
+  "trigger": "automatic_observation",
+  "started_at": "2026-10-02T13:52:55.715Z",
+  "finished_at": "2026-10-02T14:03:42.699Z",
+  "before": {
+    "id": 202,
+    "project_id": 4266,
+    "frequency": "hourly",
+    "schedule_time_utc": "*:25",
+    "cron_expression": "25 * * * *",
+    "enabled": true,
+    "notify_on_failure": true,
+    "next_run_at": "2026-10-02T12:25:00Z",
+    "last_run_at": null,
+    "created_at": "2026-10-02T11:45:08.764Z",
+    "skipped_runs_count": 0
+  },
+  "after_edit": {
+    "id": 202,
+    "project_id": 4266,
+    "frequency": "hourly",
+    "schedule_time_utc": "*:56",
+    "cron_expression": "56 * * * *",
+    "enabled": true,
+    "notify_on_failure": true,
+    "next_run_at": "2026-10-02T13:56:00Z",
+    "last_run_at": null,
+    "created_at": "2026-10-02T11:45:08.764Z",
+    "skipped_runs_count": 0
+  },
+  "update_responses": [
+    {
+      "path": "/api/dataset/analyzer/v2/projects/4266/pipeline/schedules/202",
+      "method": "PATCH",
+      "status": 200,
+      "at": "2026-10-02T13:53:02.945Z"
+    }
+  ],
+  "history_samples": [
+    {
+      "captured_at": "2026-10-02T13:53:03.308Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:53:33.531Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:54:04.149Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:54:34.378Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:55:04.742Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:55:34.989Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:56:05.245Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:56:35.468Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:57:05.734Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:57:35.989Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:58:06.281Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:58:36.534Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:59:06.791Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T13:59:37.026Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:00:07.758Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:00:38.061Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:01:08.929Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:01:39.203Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:02:09.619Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:02:39.855Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:03:10.769Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    },
+    {
+      "captured_at": "2026-10-02T14:03:41.033Z",
+      "next_run_at": "2026-10-02T13:56:00Z",
+      "last_run_at": null,
+      "total": 0,
+      "executions": []
+    }
+  ],
+  "outcome": "no_new_execution_record_in_observation_window",
+  "gcs_observation": {
+    "started_at": "2026-10-02T13:52:55.814Z",
+    "first_successful_sample": {
+      "captured_at": "2026-10-02T13:52:57.813Z",
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ]
+    },
+    "last_successful_sample": {
+      "captured_at": "2026-10-02T14:04:58.785Z",
+      "objects": [
+        "RhombusAI_output_1790853187148.csv",
+        "RhombusAI_output_1790940577138.csv",
+        "RhombusAI_output_1790948994643.csv"
+      ]
+    },
+    "sample_count": 25,
+    "samples": [
+      {
+        "captured_at": "2026-10-02T13:52:57.813Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:52:59.783Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:53:31.806Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:54:02.990Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:54:34.090Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:55:05.204Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:55:36.327Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:56:08.756Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:56:39.866Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:57:10.978Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:57:42.082Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:58:13.223Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:58:44.317Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:59:15.420Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T13:59:46.515Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:00:17.654Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:00:48.748Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:01:19.839Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:01:50.964Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:02:22.089Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:02:53.222Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:03:24.358Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:03:56.469Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:04:27.587Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      },
+      {
+        "captured_at": "2026-10-02T14:04:58.785Z",
+        "objects": [
+          "RhombusAI_output_1790853187148.csv",
+          "RhombusAI_output_1790940577138.csv",
+          "RhombusAI_output_1790948994643.csv"
+        ]
+      }
+    ],
+    "outcome": "No new object was observed in the successful listing samples. A final element screenshot timed out after those samples; no final GCS screenshot is claimed."
+  },
+  "limitations": [
+    "No manual pipeline run occurred during these observation windows.",
+    "An elapsed cron boundary does not establish that the backend dispatched a job.",
+    "This bounded observation cannot rule out a longer delay."
+  ]
+}

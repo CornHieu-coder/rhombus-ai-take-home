@@ -55,7 +55,9 @@ try {
   }));
   await page.getByRole('tab', { name: 'Schedule', exact: true }).click();
   const historyResponse = page.waitForResponse(r => new URL(r.url()).pathname === `${root}/pipeline/schedules/${active.id}/executions`);
-  await page.getByRole('button').filter({ has: page.locator('svg.lucide-history') }).click();
+  const activeControls = page.getByRole('switch', { name: 'Deactivate schedule', exact: true })
+    .locator('xpath=../..');
+  await activeControls.getByRole('button').filter({ has: page.locator('svg.lucide-history') }).click();
   await historyResponse;
   await expect(page.getByRole('columnheader', { name: 'Execution', exact: true })).toBeVisible();
   evidence.visible_next_run = await page.getByText(/^Next run:/).first().innerText();

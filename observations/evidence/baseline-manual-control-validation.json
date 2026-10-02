@@ -1,0 +1,47 @@
+{
+  "scenario": "baseline",
+  "passed": true,
+  "source_rows": 9,
+  "expected_rows": 5,
+  "output_rows": 5,
+  "source_extra_columns": [],
+  "checks": [
+    {
+      "name": "source_schema",
+      "passed": true,
+      "detail": "missing=[]; extra=[]"
+    },
+    {
+      "name": "new_invalid_values",
+      "passed": true,
+      "detail": "new rejected order_ids=[]; baseline rejected=['1002', '1003', '1004', '1009']"
+    },
+    {
+      "name": "output_exists",
+      "passed": true,
+      "detail": "output supplied"
+    },
+    {
+      "name": "output_schema",
+      "passed": true,
+      "detail": "expected=['order_id', 'customer_email', 'customer_name', 'amount_usd', 'order_date', 'country']; actual=['order_id', 'customer_email', 'customer_name', 'amount_usd', 'order_date', 'country']"
+    },
+    {
+      "name": "row_count",
+      "passed": true,
+      "detail": "expected=5; actual=5"
+    },
+    {
+      "name": "cleaning_rules",
+      "passed": true,
+      "detail": "canonical rows match"
+    },
+    {
+      "name": "determinism",
+      "passed": null,
+      "detail": "not evaluated; supply two repeat outputs for three runs"
+    }
+  ],
+  "source_uri": "datasets/baseline.csv",
+  "output_uri": "observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv"
+}

@@ -42,7 +42,10 @@ test('scheduled attempts appear in the execution history table', async ({ page }
   const schedule = await openSchedule(page, projectId);
   const pending = page.waitForResponse(response => new URL(response.url()).pathname ===
     `/api/dataset/analyzer/v2/projects/${projectId}/pipeline/schedules/${schedule.id}/executions`);
-  await page.getByRole('button').filter({ has: page.locator('svg.lucide-history') }).click();
+  // A paused diagnostic schedule may also be present. Open the enabled card's history.
+  const activeControls = page.getByRole('switch', { name: 'Deactivate schedule', exact: true })
+    .locator('xpath=../..');
+  await activeControls.getByRole('button').filter({ has: page.locator('svg.lucide-history') }).click();
   expect((await pending).status()).toBe(200);
   await expect(page.getByRole('columnheader', { name: 'Execution', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Export CSV', exact: true })).toBeVisible();

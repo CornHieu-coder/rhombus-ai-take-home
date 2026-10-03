@@ -1,0 +1,43 @@
+# Start with input dataframe
+df = input_df_1.copy()
+
+# Step 1: Trim leading/trailing whitespace from all string/object columns
+for col in df.select_dtypes(include=['object']).columns:
+    df[col] = df[col].str.strip()
+
+# Step 2: Lowercase the customer_email column
+df['customer_email'] = df['customer_email'].str.lower()
+
+# Step 3: Remove duplicate order_id rows, keeping the first occurrence
+df = df.drop_duplicates(subset=['order_id'], keep='first')
+
+# Step 4: Fill missing customer_name values with the string 'Unknown'
+df['customer_name'] = df['customer_name'].fillna('Unknown')
+
+# Step 5: Remove rows where order_id is null/empty or customer_email is null/empty
+df = df[df['order_id'].notna() & (df['order_id'] != '')]
+df = df[df['customer_email'].notna() & (df['customer_email'] != '')]
+
+# Step 6: Remove rows where amount_usd is not a valid number or is <= 0
+df['amount_usd'] = pd.to_numeric(df['amount_usd'], errors='coerce')
+df = df[df['amount_usd'].notna() & (df['amount_usd'] > 0)]
+
+# Step 7: Remove rows where order_date cannot be parsed as a valid date
+df['order_date'] = pd.to_datetime(df['order_date'], errors='coerce')
+df = df[df['order_date'].notna()]
+
+# Step 8: Keep only rows where country (case-insensitive, trimmed) is 'us', 'usa', or 'united states'
+valid_countries = {'us', 'usa', 'united states'}
+df = df[df['country'].str.lower().str.strip().isin(valid_countries)]
+
+# Step 9: Standardize country to 'US'
+df['country'] = 'US'
+
+# Step 10: Round amount_usd to 2 decimal places
+df['amount_usd'] = df['amount_usd'].round(2)
+
+# Step 11: Format order_date as YYYY-MM-DD string
+df['order_date'] = df['order_date'].dt.strftime('%Y-%m-%d')
+
+# Step 12: Output exactly these columns in this order
+output_df = df[['order_id', 'customer_email', 'customer_name', 'amount_usd', 'order_date', 'country']]

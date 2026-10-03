@@ -1,15 +1,8 @@
 # Semantic drift: dollars become cents
 
-**Submission scope, 3 October 2026:** this scheduled case and its chatbot repair/recovery were not run because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The procedure below is an unexecuted plan, not observed behavior. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+- **Dataset:** [semantic-cents.csv](../datasets/semantic-cents.csv).
+- **Change:** Keep the `amount_usd` header and numeric shape, but express values in cents. For order `1001`, `1995` means USD `19.95`.
+- **Expected contract:** Interpret the declared units correctly and produce five cleaned rows with amounts divided by 100. The validator's `semantic-cents` oracle checks this meaning; treating `1995` as dollars fails the cleaning comparison. The unchanged headers alone do not identify the unit change.
+- **Scheduled coverage:** Not evaluated. The required successful automatic baseline was unavailable, so this case has no assessed scheduled outcome, execution logs, GCS output, chatbot diagnosis or repair, or later scheduled recovery. Severity is not assessed.
 
-- **Dataset:** [`semantic-cents.csv`](../datasets/semantic-cents.csv)
-- **Change:** The `amount_usd` header and numeric type stay the same, but values now represent cents. For example, `1995` means USD 19.95.
-- **Expected:** A safe pipeline should detect or be told about the unit change; the canonical GCS amount for order `1001` is `19.95`. Treating `1995` as dollars is a semantic failure.
-- **Observed run, status, GCS object:** Not run; blocked by the missing successful automatic baseline.
-- **Logs:** Pending. Save logs or the schedule-history CSV in [`evidence/`](evidence/).
-- **Chatbot diagnosis and proposed fix:** Pending. Ask the chatbot to interpret the unchanged schema and record whether it identifies the unit shift without being told.
-- **Did the fix work?** Pending. If a fix is proposed, apply it through the AI builder and validate the next output.
-- **Schedule afterward:** Pending.
-- **Data validation:** Run `validate.py --scenario semantic-cents` against the actual objects and link the report here. The oracle divides source amounts by 100 before comparing.
-
-To reproduce, establish a scheduled baseline, replace the same S3 source object with this file before the next trigger, refresh source access, and capture the execution and export. Restore the baseline before another case.
+This is a prepared case, not a scheduled run result. The [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home) explains the blocker and Rhombus's guidance to document its effect on progress.

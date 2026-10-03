@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test:ui": "playwright test ui-tests",
+    "test:ui": "playwright test ui-tests/existing-project.spec.ts",
+    "test:journey": "playwright test ui-tests/pipeline-journey.spec.ts",
     "test:api": "playwright test api-tests",
     "test:all": "playwright test",
     "test:validator": "python -m unittest discover -s data-validation/tests -v",

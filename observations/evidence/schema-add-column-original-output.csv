@@ -1,6 +1,0 @@
-order_id,customer_email,customer_name,amount_usd,order_date,country
-1001,alice@example.com,Alice Chen,19.95,2026-04-05,US
-1002,bob@example.com,Bob Lee,42.5,2026-04-06,US
-1006,carol@example.com,Unknown,120.0,2026-04-07,US
-1007,dave@example.com,Dave Kim,8.4,2026-04-08,US
-1008,eve@example.com,Eve Ross,199.0,2026-04-09,US

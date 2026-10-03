@@ -1,2 +1,4 @@
 # Preserve downloaded CSV bytes and their recorded SHA-256 on every platform.
 observations/evidence/*.csv -text
+observations/evidence/**/*.csv -text
+observations/evidence/historical-ai-generated-cleaning-code.txt -text

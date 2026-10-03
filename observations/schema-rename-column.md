@@ -1,15 +1,8 @@
 # Schema drift: rename customer_email
 
-**Submission scope, 3 October 2026:** this scheduled case and its chatbot repair/recovery were not run because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The procedure below is an unexecuted plan, not observed behavior. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+- **Dataset:** [schema-rename-column.csv](../datasets/schema-rename-column.csv).
+- **Change:** Rename `customer_email` to `email`; values and the nine source rows are unchanged.
+- **Expected contract:** Identify the missing required `customer_email` field. Any repair must explicitly map the renamed field and preserve the six-column output contract; silent loss of email data is unacceptable. The unchanged validator flags the source schema as incompatible.
+- **Scheduled coverage:** Not evaluated. The required successful automatic baseline was unavailable, so this case has no assessed scheduled outcome, execution logs, GCS output, chatbot diagnosis or repair, or later scheduled recovery. Severity is not assessed.
 
-- **Dataset:** [`schema-rename-column.csv`](../datasets/schema-rename-column.csv)
-- **Change:** Rename `customer_email` to `email`; values and row count are unchanged.
-- **Expected:** A pipeline bound to `customer_email` should identify the missing field or explicitly map the new name. Silent loss or an empty export would fail the data contract.
-- **Observed run, status, GCS object:** Not run; blocked by the missing successful automatic baseline.
-- **Logs:** Pending. Save the schedule-history CSV and node error in [`evidence/`](evidence/).
-- **Chatbot diagnosis and proposed fix:** Pending. Supply the exact error, then ask the AI builder to repair the mapping.
-- **Did the fix work?** Pending.
-- **Schedule afterward:** Pending. Check the next scheduled execution after applying the fix.
-- **Data validation:** Run `validate.py --scenario schema-rename-column` against the actual objects or with `--output-missing`; link the report here.
-
-To reproduce, establish a scheduled baseline, replace the same S3 source object with this file, refresh source access, and inspect the next scheduled run. Restore the baseline before another case.
+This is a prepared case, not a scheduled run result. The [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home) explains the blocker and Rhombus's guidance to document its effect on progress.

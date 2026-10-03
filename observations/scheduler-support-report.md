@@ -1,84 +1,125 @@
-# Bug report: no history or fresh GCS delivery observed after enabled trigger boundaries
+# Scheduler failure: no history or fresh GCS delivery in observed windows
 
 ## Impact
 
-**High, provisional:** a recurring baseline delivery cannot be verified. Earlier user-confirmed scheduled attempts displayed generic Success messages without an execution record or fresh GCS object; the screenshot crops do not independently establish their trigger or which nodes ran. Controlled later observations returned empty histories and no new object within the recorded windows. This blocked the required scheduled baseline and subsequent drift exercise.
+**High, provisional:** recurring baseline delivery could not be verified. Controlled enabled-schedule checks returned no execution record and no fresh GCS object within their recorded windows. A manual control of the saved pipeline delivered a valid export. This blocked the required successful scheduled baseline and subsequent scheduled drift exercise.
 
-The user sent this issue and its evidence to Rhombus on 3 October 2026 at 02:19 Sydney time. Support requested the Dashboard check below, and the user sent its findings in the same email thread.
+The specific backend cause is unknown. These observations do not prove that a scheduled job was dispatched or rule out a longer delay.
 
 ## Support guidance and effect on the take-home
 
-On **3 October 2026 at 14:08 Sydney time** (`04:08Z`), Rhombus advised that manual drift results need not be submitted and that the submission should explain how this scheduler issue prevented progress, in the README or another appropriate file. This report and the [README submission scope](../README.md#submission-scope-after-rhombuss-guidance) follow that direction. The private email is not reproduced publicly.
+On **3 October 2026 at 14:08 Sydney time** (`04:08Z`), Rhombus advised that manual drift results need not be submitted and that the submission should explain how scheduling prevented progress, in the README or another appropriate file. This report follows that direction; private correspondence is not published.
 
-| Original exercise stage | Effect of the observed blocker |
+| Original exercise stage | Effect of the blocker |
 | --- | --- |
-| Wait for one successful scheduled run as the baseline | No automatic run with a retrievable execution record and fresh validated GCS output was established |
-| Change each schema element before the next scheduled run, then all together | The required automatic baseline was unavailable, so scheduled drift handling was not assessed |
-| Test at least two semantic changes and validate their outputs | Scheduled end-to-end semantic coverage was not assessed; prepared datasets and validator logic are not live run evidence |
-| Ask the chatbot to diagnose/fix problems and check the schedule afterward | The sampling change was saved, but bounded repeats did not restore history or delivery; per-drift scheduled repair/recovery was not assessed |
+| Wait for one successful scheduled baseline | No automatic run with a retrievable execution record and fresh validated GCS output was established |
+| Change schema individually and together before later scheduled runs | Scheduled drift handling was not evaluated |
+| Test at least two semantic changes and validate outputs | Datasets and validator cases exist; live scheduled semantic handling was not evaluated |
+| Ask the chatbot to diagnose/fix each issue and check scheduling afterward | Sampling suggestion was applied to the baseline issue, but repeats did not verify recovery; per-drift repairs and recovery were not evaluated |
 
-Manual baseline controls verify the manual cleaning/export path and determinism. They cannot replace these automatic-run checks. No further manual drift runs are planned for this submission. Rhombus's guidance supplies a documentation route for the blocked exercise; it does not confirm a fix or a backend cause, or explicitly waive the other automation, validator, repository and video deliverables.
+The reply provides a documentation route for the blocked exercise. It does not confirm a fix, identify a backend cause or explicitly waive UI automation, API tests, the validator or the video. The [README checklist](../README.md#remaining-submission-checklist) records the remaining work.
 
 ## Identifiers and configuration
 
-- Project ID: `4266`.
-- Original schedule ID: `202`.
-- Fresh diagnostic schedule ID: `208`.
-- Pipeline: S3 `baseline.csv` input → AI Builder Custom transformation → CSV GCS output.
-- Sampling: disabled. The saved transformation includes all 12 cleaning steps and assigns the six requested columns to `output_df`.
-- Baseline: nine source rows, five expected output rows.
-- Schedule creation request: all three current pipeline nodes included; HTTP 200.
-- Account tokens, service-account keys and bucket names are excluded from this public report.
+- Project `4266`: Rhombus QA Take Home.
+- Saved graph: S3 `baseline.csv` → AI Builder Custom transformation → CSV GCS destination.
+- Baseline: nine source rows, five expected output rows; sampling disabled in the recorded configuration.
+- Original schedule `202`; fresh diagnostic schedule `208`. These were later replaced by user-created `209`.
+- Last verified current state: `209` paused by the user. Paused time is not treated as failed scheduling.
+- Account tokens, service-account keys and bucket names are excluded from public captures.
+
+All experiment timestamps below are UTC. Sydney was UTC+10 during these captures; late UTC windows fall on 3 October locally.
+
+## Chatbot diagnosis and automated checks
+
+At `2026-10-02T12:37:25.262Z`, AI Builder persisted a source sampling change from enabled to disabled. It confirmed the graph and cleaning steps, while stating that it could not inspect scheduler node logs, GCS contents, scheduler credential scope or the executed pipeline snapshot. It attributed missing export/history to sampling and promised a later GCS write. This was a hypothesis, not a verified cause. [Captured exchange](evidence/baseline-schedule-chatbot-2026-10-02.md).
+
+Authenticated inspection of schedule 202 returned HTTP 200 with `executions=[]`, `total=0`, `last_run_at=null` and a stale `next_run_at=12:25Z`. The UI showed an empty history and no Next run value. [Selected API fields](evidence/baseline-schedule-playwright-2026-10-02.json), [masked screenshot](evidence/baseline-schedule-playwright-2026-10-02.png).
+
+The [post-chatbot observation](evidence/baseline-schedule-after-chatbot-2026-10-02.json) polled the schedule/history APIs from `13:24:06Z` through `13:30:40Z`, across an enabled hourly minute-25 boundary. History stayed empty, last-run stayed null and next-run stayed stale. No manual run or schedule edit occurred in this window. **GCS was not directly queried in this window**, so this establishes no history recovery, not cloud-output absence.
+
+On 2 October, `npm run test:all -- --workers=1` completed with **5 passed, 3 failed, 1 skipped**: canvas and four API checks passed; API history, UI history and UI Next run failed; the journey scaffold skipped. A targeted UI history regression on 3 October still failed on the real `No results.` cell. These are dated live results, not fresh results for the current paused schedule or updated test commands.
 
 ## Reproduction and controls
 
-1. Temporarily pause schedule `202` and manually run the saved pipeline. At `2026-10-02T13:49:53.588Z`, the run produces `RhombusAI_output_1790948994643.csv` in GCS. Its downloaded 320 bytes pass the baseline validator with five rows. [Manual control and actual CSV](baseline-manual.md#automated-manual-control-and-direct-gcs-verification).
-2. Resume `202`, edit its hourly recurrence to minute 56, and allow the `13:56Z` boundary without clicking Run. The update returns HTTP 200 and a future `next_run_at=13:56Z`.
-3. Poll its history through `14:03:41Z`: every result is `total=0`, `executions=[]`, `last_run_at=null`; `next_run_at` remains `13:56Z`. Refresh the GCS listing through `14:04:58Z`: no new object. [API and GCS samples](evidence/baseline-schedule-edited-repeat-2026-10-02.json).
-4. Pause `202`, create fresh schedule `208` through the UI using custom cron `* * * * *`, with the same current saved graph. Creation at `14:10:15Z` gives a future `next_run_at=14:11Z`.
-5. Use a seven-minute polling limit to observe its automatic trigger boundaries, reading the schedule-specific history and refreshing GCS. Fourteen samples from `14:10:19Z` through `14:17:06Z` all show zero history records, null `last_run_at`, unchanged `next_run_at=14:11Z` and no new GCS object. The next-run value was future at the first two samples and became stale after the boundary. [Fresh-schedule capture](evidence/baseline-schedule-fresh-repeat-2026-10-03.json).
+The following records describe the completed historical experiment. They do not instruct a reviewer to use retired schedule IDs.
 
-All timestamps above are UTC. The fresh diagnostic occurred shortly after midnight on 3 October in Australia/Sydney. No manual run occurred during either scheduled observation. The short-interval diagnostic is disabled after the bounded check; the original hourly minute-25 configuration is restored.
+### Manual delivery control
 
-These restoration settings describe the end of that controlled experiment. The user later replaced schedules 202/208 with schedule **209**, changed it to hourly minute 16, and paused it. The baseline upload completed at `15:15:48Z`, before the `15:16Z` boundary; actual downloaded source bytes were verified afterward. Enabled samples at `15:17:05Z` and `15:17:22Z` show zero history and no fresh GCS object. Later samples are paused, so this is a short observation rather than five minutes of active scheduling coverage. [Selected evidence and limits](evidence/baseline-schedule-user-repeat-2026-10-03.json). No schedule toggles were sent by this watcher.
+With schedule 202 paused, Playwright clicked Run at `2026-10-02T13:49:53.588Z`. The saved graph produced `RhombusAI_output_1790948994643.csv`. Its actual GCS download was 320 bytes and passed the baseline checks with five rows. Two subsequent manual exports with matching recorded runtime fingerprints also matched. Actual S3 source bytes equal the repository baseline.
 
-Three manual baseline outputs with matching runtime configuration now pass ordered determinism as well as the cleaning checks. Actual S3 source bytes match the repository baseline. [Source and three-run provenance](evidence/baseline-manual-repeats-2026-10-03.json), [validator report](evidence/baseline-manual-determinism-validation.json).
+[Manual control, source and three-output validation](baseline-manual.md#automated-manual-control-and-direct-gcs-verification) establish the manual path and ordered consistency. They do not prove scheduled workers share its credential context.
+
+### Existing schedule after an edit
+
+1. Resume 202 and edit its hourly recurrence to minute 56. The update returned HTTP 200 and a future `next_run_at=2026-10-02T13:56:00Z`.
+2. Allow the boundary without clicking Run.
+3. History samples from `13:53:03Z` through `14:03:41Z` all returned zero records and null last-run; next-run did not advance from `13:56Z`.
+4. Independent authenticated GCS refreshes from `13:52:57Z` through `14:04:58Z` returned the same three objects, with the manual control remaining newest.
+
+[API/GCS samples](evidence/baseline-schedule-edited-repeat-2026-10-02.json), [masked history screenshot](evidence/baseline-schedule-edited-repeat-2026-10-02.png). No manual run occurred during the window. A final GCS element screenshot timed out after successful listing checks; no such screenshot is claimed.
+
+### Fresh schedule with the saved graph
+
+With 202 disabled, create schedule 208 through the UI with custom cron `* * * * *`. Creation at `14:10:15Z` included all three current nodes, returned HTTP 200 and set future next-run `14:11Z`.
+
+Fourteen samples from `14:10:19Z` through `14:17:06Z` showed zero history, null last-run, unchanged next-run and no new GCS object. The first two next-run samples were future; it became stale after the boundary. [Fresh-schedule capture](evidence/baseline-schedule-fresh-repeat-2026-10-03.json).
+
+No manual run occurred during this window. After the bounded diagnostic, 208 was disabled and 202's hourly minute-25 configuration restored. The [restoration capture](evidence/baseline-schedule-final-2026-10-03.json) and [screenshot](evidence/baseline-schedule-final-2026-10-03.png) show a future next-run rendering as “in 3 mins.” The blank value associated with stale timestamps is a monitoring symptom; an independent rendering defect is not established.
+
+### Later user-created schedule
+
+The user replaced 202/208 with 209, configured hourly minute 16 and later paused it. The baseline upload completed at `15:15:48Z`, before the `15:16Z` boundary; downloaded source bytes were verified afterward.
+
+Enabled samples at `15:17:05Z` and `15:17:22Z` showed zero history and no fresh object. Schedule 209 was first observed paused at `15:17:38Z`; the user confirmed pausing it. Later samples are paused, so this is short enabled coverage, not a full active five-minute repeat. The read-only watcher sent no schedule toggles. [Selected evidence and limits](evidence/baseline-schedule-user-repeat-2026-10-03.json).
 
 ## Expected
 
-An automatic trigger runs the saved graph, writes a fresh valid five-row GCS CSV and creates a retrievable execution record. A failed trigger or node should expose a failure status and error. Rhombus's [scheduling documentation](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) describes execution records and captured pipeline configuration for scheduled runs.
+An automatic trigger should execute the saved graph, create a retrievable execution record and deliver a fresh valid five-row CSV. Failure should expose its status and diagnostic error. Rhombus's [scheduling guide](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) describes scheduled execution records and captured pipeline configuration.
+
+Earlier user-confirmed automatic attempts showed generic Success messages in supplied screenshots. Those crops did not independently identify the trigger or executed nodes. The controlled API/GCS windows above provide the stronger reproduction evidence. Earlier screenshot transcriptions remain in [immutable history](evidence/README.md#historical-code-and-archives).
 
 ## Dashboard check requested by support — 3 October 2026
 
-At **10:02 Sydney time** (`00:02Z`), Playwright opened **Dashboard → Executions**, as requested. Executions are visible there, and the global history API returns **13 records**. All 13 belong to project 4266, have `trigger=manual`, and have `schedule_id=null`. The API returned all 13 records on one page; the UI screenshot displays the first 10 with pagination `1-10 of 13`.
+At **10:02 Sydney time** (`00:02Z`), Playwright opened Dashboard → Executions following support's advice. The global endpoint `GET /api/dataset/analyzer/v2/pipeline/executions/all` returned HTTP 200, `total=13`, `page_size=20` and all 13 records. The screenshot displays the first ten with pagination `1-10 of 13`.
 
-- Global endpoint: `GET /api/dataset/analyzer/v2/pipeline/executions/all`, HTTP 200, `total=13`, `page_size=20`, 13 returned records.
-- Current schedule 209 history: HTTP 200, `total=0`, `executions=[]`.
-- Schedule 209 remains paused, with `last_run_at=null` and the old `next_run_at=2026-10-02T15:16:00Z`.
-- The global records include successful manual baseline runs **16454, 16456 and 16457**, and manual drift records **16459** (added column, Success), **16460** (changed type, Success), and **16461** (missing amount, Failure). These IDs correlate by project, manual trigger and timestamps with the previously captured runs; the earlier asynchronous task IDs are separate identifiers.
-- [Selected API evidence](evidence/dashboard-executions-2026-10-03.json), [redacted Dashboard screenshot](evidence/dashboard-executions-2026-10-03.png), [visible table transcript](evidence/dashboard-executions-2026-10-03.txt).
+Every returned record belongs to project 4266 and is classified `trigger=manual`, `schedule_id=null`. Manual baseline executions 16454, 16456 and 16457 correlate with the controls by project and timestamps; their integer execution IDs differ from asynchronous task UUIDs. The complete capture preserves all returned records, including exploratory work.
 
-**Conclusion:** the Dashboard provides manual execution history, but the returned records do not establish any successful automatic run. This read-only check did not change schedules or click Run. Current paused time is not counted as a failed automatic trigger; the earlier enabled observation windows remain the reproduction evidence. GCS was not newly queried during this Dashboard check.
+Schedule 209's own history still returned HTTP 200, zero records and an empty executions list. It remained paused with null last-run and old next-run `2026-10-02T15:16:00Z`.
 
-The required successful automatic baseline and scheduled drift cases remain blocked. Rhombus's subsequent submission guidance is recorded above; the Dashboard check is diagnostic evidence, not a successful scheduled baseline.
+[Selected API evidence](evidence/dashboard-executions-2026-10-03.json), [masked Dashboard screenshot](evidence/dashboard-executions-2026-10-03.png), [table transcript](evidence/dashboard-executions-2026-10-03.txt).
+
+This read-only check confirms that manual records are visible elsewhere. It does not establish a scheduled run, count paused time as a failed trigger or newly query GCS. The user sent these findings in the original support thread before receiving the submission guidance above.
+
+## Reproduce a future check
+
+If scheduling is reassessed, use current IDs and record current prerequisites:
+
+1. Confirm the baseline source, saved three-node graph, sampling setting and GCS destination. Establish a manual export control and validate its actual downloaded bytes.
+2. Record an enabled schedule's ID, recurrence, saved configuration and future next-run boundary. Use a dedicated diagnostic schedule or document an authorized edit.
+3. Allow automatic boundaries without clicking Run or changing the graph. Record the observation start/end, enabled state, schedule/history API responses and independently refreshed GCS object listings.
+4. Associate any fresh object with that run and validate it. If no object appears, retain listing evidence; a validator `--output-missing` flag alone is not a cloud query.
+5. Record final schedule state and any restoration.
+
+`npm run capture:schedule -- observations/evidence/my-schedule-capture` is a read-only selected-field snapshot helper. It currently selects the first enabled schedule and fails if none exists. It does **not** implement the full timed observation or independent GCS checks above.
 
 ## Investigation needed from Rhombus
 
-Please correlate project `4266` and schedules `202`/`208` with scheduler, deployment and worker logs during the UTC windows above:
+Correlate project 4266 and schedules 202/208 with scheduler, deployment and worker logs during the UTC windows:
 
-- Was each deployment registered, loaded and enabled in the scheduler?
-- Did the scheduler enqueue work at the recorded cron boundaries? If it skipped a run, what was the reason?
-- Did a worker receive the job and load the saved three-node graph and cloud credential references?
-- Was an execution record created, and if so why is the schedule-specific API returning zero records?
-- If execution or GCS export failed before a record was stored, where is that error logged?
-- Why do `next_run_at` and `last_run_at` remain unchanged after the trigger boundaries?
+- Was the saved deployment registered, loaded and enabled?
+- Was work enqueued at the boundary, or skipped with a reason?
+- Did a worker receive it, load the three-node graph and obtain the cloud credential references?
+- Was an execution record created? If so, why did schedule-specific history return zero?
+- Where would a failure before record creation or export appear?
+- Why did next-run and last-run stop advancing?
 
-The manual control verifies the manual pipeline and GCS delivery path. It does not prove that scheduled workers have the same credentials or that any scheduled job was dispatched. The specific backend cause remains unconfirmed. The existing AI Builder suggestion to disable sampling did not restore history in the observed repeat.
+The account did not expose those internal logs. No scheduled execution ID was returned. Root cause, dispatch and the earlier generic Success messages remain unresolved.
 
 ## Verification criteria if scheduling is repaired
 
-An automatic run of the unchanged baseline would need an execution ID and successful status, actual completion of the three nodes, a fresh GCS object associated with that run, and a passing validator result. Only that evidence would establish a successful scheduled baseline. These are repair acceptance criteria, not an additional attempt required before submitting the blocker documentation under Rhombus's guidance.
+A successful automatic baseline needs a scheduled execution ID/status, evidence of the three nodes completing, a fresh associated GCS object and a passing validator result. These are repair acceptance criteria, not an additional attempt required before submitting the documented blocker under Rhombus's guidance.
 
 ## Remaining submission work
 
-The [README checklist](../README.md#remaining-submission-checklist) records the verified artifacts and unfinished deliverables. The main remaining work outside scheduling is verifying the Playwright provisioning journey and recording/linking a short demo. Existing datasets, direct backend tests and the validator should be included with honest coverage limits. Historical manual drift records are not replacements for the scheduled exercise and need not be submitted under Rhombus's latest guidance.
+Complete and verify the UI journey, record the required short walkthrough of UI tests/API tests/data validation, and perform the final submission check. [README checklist](../README.md#remaining-submission-checklist). Prepared drift datasets and validator cases remain available; their live scheduled behavior is not claimed.

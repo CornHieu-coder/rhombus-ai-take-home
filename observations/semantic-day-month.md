@@ -1,15 +1,8 @@
 # Semantic drift: day and month swap
 
-**Submission scope, 3 October 2026:** this scheduled case and its chatbot repair/recovery were not run because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The procedure below is an unexecuted plan, not observed behavior. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+- **Dataset:** [semantic-day-month.csv](../datasets/semantic-day-month.csv).
+- **Change:** Keep the `order_date` header and slash-separated string shape, but switch from MM/DD/YYYY to DD/MM/YYYY. Order `1001`'s `05/04/2026` means 5 April 2026.
+- **Expected contract:** Interpret the declared date format correctly and produce five cleaned rows. The validator's `semantic-day-month` oracle requires order `1001`'s date to be `2026-04-05`; interpreting it as 4 May fails the cleaning comparison. Ambiguous dates alone do not establish the intended format.
+- **Scheduled coverage:** Not evaluated. The required successful automatic baseline was unavailable, so this case has no assessed scheduled outcome, execution logs, GCS output, chatbot diagnosis or repair, or later scheduled recovery. Severity is not assessed.
 
-- **Dataset:** [`semantic-day-month.csv`](../datasets/semantic-day-month.csv)
-- **Change:** The `order_date` header and slash-separated string shape stay the same, but dates change from MM/DD/YYYY to DD/MM/YYYY. `05/04/2026` means 5 April, not 4 May.
-- **Expected:** A safe pipeline should detect ambiguity or flag the format change. The canonical GCS date for order `1001` remains `2026-04-05`.
-- **Observed run, status, GCS object:** Not run; blocked by the missing successful automatic baseline.
-- **Logs:** Pending. Save logs or the schedule-history CSV in [`evidence/`](evidence/).
-- **Chatbot diagnosis and proposed fix:** Pending. Ask the chatbot to inspect the result without first revealing the new date convention; then capture its proposed fix.
-- **Did the fix work?** Pending. Apply any fix through the AI builder and validate the next output.
-- **Schedule afterward:** Pending.
-- **Data validation:** Run `validate.py --scenario semantic-day-month` against the actual objects and link the report here. The oracle interprets the source as DD/MM/YYYY.
-
-To reproduce, establish a scheduled baseline, replace the same S3 source object with this file before the next trigger, refresh source access, and capture the execution and export. Restore the baseline after this case.
+This is a prepared case, not a scheduled run result. The [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home) explains the blocker and Rhombus's guidance to document its effect on progress.

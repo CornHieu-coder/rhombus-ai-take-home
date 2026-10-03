@@ -1,14 +1,10 @@
-# Manual baseline: failed export followed by a validated corrected CSV
+# Manual baseline controls
 
-## Scope and provenance
-
-The user supplied the exact AI Builder prompt, confirmed Pipeline mode, and showed a canvas with an Amazon S3 Data Input for `baseline.csv`, a connected Custom transformation (`llm_node_1`), and a Data Output node. The S3 source key was supplied privately; this public record redacts the bucket name. The run shown in the log screenshot started at 9:13:05 PM and completed at 9:13:10 PM (the screenshot does not show a date or execution ID). Its visible log says a Custom code transformation was applied and the pipeline completed successfully. See the [transcribed visible log](evidence/baseline-manual-visible-log.txt).
-
-The user supplied [a new downloaded CSV](evidence/baseline-manual-output-2026-10-01-2113.csv), whose filename timestamp corresponds to 1 October 2026 at about 9:13 PM Australia/Sydney. The user subsequently confirmed that the new GCS object URI ends in `RhombusAI_output_1790853187148.csv` (bucket name redacted), matching the download and the visible run time. The GCS URI supplied earlier ends in `1790836523139.csv` and identifies the *earlier* export. The old and new downloads are byte-for-byte identical (SHA-256 `2c6dfeee49d175de5852c57f2b2977cf6b8175ef886da0228e20bc3d623dd168`). The GCS object's bytes have not been independently fetched for checksum comparison.
+These controls establish manual cleaning/export and consistency. The required automatic baseline remains unverified; see the [scheduler report](scheduler-support-report.md).
 
 ## Prompt and expected result
 
-The exact user-supplied AI Builder prompt was:
+The original user-supplied AI Builder prompt was:
 
 > Using baseline.csv as the input, build a cleaning pipeline that:
 >
@@ -27,60 +23,42 @@ The exact user-supplied AI Builder prompt was:
 >
 > order_id, customer_email, customer_name, amount_usd, order_date, country.
 
-The baseline input has nine rows. The expected cleaned output has five order IDs: `1001`, `1002`, `1006`, `1007`, `1008`.
+The saved transformation prompt captured during authenticated inspection specifies the order explicitly:
 
-## Observed result
+> Clean the dataframe using the following steps in order: 1. Trim leading/trailing whitespace from all string/object columns. 2. Lowercase the customer_email column. 3. Remove duplicate order_id rows, keeping the first occurrence. 4. Fill missing customer_name values with the string 'Unknown'. 5. Remove rows where order_id is null/empty or customer_email is null/empty. 6. Remove rows where amount_usd is not a valid number or is <= 0. 7. Remove rows where order_date cannot be parsed as a valid date. 8. Keep only rows where the country value (case-insensitive, trimmed) is one of: 'us', 'usa', 'united states'. 9. Standardize the country column to the value 'US' for all remaining rows. 10. Format amount_usd to 2 decimal places (as a float rounded to 2 decimals). 11. Format order_date as a string in YYYY-MM-DD format. 12. Output exactly these columns in this order: order_id, customer_email, customer_name, amount_usd, order_date, country.
 
-The [validator report](evidence/baseline-manual-validation.json) fails: actual output has nine rows, expected five. The column names and order match the request, and parseable dates appear in ISO format. The following requested cleaning did not appear in the export:
-
-| Rule | Example in the new output |
-| --- | --- |
-| Trim and lowercase | ` ALICE@Example.COM ` and ` DAVE@example.com ` remain unchanged. |
-| Deduplicate | Both `1002` rows remain. |
-| Fill missing name | Order `1006` still has an empty name. |
-| Filter invalid rows | `1003` has an empty email, `1004` an empty amount, and `1009` an empty date; all remain. |
-| Normalize country | `usa`, `us`, and `United States` remain. |
-
-The export contains float-like amounts such as `42.5`; a CSV cannot establish whether the in-memory float was rounded to two decimals. This baseline has no missing `order_id`, nonpositive amount, or disallowed country, so those branches are not independently tested by this result.
-
-## Follow-up node inspection
-
-The user subsequently supplied screenshots of the Custom and Data Output previews, each still showing the same nine uncleaned rows. This places the visible mismatch at the Custom node rather than only in the downloaded export. The supplied Edit Code excerpt starts with `df = input_df_1.copy()` and ends after country standardization; it does not include the final three requested steps or an assignment to `output_df`. The excerpt may be incomplete, so it does not establish that those lines are absent from the full generated code.
-
-In a later screenshot follow-up received on 2 October 2026, both node previews show the expected five rows, lowercase emails, `Unknown` for order `1006`, all countries `US`, and ISO date strings. Visible logs show execution start at 9:29:36 PM and successful completion at 9:29:42 PM. The screenshot does not establish the execution date, timezone, ID, or trigger type. See the [transcribed follow-up evidence](evidence/baseline-follow-up-visible-evidence.md).
-
-The follow-up log still visibly begins with `input_df_1.copy()`. Although [the Custom node documentation](https://doc.rhombusai.com/docs/transformer-references/custom-nodes/llm-transform/) names `input_df` as the primary input, the screenshots do not establish that the different variable name caused the earlier mismatch. Later authenticated inspection confirms the saved code includes all 12 steps, begins with `input_df_1.copy()`, and assigns the six requested columns to `output_df`. This establishes the current saved code, not the cause of the original failure.
-
-## Corrected manual export validation
-
-On 2 October 2026, the user supplied the actual 320-byte download `RhombusAI_output_1790940577138.csv`. Its filename and size match the previously shown GCS object created at 9:29:38 PM. The [archived original bytes](evidence/baseline-manual-corrected-output-2026-10-02-2129.csv) have SHA-256 `89cdb162f7d43e9f21ce0a8ae077295575837aa7d46580e8bc067940ab2b63bb`. The GCS checksum was not independently queried.
-
-The [corrected validation report](evidence/baseline-manual-corrected-validation.json) passes all six evaluated checks against the repository baseline: source schema, newly invalid values, output existence, exact output schema, five-row count and cleaning rules. It contains the expected IDs `1001`, `1002`, `1006`, `1007`, `1008`, lowercase emails, `Unknown` for the missing name, ISO dates and country `US`. Determinism is unevaluated because only one corrected output was supplied. Rules for missing order IDs, nonpositive amounts, excluded countries and rounding values with extra precision are not independently exercised by this nine-row source.
-
-The first validator run incorrectly rejected float CSV representations such as `42.5` versus `42.50`. The validator now compares exact numeric values while preserving text and schema checks; it does not round the output before comparison. Regression tests first reproduced the false failure, then passed after the fix. Tests also reject `42.51`, `42.501`, invalid amounts and nonfinite values, and verify that the prompt imposes no USD 500 cap. All 12 validator unit tests pass. Rechecking the earlier nine-row output still fails the row count and cleaning rules.
+The nine source rows yield five orders: `1001, 1002, 1006, 1007, 1008`. Emails are lowercase, order 1006's missing name becomes `Unknown`, countries are `US`, and dates are YYYY-MM-DD.
 
 ## Automated manual control and direct GCS verification
 
-On 2 October 2026 at `13:49:53.588Z` (11:49:53 PM Sydney), Playwright clicked Run with the original schedule temporarily disabled. The saved pipeline had sampling disabled and the current three connected nodes. The UI reported successful completion; the [redacted screenshot](evidence/baseline-manual-control-2026-10-02.png) shows a transformation log and completion messages.
+Playwright clicked Run on the saved S3 → Custom → GCS pipeline with sampling disabled and schedules paused. GCS objects were independently downloaded through authenticated browser-observed links, with HTTP 200.
 
-The authenticated GCS console then contained a new object, `RhombusAI_output_1790948994643.csv`, created at 11:49:56 PM. Its actual bytes were downloaded directly through the observed GCS object link (HTTP 200), rather than copied from a node preview. The [archived CSV](evidence/baseline-manual-control-output-2026-10-02-2349.csv) is 320 bytes and has SHA-256 `89cdb162f7d43e9f21ce0a8ae077295575837aa7d46580e8bc067940ab2b63bb`. Its [validation report](evidence/baseline-manual-control-validation.json) passes all six evaluated baseline checks. The [control summary](evidence/baseline-manual-control-2026-10-02.json) records the manual trigger, schedule pause/resume, object and checksum.
+| Manual trigger time, UTC on 2 October 2026 | Actual GCS object | Saved output |
+| --- | --- | --- |
+| 13:49:53.588 | `RhombusAI_output_1790948994643.csv` | [Control CSV](evidence/baseline-manual-control-output-2026-10-02-2349.csv) |
+| 14:35:18.175 | `RhombusAI_output_1790951722682.csv` | [Repeat 1 CSV](evidence/baseline-manual-repeat-1-2026-10-03.csv) |
+| 14:35:44.190 | `RhombusAI_output_1790951748444.csv` | [Repeat 2 CSV](evidence/baseline-manual-repeat-2-2026-10-03.csv) |
 
-This verifies that the current pipeline can clean the baseline and deliver to GCS through a manual run. It does not establish that the scheduled worker has the same credential context. The downloaded result matches the earlier corrected CSV, but those runs used different sampling settings; repeat determinism under one unchanged configuration is still unevaluated. Source comparisons use the repository baseline; the S3 object's bytes were not independently fetched in this session.
+All three are 320 bytes with SHA-256 `89cdb162f7d43e9f21ce0a8ae077295575837aa7d46580e8bc067940ab2b63bb`. Some filenames use the Sydney capture date, 3 October.
 
-## Verified source and manual determinism
+The independently downloaded [S3 source](evidence/baseline-source-fetched-2026-10-03.csv) is 531 bytes and equals [datasets/baseline.csv](../datasets/baseline.csv), SHA-256 `6bc9a17c1734676986c1d48ad1122b132e3d71e1b60c3867f6687b3d8d08139e`.
 
-On 3 October 2026 Sydney time, Playwright downloaded the actual S3 `baseline.csv` through its browser-observed download link. Its 531 bytes are identical to `datasets/baseline.csv`, SHA-256 `6bc9a17c1734676986c1d48ad1122b132e3d71e1b60c3867f6687b3d8d08139e`. The [archived source bytes](evidence/baseline-source-fetched-2026-10-03.csv) and [repeat provenance](evidence/baseline-manual-repeats-2026-10-03.json) establish this comparison.
+[Control provenance](evidence/baseline-manual-control-2026-10-02.json), [repeat/source provenance](evidence/baseline-manual-repeats-2026-10-03.json) and the [masked control screenshot](evidence/baseline-manual-control-2026-10-02.png) record the triggers, downloads and configuration comparison. The three process requests have the same recorded runtime fingerprint: `88e52ce85a867167e2a67f5dbca1f1beb957da758722d2c0afce1249f2e98c61`, covering node names, wiring, transformation types and parameters. The complete canonical request representation is not published, so that historical fingerprint cannot be independently recomputed from these selected-field records.
 
-With schedules paused, two further manual runs at `14:35:18Z` and `14:35:44Z` produced fresh GCS exports. Their [first](evidence/baseline-manual-repeat-1-2026-10-03.csv) and [second](evidence/baseline-manual-repeat-2-2026-10-03.csv) actual downloads are each 320 bytes and have the same SHA-256 as the manual control at `13:49:53Z`. The three captured process requests have an identical canonical fingerprint of runtime node names, wiring, transformation types and parameters; this comparison excludes UI metadata and redacts account secrets.
+Dashboard later classified the corresponding executions `16454, 16456, 16457` as manual with no schedule ID. Their correlation uses project and timestamps; asynchronous task UUIDs are different identifiers. [Dashboard evidence](evidence/dashboard-executions-2026-10-03.json).
 
-The [three-output validation report](evidence/baseline-manual-determinism-validation.json) passes all seven checks, including ordered determinism. The earlier corrected 9:29 PM export is not used in this comparison because its sampling configuration differed. This establishes manual baseline consistency under the compared configuration; scheduled consistency remains unverified.
+## Reproduce the validation locally
 
-## Schedule creation follow-up
+Run from the repository root:
 
-The user showed an Active Hourly schedule at minute 00, with an enabled switch. Its history table is empty and its `Next run` field has no visible value. A separate log reports execution start and success at 10:04:26 PM, but does not link that execution to the schedule. The supplied GCS listing contains `RhombusAI_output_1790940577138.csv`, created on 2 October 2026 at 9:29:38 PM; that timestamp matches the earlier five-row preview run. No later export is visible in the screenshot. See the [schedule and object-list transcription](evidence/baseline-schedule-visible-evidence.md).
+```bash
+python data-validation/validate.py --scenario baseline --source observations/evidence/baseline-source-fetched-2026-10-03.csv --output observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv --repeat-output observations/evidence/baseline-manual-repeat-1-2026-10-03.csv --repeat-output observations/evidence/baseline-manual-repeat-2-2026-10-03.csv
+```
 
-The user subsequently confirmed that the 10:04 PM execution came from the schedule and that neither a history record nor a GCS output appeared. The scheduled trigger is user-confirmed; subsequent authenticated API inspection confirms zero history records. The cause remains unverified. This is tracked in the [scheduled baseline observation](baseline-scheduled.md).
+The [saved report](evidence/baseline-manual-determinism-validation.json) passes all seven checks, including ordered determinism. Numerically equal float serialization such as `42.5` and `42.50` is accepted; extra nonzero precision and incorrect values are rejected. The expected-output unit-test fixture is separate from these actual exports.
 
-## Interpretation and next checks
+## Limits
 
-**Observed:** the earlier exported CSV failed validation despite execution Success; corrected manual exports now pass the baseline checks. Actual S3 bytes match the repository baseline, and three manual outputs with matching runtime configuration pass ordered determinism. User-confirmed scheduled attempts and subsequent controlled schedule comparisons left no history record or fresh GCS object within the recorded windows. **Blocked:** verified scheduled delivery and scheduled drift runs. The chatbot exchange, configuration edit and fresh-schedule comparison are preserved in the [scheduled observation](baseline-scheduled.md). Scheduler and worker logs are needed to determine the cause. Per [Rhombus's 3 October guidance](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home), the submission explains how scheduling prevented progress; additional manual drift results need not be submitted. The existing manual case files are historical records, not a plan for further runs.
+The controls do not prove scheduled dispatch, worker credentials, automatic delivery or live semantic drift handling. This baseline does not independently exercise missing order IDs, nonpositive amounts, disallowed countries or rounding of values with extra precision.
+
+A [historical generated-code snapshot](evidence/README.md#historical-code-and-archives) preserves complete code captured during exploratory manual work. It is evidence of that capture, not a complete saved configuration for the three controls. Earlier exploratory results are available in immutable Git history; they are outside the current submission route.

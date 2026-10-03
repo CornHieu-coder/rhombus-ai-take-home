@@ -1,6 +1,11 @@
 import { expect, test } from '@playwright/test';
 import fs from 'node:fs';
 
+// This unverified scaffold changes the live project and cloud connections.
+// Skip at collection time so default runs do not initialize browser fixtures.
+test.skip(process.env.RHOMBUS_RUN_PROVISIONING_JOURNEY !== '1',
+  'Provisioning scaffold requires explicit RHOMBUS_RUN_PROVISIONING_JOURNEY=1.');
+
 const required = [
   'RHOMBUS_STORAGE_STATE', 'RHOMBUS_PROJECT_NAME', 'RHOMBUS_S3_BUCKET',
   'RHOMBUS_S3_REGION', 'RHOMBUS_GCS_BUCKET',

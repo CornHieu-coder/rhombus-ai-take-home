@@ -1,21 +1,42 @@
-# Evidence handling
+# Evidence index
 
-Place redacted screenshots, exported schedule-history CSV files, log excerpts, and validator JSON reports here. Name each file with the scenario and execution ID. Keep credentials, service-account keys, access tokens, personal data, and raw HAR files out of git.
+The [scheduler report](../scheduler-support-report.md) is the canonical finding; [manual controls](../baseline-manual.md) establish the comparison path. Timestamps within captures are UTC unless labelled otherwise. Account credentials and bucket names are excluded from public captures.
 
-The initial manual baseline run has a user-supplied downloaded output CSV, a validator report, and a transcription of the visible log screenshot. That initial screenshot was supplied in chat and is not archived here. The user confirmed its GCS object URI; its bucket name is redacted in the public observation. That initial export was not independently fetched from GCS. Later manual controls and repeats, described below, were independently downloaded and verified.
+## Manual baseline controls
 
-The later [preview and log transcription](baseline-follow-up-visible-evidence.md) records matching five-row Custom and Data Output previews. The user subsequently supplied the corresponding 320-byte [corrected CSV download](baseline-manual-corrected-output-2026-10-02-2129.csv), which passes all evaluated checks in the [corrected report](baseline-manual-corrected-validation.json). This is an earlier manual run's output; its report did not evaluate determinism.
+- [Actual S3 source](baseline-source-fetched-2026-10-03.csv) and [source/repeat provenance](baseline-manual-repeats-2026-10-03.json).
+- [Control provenance](baseline-manual-control-2026-10-02.json), [masked screenshot](baseline-manual-control-2026-10-02.png), [actual control CSV](baseline-manual-control-output-2026-10-02-2349.csv) and [single-run validation](baseline-manual-control-validation.json).
+- [Actual repeat 1](baseline-manual-repeat-1-2026-10-03.csv), [actual repeat 2](baseline-manual-repeat-2-2026-10-03.csv) and [three-output validation](baseline-manual-determinism-validation.json).
 
-Later [source and three-run provenance](baseline-manual-repeats-2026-10-03.json) records independently downloaded S3 baseline bytes and three matching-configuration manual GCS exports. The [determinism report](baseline-manual-determinism-validation.json) passes all seven checks. This establishes manual baseline determinism, not successful scheduled delivery.
+These are downloaded cloud bytes, separate from the validator's expected-output fixture. Replaying them establishes manual baseline cleaning and ordered consistency, not scheduled delivery.
 
-The [schedule follow-up](baseline-schedule-visible-evidence.md) records an Active hourly schedule, an empty schedule-specific history, a blank Next run value, a 10:04 PM Success log, and the GCS object's earlier 9:29 PM creation time. The user confirmed that the 10:04 PM run was automatic and that no history entry or new export appeared. The [validator report](baseline-scheduled-output-missing.json) records the missing output using the explicit `--output-missing` flag and the local baseline source; it did not independently query GCS.
+## Scheduler diagnostics
 
-The [schedule repeat](baseline-schedule-repeat-visible-evidence.md) shows the same visible symptoms at 10:30 PM after the existing schedule minute changed to 25. The [repeat report](baseline-scheduled-repeat-output-missing.json) again fails output existence without evaluating row-level output quality.
+| Evidence | What it establishes |
+| --- | --- |
+| [Initial API fields](baseline-schedule-playwright-2026-10-02.json), [masked screenshot](baseline-schedule-playwright-2026-10-02.png) | Enabled schedule 202, empty backend history and stale Next run |
+| [Chatbot exchange](baseline-schedule-chatbot-2026-10-02.md) | Sampling suggestion, saved change and stated access limits |
+| [Post-chatbot window](baseline-schedule-after-chatbot-2026-10-02.json) | Empty schedule history after an enabled boundary; no direct GCS query |
+| [Edited 202](baseline-schedule-edited-repeat-2026-10-02.json), [screenshot](baseline-schedule-edited-repeat-2026-10-02.png) | Empty history and unchanged independently refreshed GCS listing |
+| [Fresh 208](baseline-schedule-fresh-repeat-2026-10-03.json) | New captured graph and schedule, zero history and unchanged GCS listing across bounded checks |
+| [Restoration snapshot](baseline-schedule-final-2026-10-03.json), [screenshot](baseline-schedule-final-2026-10-03.png) | Diagnostic disabled, original settings restored and a future Next run rendered |
+| [User-created 209](baseline-schedule-user-repeat-2026-10-03.json) | Short enabled observation then user pause; later paused time is not active coverage |
+| [Dashboard API](dashboard-executions-2026-10-03.json), [screenshot](dashboard-executions-2026-10-03.png), [transcript](dashboard-executions-2026-10-03.txt) | 13 records classified manual, schedule history empty; no new GCS check |
 
-The [authenticated API capture](baseline-schedule-playwright-2026-10-02.json) and [email-masked screenshot](baseline-schedule-playwright-2026-10-02.png) independently confirm the empty backend history and blank Next run display. The [AI Builder exchange](baseline-schedule-chatbot-2026-10-02.md) preserves the sampling diagnosis and repair without accepting its explanation as fact. Raw authenticated traces and browser state remain ignored.
+The complete Dashboard capture retains the historical records it returned. It does not supply scheduled drift results.
 
-The [post-repair observation](baseline-schedule-after-chatbot-2026-10-02.json) records a bounded seven-minute polling window spanning the next minute-25 schedule boundary. Backend history remained empty. It is scheduler API evidence, not a direct GCS query or proof that a scheduled job executed.
+## Historical code and archives
 
-The [edited schedule](baseline-schedule-edited-repeat-2026-10-02.json) and [fresh schedule](baseline-schedule-fresh-repeat-2026-10-03.json) captures contain independent GCS refreshes as well as schedule/history samples. Neither bounded check found a fresh object or execution record. The [Dashboard capture](dashboard-executions-2026-10-03.json), [masked screenshot](dashboard-executions-2026-10-03.png) and [table transcript](dashboard-executions-2026-10-03.txt) record 13 API-classified manual executions and no schedule IDs.
+[historical-ai-generated-cleaning-code.txt](historical-ai-generated-cleaning-code.txt) preserves the exact UTF-8 `generated_code` string captured during exploratory manual work, with no added newline. SHA-256: `b4e46b9f67b5685f6390182fa6d579c724b76590b070f231225694ea8680ed5e`.
 
-Per Rhombus's 3 October guidance, the submission focuses on [how this scheduler issue prevented progress](../scheduler-support-report.md#support-guidance-and-effect-on-the-take-home). Existing manual drift artifacts are historical; no additional manual drift evidence is needed. The existing ZIP is the historical bundle sent with the first email and has not been rewritten to include later findings; the current report and links above supersede its old status text.
+Its [immutable source record](https://github.com/CornHieu-coder/rhombus-ai-take-home/blob/beaea4094334304c5b9c320c52eb77a209b42635/observations/evidence/schema-add-column-original.json) records project 4266, manual task `e4b11aab-78d2-449a-86e1-a22f117c3005`, and capture start `2026-10-02T14:48:01.505Z`. The other two exploratory records contain identical code. This is a historical AI-generated code capture, not an active transformation or proof of the complete baseline configuration.
+
+Superseded previews, exploratory manual drift artifacts and the answered email draft were removed from current main for clarity. They remain available in the [pre-cleanup repository snapshot](https://github.com/CornHieu-coder/rhombus-ai-take-home/tree/beaea4094334304c5b9c320c52eb77a209b42635/observations).
+
+The [original emailed ZIP](https://raw.githubusercontent.com/CornHieu-coder/rhombus-ai-take-home/6bf3c96ea33285175eeef4715e38da267802ddb1/observations/evidence/rhombus-scheduler-evidence-2026-10-03.zip) remains unchanged at its historical commit. SHA-256: `d5327c7be6a54f59f4714ac7532e3659656e6ae49978c2b369944dfb199fc906`. It predates the Dashboard check and support guidance; use the current scheduler report for the submission.
+
+## Future journey evidence
+
+No verified journey run has been recorded. After verification, publish only reviewed summaries, redacted screenshots, relevant selected log/API fields and actual CSV/validation pairs under `ui-journey/<run-id>/`. Keep browser state, service-account keys, HAR files and raw Playwright traces in ignored local locations. Local `test-results/` and `playwright-report/` are generated diagnostics, not public evidence.
+
+Planned contents: `manifest.json` with run times, step outcomes, project/schedule/execution IDs, source/output object identifiers and hashes; an actual `input.csv` snapshot; `output.csv` only if retrieved from that run; `validation.json`; selected sanitized responses and redacted screenshots. No output or success record should be fabricated for a blocked step.

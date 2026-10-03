@@ -1,36 +1,33 @@
-# Rhombus AI pipeline drift exercise
+# Rhombus AI take-home: pipeline testing
 
-Amazon S3 → AI-built cleaning in Rhombus → Google Cloud Storage. This repository contains eight datasets, Playwright UI tests, direct backend API tests, an independent validator and scheduler evidence.
+This exercise tests **Amazon S3 → AI Builder cleaning → Google Cloud Storage → scheduled runs**. The required UI tests run from the command line, use no fixed sleeps and check real outcomes. The take-home also requires direct API tests, data validation, datasets and case write-ups, with a successful scheduled baseline before drift testing.
 
-## Submission scope after Rhombus's guidance
+## Review at a glance
 
-On **3 October 2026 at 14:08 Sydney time** (`04:08Z`), Rhombus advised that manual drift results need not be submitted and that the submission should explain how scheduling prevented progress. The [scheduler failure report](observations/scheduler-support-report.md) is the canonical write-up.
+These are recorded results from 2–3 October 2026, not a fresh assessment of the current service.
 
-A successful automatic baseline was never established. Controlled checks of an edited schedule and a fresh schedule returned no execution records or new GCS objects within their observation windows. This prevented assessment of drift, chatbot repair and recovery on subsequent scheduled runs. The cause is unconfirmed. Manual baseline controls verify cleaning/export and determinism; they cannot establish automatic delivery. The support reply did not explicitly waive the UI journey, API tests, validator or demo video.
-
-## Current status and findings
-
-Live results below are dated observations, not claims about the current service.
-
-| Area | Verified state |
+| Required work | What was verified |
 | --- | --- |
-| Manual baseline and validator | Actual S3 source and three matching-configuration GCS exports pass all seven checks, including ordered determinism. [Control record](observations/baseline-manual.md) |
-| Scheduled baseline | Blocked in the recorded windows. Last verified schedule 209 was paused by the user. [Reproduction, evidence and limits](observations/scheduler-support-report.md) |
-| API tests, 2 October | 4 passed; history assertion failed with `total=0` |
-| Existing-project UI tests, 2 October | Canvas check passed; Next run and history checks failed |
-| UI journey, 3 October | Live configuration journey passed: S3 selection, AI Builder/code generation, GCS settings and its own enabled schedule. Automatic delivery unevaluated. [Run and limits](observations/ui-journey.md) |
-| Scheduled drift and chatbot recovery | Not evaluated because the automatic baseline was unavailable |
-| Demo video | Not recorded; link must be added below |
+| UI automation — live Rhombus | Playwright completed the setup journey on 3 October, including an enabled schedule. This proves setup, **not automatic delivery**. [Evidence](observations/ui-journey.md). |
+| Direct API tests — live Rhombus | Three tests passed, including rejection of protected requests without a login. The history test failed because scheduled records were missing. [Results](observations/ui-journey.md#other-verification-in-this-session), [history findings](observations/scheduler-support-report.md#chatbot-diagnosis-and-automated-checks). |
+| Data validation — local saved files | Twelve validator tests passed. Three real manual GCS exports matched and passed checks against actual S3 input, validating the original manual baseline. [Evidence](observations/baseline-manual.md). |
+| Scheduled baseline and drift | No successful automatic baseline was established. Scheduled drift, chatbot fixes and recovery remain unassessed. [Blocker](observations/scheduler-support-report.md). |
 
-Three main findings, which may share a backend cause:
+Code: [`/ui-tests/`](ui-tests/), [`/api-tests/`](api-tests/) and [`/data-validation/`](data-validation/). Data: the baseline and seven drift variants in [`/datasets/`](datasets/). Case write-ups and evidence: [`/observations/`](observations/).
 
-1. **Automatic delivery was not established.** Both controlled schedule checks found no fresh GCS export; the manual control delivered a valid file. [Checks](observations/scheduler-support-report.md#reproduction-and-controls).
-2. **Scheduled history offered no diagnostic record.** Schedule APIs returned empty histories; Dashboard returned 13 records, all manual with no schedule ID. [Dashboard check](observations/scheduler-support-report.md#dashboard-check-requested-by-support--3-october-2026).
-3. **Monitoring and the chatbot suggestion did not resolve the blocker.** Next-run timestamps stopped advancing and last-run timestamps remained null. Disabling sampling did not restore history in the bounded repeat. [Diagnosis and limits](observations/scheduler-support-report.md#chatbot-diagnosis-and-automated-checks).
+Start with [How to run](#how-to-run) for commands, or [Verified results and limits](#verified-results-and-limits) for evidence and coverage. The required [demo video](#demo-video) is pending; the hosted dashboard is optional.
 
-## Setup and local verification
+## Scheduling blocker and submission scope
 
-The take-home requires browser automation of **S3 connection → AI-built pipeline → GCS destination → scheduling**, runnable from the command line, with no fixed sleeps and assertions on real outcomes. We use Playwright, direct API tests and an independent data validator.
+Two controlled checks with enabled schedules found no history records or fresh GCS output by their deadlines. The cause remains unknown. The user later paused the original schedule; that later state was not counted as a scheduling failure.
+
+On 3 October, Rhombus advised documenting the blocker rather than submitting manual drift results. The prepared cases therefore have no assessed scheduled outcomes. UI tests, API tests, validation and the video remain part of the submission. [Support guidance](observations/scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+
+## Top three findings
+
+1. **Manual export worked; automatic delivery was not established.** Manual outputs were valid and matched; controlled scheduled checks found no fresh output. [Controls](observations/scheduler-support-report.md#reproduction-and-controls).
+2. **History did not explain the missing runs.** Schedule history was empty, next-run information became stale, and Dashboard showed manual records only. [Findings](observations/scheduler-support-report.md).
+3. **The chatbot suggestion did not establish recovery.** Disabling sampling was suggested as a fix, but later checks still found no schedule-history recovery. [Follow-up](observations/scheduler-support-report.md#chatbot-diagnosis-and-automated-checks).
 
 ## What the tests prove
 

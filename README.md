@@ -49,19 +49,21 @@ The full Playwright journey proves that the required pipeline can be configured 
 
 Automatic scheduled delivery is documented separately in the [scheduler findings](observations/scheduler-support-report.md). In the recorded observation windows, a successful scheduled baseline was not established, so the README must not imply that automatic delivery passed.
 
-### Verified results and limits
+## Verified results and limits
 
-**Verified live on 3 October:** the UI setup journey passed in 1.4 minutes; the existing-project canvas check and three signed-out API tests also passed. The [journey evidence](observations/ui-journey.md) proves setup and saved settings. The new generated code's cleaning results and automatic delivery were not validated.
+The take-home requires UI automation of the S3 → AI Builder → GCS → schedule journey, direct API tests, data validation, and a successful scheduled baseline before testing drift.
 
-**Verified locally:** 12 validator tests passed. Comparing saved S3 input with three actual downloaded manual GCS exports passed all seven baseline checks, including repeat consistency. The [baseline evidence](observations/baseline-manual.md) identifies the files. Repeating this comparison needs no cloud access and does not test live drift.
+**UI automation:** On 3 October, the Playwright test successfully completed the required setup journey in the live Rhombus application: it selected the S3 input, used AI Builder to create the cleaning pipeline, configured the GCS output and created an enabled schedule. This proves that the required setup journey can be automated through the UI. It does **not** prove that the new schedule later ran automatically or produced a GCS file. [UI journey evidence](observations/ui-journey.md).
 
-**Blocked:** automatic scheduled delivery has not been established. Historical enabled-schedule checks found no execution records or fresh GCS output within their observation windows, preventing scheduled drift and chatbot recovery testing. See the [scheduler report](observations/scheduler-support-report.md).
+**API tests:** Three signed-out direct backend tests passed against live Rhombus, including checks that protected requests were rejected. During the historical scheduler investigation, schedule-history requests returned no scheduled execution records. The test expecting those records therefore failed. [Recorded API results and findings](observations/scheduler-support-report.md#chatbot-diagnosis-and-automated-checks).
 
-Schedule checks require an enabled schedule; history checks must be explicitly enabled after an automatic attempt. The original schedule was user-paused, and those checks were not rerun against it. A paused-schedule prerequisite failure would not reproduce the historical defect.
+**Data validation:** All 12 validator tests passed locally. The validator was also run locally against the downloaded actual S3 input and three real GCS files produced by manual runs. All three outputs passed the baseline checks and matched each other, showing that the cleaning result was correct and repeatable for this baseline when the pipeline was run manually. These files came from the original pipeline; they do not validate the new journey's generated cleaning code. [Data and validation evidence](observations/baseline-manual.md).
 
-**Unverified live:** an additional delivery check is intended to require a completed new scheduled execution, its fresh GCS export and passing data validation. Nine offline tests of its execution/output matching rules passed; the full live check has not been verified.
+**Scheduled baseline:** A successful automatic scheduled run was not established. During the recorded periods when schedules were enabled, no new scheduled execution appeared in schedule history and no fresh GCS output was observed before the stated deadlines. Because the take-home requires a successful scheduled baseline before the drift tests, the scheduled schema-drift, semantic-drift and chatbot-recovery tests could not be completed. [Observation windows and supporting evidence](observations/scheduler-support-report.md#reproduction-and-controls).
 
-The setup-only and delivery-check options and extra matching tests are our implementation choices. Creating a schedule alone does not prove automatic delivery.
+The original schedule was later paused by the user. Tests that require an enabled schedule were therefore not rerun against that paused schedule. An enabled schedule is a prerequisite for those tests; the current paused state is not evidence of the historical scheduler problem.
+
+A separate, stricter delivery check was also developed to verify that a newly created schedule completes a new execution, delivers a fresh GCS file and passes data validation. This is our additional testing approach, not a separate requirement from the take-home. Its logic for identifying the correct run and file was tested locally, but the full live delivery check has not been verified, so this submission does not claim that automatic delivery passed.
 
 ### Commands
 

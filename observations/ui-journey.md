@@ -1,12 +1,44 @@
-# Playwright UI journey — 3 October 2026
+# Playwright UI setup journey — 3 October 2026
 
-**Configuration verified.** The live CLI journey passed on 3 October, `09:03:59–09:05:21Z` (19:03–19:05 Sydney time). It opened the separate project **5252**, selected the S3 baseline, completed a new AI Builder turn, saved generated Python code, configured GCS destination **58**, and created its own enabled schedule **215**. Cleanup paused 215 and confirmed the original project's schedule **209** remained paused.
+**The live S3 → AI Builder → GCS → schedule setup passed: 1 passed (1.4m).** The run used separate project **5252**, GCS destination **58** and schedule **215**. It ran from `2026-10-03T09:03:59.051Z` to `09:05:21.370Z` (19:03–19:05 Sydney time).
 
-The [run manifest](evidence/ui-journey/2026-10-03T09-03-59-050Z/manifest.json) records all five passed steps and cleanup. This result establishes the UI setup journey; **automatic baseline delivery was not evaluated** in this configuration run.
+All five setup steps passed in the [run manifest](evidence/ui-journey/2026-10-03T09-03-59-050Z/manifest.json). Cleanup paused schedule 215 before its first trigger and confirmed that original schedule **209** remained paused. **Automatic delivery and the new pipeline's cleaning result were not evaluated.**
+
+## What was being tested
+
+The take-home requires a command-line UI test covering S3 connection, AI-built cleaning, GCS destination and scheduling, using no fixed sleeps and assertions on real outcomes. This run checked that those settings were saved in the live Rhombus application. The expected result was a connected three-node pipeline with generated code, CSV output settings and its own enabled schedule.
+
+The original project **4266** supplied the comparison for schedule preservation. The test opened **Rhombus QA Playwright Journey**, project 5252, with no competing enabled schedule. It selected the existing `baseline.csv` S3 object using preconfigured read access and configured GCS using a local service-account key. No Python was edited manually.
+
+<a id="assertions-and-evidence"></a>
+
+## What happened
+
+| Step | Verified result | Evidence |
+| --- | --- | --- |
+| 1. Open the separate project | Project 5252 differed from the original; it had no competing active schedule. | [Starting settings](evidence/ui-journey/2026-10-03T09-03-59-050Z/configuration-before.json) |
+| 2. Select the S3 baseline | The exact `baseline.csv` key was listed at 531 bytes. The saved source selection and connection matched; the preview showed six columns and nine rows. | [Source selection](evidence/ui-journey/2026-10-03T09-03-59-050Z/source.png), [preview](evidence/ui-journey/2026-10-03T09-03-59-050Z/input-preview.png) |
+| 3. Build cleaning with AI Builder | A new request completed in Pipeline mode. Three connected nodes, the ordered cleaning prompt and generated Python code were saved. | [Builder prompt](evidence/ui-journey/2026-10-03T09-03-59-050Z/builder-prompt.txt), [saved nodes and response status](evidence/ui-journey/2026-10-03T09-03-59-050Z/ai-graph.json) |
+| 4. Configure GCS export | Destination 58 mapped to the selected GCS bucket. CSV and the unique filename remained saved after reload; the source selection was preserved. | [Saved settings](evidence/ui-journey/2026-10-03T09-03-59-050Z/configuration-saved.json), [destination](evidence/ui-journey/2026-10-03T09-03-59-050Z/destination.png) |
+| 5. Create and inspect a schedule | Schedule creation returned HTTP 200 and ID 215. The saved source, connections, prompt/code and destination matched the schedule's pipeline. The schedule was enabled with cron `* * * * *`, and its history opened. | [Created schedule and history](evidence/ui-journey/2026-10-03T09-03-59-050Z/schedule-created.json), [schedule UI](evidence/ui-journey/2026-10-03T09-03-59-050Z/schedule-created.png) |
+
+### Code generation and UI feedback
+
+The Builder-created prompt initially needed code generation. Submitting Rhombus's **Regenerate With Feedback** dialog saved the code. The [submitted feedback](evidence/ui-journey/2026-10-03T09-03-59-050Z/code-generation-feedback.txt) asked Rhombus to preserve all 12 rules and their order.
+
+The same [generated code](evidence/ui-journey/2026-10-03T09-03-59-050Z/generated-code.txt) was saved in the pipeline and included in schedule 215. Both captures record SHA-256 `8625ef23feeabf2b556952d659d6b66821f4c84e8da7af3e1b979ee967141268`.
+
+Regeneration also starts processing in the UI. The [canvas captured during generation](evidence/ui-journey/2026-10-03T09-03-59-050Z/ai-canvas.png) showed an output error **before the GCS destination was configured**. The later setup steps passed. This processing attempt's delivery and cleaning result were not assessed.
+
+### Schedule cleanup
+
+Schedule 215 was created at `09:05:18.078Z`, with its next run at `09:06:00Z`. Cleanup had paused it by the run's finish at `09:05:21.370Z`, before that first trigger. Its initial history contained zero executions. That empty history does not show a scheduling failure in this run.
+
+The manifest confirms that original project 4266's schedule **209** remained paused and its schedule states were preserved. The [scheduler report](scheduler-support-report.md) remains the detailed report of the earlier scheduling blocker; this setup run did not test recovery from it.
 
 ## Reproduce
 
-Follow the [session and cloud prerequisites](../ui-tests/README.md#journey-prerequisites-and-isolation), populate ignored `.env`, and run from the repository root:
+Follow the [login and cloud prerequisites](../ui-tests/README.md#journey-prerequisites-and-isolation), fill in ignored `.env`, and run from the repository root:
 
 ```powershell
 $env:RHOMBUS_RUN_PROVISIONING_JOURNEY = '1'
@@ -16,31 +48,20 @@ Remove-Item Env:RHOMBUS_RUN_PROVISIONING_JOURNEY
 Remove-Item Env:RHOMBUS_JOURNEY_VERIFY_DELIVERY
 ```
 
-Captured CLI result: **1 passed (1.4m)**. Connections may be reused in the separate project; missing connections are configured through the UI using the preconfigured S3 read policy and a local GCS key. The original evidence project is preserved.
-
-## Assertions and evidence
-
-| Step | What passed | Capture |
-| --- | --- | --- |
-| Project isolation | Journey project differs from the original; no competing active schedule | [Before configuration](evidence/ui-journey/2026-10-03T09-03-59-050Z/configuration-before.json) |
-| S3 input | Exact `baseline.csv` key, 531-byte listing, selected asset and connection, six columns and nine preview rows | [Source](evidence/ui-journey/2026-10-03T09-03-59-050Z/source.png), [preview](evidence/ui-journey/2026-10-03T09-03-59-050Z/input-preview.png) |
-| AI Builder | Pipeline mode; a newly completed request; three connected persisted nodes; ordered cleaning prompt and saved code | [Builder prompt](evidence/ui-journey/2026-10-03T09-03-59-050Z/builder-prompt.txt), [graph and HTTP fields](evidence/ui-journey/2026-10-03T09-03-59-050Z/ai-graph.json) |
-| GCS destination | Saved destination ID maps to the selected GCS bucket; CSV and unique filename persist after reload; source identity remains intact | [Saved graph](evidence/ui-journey/2026-10-03T09-03-59-050Z/configuration-saved.json), [destination](evidence/ui-journey/2026-10-03T09-03-59-050Z/destination.png) |
-| Schedule | Creation returns this schedule's ID; captured source, wiring, prompt/code and destination match the saved graph; enabled custom cron and its own history UI | [Created schedule](evidence/ui-journey/2026-10-03T09-03-59-050Z/schedule-created.json), [screenshot](evidence/ui-journey/2026-10-03T09-03-59-050Z/schedule-created.png) |
-
-Rhombus's **Regenerate With Feedback** dialog generated code for the Builder-created prompt. The [feedback](evidence/ui-journey/2026-10-03T09-03-59-050Z/code-generation-feedback.txt) requested preservation of all 12 rules; no Python was edited manually. The [captured code](evidence/ui-journey/2026-10-03T09-03-59-050Z/generated-code.txt) has SHA-256 `8625ef23feeabf2b556952d659d6b66821f4c84e8da7af3e1b979ee967141268`, matching both the saved graph and schedule snapshot.
+The test can reuse connections available in the separate project or configure missing ones through the UI. It creates an enabled schedule and pauses that exact schedule during cleanup. See the [setup guide](../ui-tests/README.md#configuration-mode) for the five actions and what a pass proves.
 
 ## Limits
 
-- Schedule 215 was paused at the end of configuration, before its `09:06Z` next-run boundary. Its initial empty history is expected and is **not evidence of another scheduler failure**.
-- Regeneration starts processing in the UI. The [generation-stage canvas](evidence/ui-journey/2026-10-03T09-03-59-050Z/ai-canvas.png) shows an output error before the GCS destination was configured. The test verifies persisted code and subsequent destination setup; it does not assess that processing attempt's delivery or cleaning result.
-- This run verified source selection/listing/preview, without independently downloading the current S3 bytes. It produced no verified scheduled CSV or validation report. Use the [recorded manual baseline controls](baseline-manual.md) for real-byte cleaning and determinism evidence.
-- Static review of this generated code found a null-ID filter but no explicit empty-string `order_id` filter. The configuration pass does not certify every cleaning rule or the new code's output quality.
-- The optional [strict delivery mode](../ui-tests/README.md#strict-delivery-mode) requires authenticated S3/GCS console tabs on CDP port 9333. That browser was unavailable in this session, so the cloud observer and complete delivery mode remain **live-unverified**. Their execution/object matching rules passed nine offline tests.
-- The [scheduler report](scheduler-support-report.md) remains the canonical historical blocker under Rhombus's guidance. This configuration run neither reproduces nor resolves it.
+- The run checked source listing, selection and preview. It **did not independently download the current S3 bytes**. The 531-byte listing alone does not establish byte identity.
+- It produced no verified scheduled CSV or output-validation report. The [original manual baseline controls](baseline-manual.md) provide real-byte cleaning and repeated-output evidence for the original pipeline.
+- Static review of this new generated code found a null-ID filter but no explicit empty-string `order_id` filter. Saving the code does not certify all cleaning rules or its output quality. The code was retained as generated.
+- The [additional automatic-delivery check](../ui-tests/README.md#strict-delivery-mode) is our own testing option and remains **unverified live**. The authenticated S3/GCS browser was unavailable in this session. Nine local tests of our run/file selection logic passed, without verifying the live scheduler or cloud downloads.
+- A successful automatic baseline is still required before scheduled drift testing. The [canonical scheduler report](scheduler-support-report.md) explains the controlled observations and the remaining blocker.
 
 ## Other verification in this session
 
-The original project's connected-canvas check passed; three unauthenticated direct API status/body checks passed; all 12 validator unit tests passed. Replaying the saved actual S3 source and three actual manual GCS exports passed all seven baseline checks, including ordered determinism. The existing-project enabled-schedule checks were not rerun against user-paused schedule 209.
+The original project's connected-canvas check passed. Three direct backend tests without a login passed their status and response-content checks, and all 12 validator unit tests passed. Rechecking the saved actual S3 source and three actual manual GCS exports passed all seven baseline checks, including that repeated runs produced the same ordered output.
 
-Public evidence contains selected fields and masked screenshots. Browser state, keys, raw traces, failed setup iterations and generated HTML reports stay ignored locally. Local output defaults to `test-results/<test>/journey/`; the curated run above is retained independently of later test invocations.
+Those manual files came from the original pipeline and do not validate this new generated code. The existing-project checks that require an enabled schedule were not rerun against user-paused schedule 209.
+
+The [evidence index](evidence/README.md) links the curated run. It contains selected fields and masked screenshots; login data, keys, raw diagnostics and failed setup iterations remain private. Local output and publication details are in the [setup guide](../ui-tests/README.md#local-output-and-publication).

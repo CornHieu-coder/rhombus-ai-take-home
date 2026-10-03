@@ -1,8 +1,26 @@
-# Schema drift: change amount type
+# Schema drift: change amount to words
 
-- **Dataset:** [schema-change-type.csv](../datasets/schema-change-type.csv).
-- **Change:** Replace order `1006`'s numeric `amount_usd` with `one hundred twenty`; headers and the nine source rows are unchanged.
-- **Expected contract:** The invalid-number filter rejects order `1006`, yielding four cleaned rows. The validator flags that newly invalid input separately from output correctness. A repair that supplies a numeric amount requires an explicit new policy or upstream evidence.
-- **Scheduled coverage:** Not evaluated. The required successful automatic baseline was unavailable, so this case has no assessed scheduled outcome, execution logs, GCS output, chatbot diagnosis or repair, or later scheduled recovery. Severity is not assessed.
+**Result: not run on a schedule.** The required successful automatic baseline was not established. This is a prepared QA case; scheduled behaviour, logs, output, chatbot repair and later recovery were not assessed, and no severity is assigned. The [scheduler report](scheduler-support-report.md) explains the blocker and Rhombus's guidance to document its effect on progress.
 
-This is a prepared case, not a scheduled run result. The [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home) explains the blocker and Rhombus's guidance to document its effect on progress.
+## Prepared change and expected result
+
+[schema-change-type.csv](../datasets/schema-change-type.csv) changes order `1006` from `amount_usd=120.00` to `one hundred twenty`. The six headers, nine rows and all other cells are unchanged.
+
+The requested invalid-number filter rejects order `1006`, leaving four cleaned orders: `1001, 1002, 1007, 1008`. A clear rejection message would explain the lost row; whether Rhombus provides one is a product observation to collect.
+
+With `--scenario schema-change-type`, a correct four-row export can pass output schema, row count and cleaning checks while the overall report fails. `new_invalid_values` flags newly rejected order `1006`; that is an input-quality alert, not evidence that correct filtering produced bad output. Recovering the row requires upstream numeric data or an explicitly changed rule for parsing words.
+
+## How to repeat after a successful scheduled baseline
+
+Follow the [shared scheduled-check procedure](baseline-scheduled.md#shared-procedure-for-a-future-drift-check) for the baseline prerequisite, evidence capture and restoration. This case has not been executed.
+
+1. Replace that same S3 object with `schema-change-type.csv` and confirm the uploaded bytes. Keep the selected source and pipeline unchanged for this first automatic check.
+2. Ask the chatbot to explain the rejection and any warning or lack of warning. Save its reply. If a repair is proposed, record its data source or changed amount policy, apply it through AI Builder, and assess a later automatic export against that declared policy. Record whether scheduling continues.
+
+From the repository root, substitute the actual saved files for this run:
+
+```bash
+python data-validation/validate.py --scenario schema-change-type --source ACTUAL_INPUT.csv --output ACTUAL_OUTPUT.csv --report data-validation/reports/schema-change-type.json
+```
+
+For missing output and repeated runs, follow the [shared reporting rules](baseline-scheduled.md#validation-and-reporting).

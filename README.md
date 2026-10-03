@@ -30,35 +30,73 @@ Three main findings, which may share a backend cause:
 
 ## Setup and local verification
 
-Use Node.js 20+ and Python 3.10+. From the repository root:
+The take-home requires browser automation of **S3 connection → AI-built pipeline → GCS destination → scheduling**, runnable from the command line, with no fixed sleeps and assertions on real outcomes. We use Playwright, direct API tests and an independent data validator.
+
+### What the tests prove
+
+| Category | Where it runs | What it checks |
+| --- | --- | --- |
+| Data validator | Local/offline with saved CSVs | Checks columns, row counts, cleaning and repeat consistency against an independent expected result. Unit tests also cover cents and day/month interpretation. |
+| Existing-project UI tests | Live Rhombus application | Inspect an already configured project's nodes, connections, S3 source, CSV destination, next-run display and history. They do not build the pipeline or validate exports. |
+| API tests | Live Rhombus endpoints | Check HTTP status and JSON responses, including expected signed-out authentication failures and signed-in schedule/history checks. They do not build the pipeline. |
+| Full Playwright journey | Live Rhombus application; separate test project | Connects or selects S3 input, builds the pipeline and generates code through AI Builder, saves GCS settings, then creates and checks an enabled schedule containing that pipeline. |
+
+The journey changes the test project, so it runs only when explicitly enabled. Cleanup pauses its own schedule and preserves the original project's settings. Login and cloud prerequisites are in the [setup guide](ui-tests/README.md).
+
+### Verified results and limits
+
+**Verified live on 3 October:** the UI setup journey passed in 1.4 minutes; the existing-project canvas check and three signed-out API tests also passed. The [journey evidence](observations/ui-journey.md) proves setup and saved settings. The new generated code's cleaning results and automatic delivery were not validated.
+
+**Verified locally:** 12 validator tests passed. Comparing saved S3 input with three actual downloaded manual GCS exports passed all seven baseline checks, including repeat consistency. The [baseline evidence](observations/baseline-manual.md) identifies the files. Repeating this comparison needs no cloud access and does not test live drift.
+
+**Blocked:** automatic scheduled delivery has not been established. Historical enabled-schedule checks found no execution records or fresh GCS output within their observation windows, preventing scheduled drift and chatbot recovery testing. See the [scheduler report](observations/scheduler-support-report.md).
+
+Schedule checks require an enabled schedule; history checks must be explicitly enabled after an automatic attempt. The original schedule was user-paused, and those checks were not rerun against it. A paused-schedule prerequisite failure would not reproduce the historical defect.
+
+**Unverified live:** an additional delivery check is intended to require a completed new scheduled execution, its fresh GCS export and passing data validation. Nine offline tests of its execution/output matching rules passed; the full live check has not been verified.
+
+The setup-only and delivery-check options and extra matching tests are our implementation choices. Creating a schedule alone does not prove automatic delivery.
+
+### Commands
+
+Use Node.js 20+ and Python 3.10+, and run from the repository root.
+
+**Local checks; no Rhombus login or cloud credentials required:**
 
 ```bash
 npm ci
-npx playwright install chromium
 npm run test:validator
 npm run test:journey-results
 python data-validation/validate.py --scenario baseline --source observations/evidence/baseline-source-fetched-2026-10-03.csv --output observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv --repeat-output observations/evidence/baseline-manual-repeat-1-2026-10-03.csv --repeat-output observations/evidence/baseline-manual-repeat-2-2026-10-03.csv
 ```
 
-The validator unit tests and saved-evidence replay need no cloud credentials or Python packages outside the standard library. The replay validates real downloaded bytes. The separate [expected-output fixture](data-validation/tests/fixtures/expected-baseline-output.csv) is an oracle used by unit tests, not a Rhombus export.
+`test:validator` tests the validator itself; the Python command checks the saved real exports. `test:journey-results` runs the extra offline matching tests.
 
-For live tests, copy `.env.example` to `.env` (`Copy-Item .env.example .env` in PowerShell), set the exact project name and save a Rhombus session with `node ui-tests/save-auth.mjs`. If Google rejects the test browser, use the [normal-Chrome sign-in procedure](ui-tests/README.md#save-a-session). Authentication files, keys, raw traces and reports are ignored.
+**Live signed-out API tests; no login or test browser required:**
 
 ```bash
-npm run test:api
-npm run test:ui
-npm run test:all -- --workers=1
+npx playwright test api-tests/backend.spec.ts --workers=1
 ```
 
-The API suite contains three unauthenticated direct requests, including negative status/body assertions, and two authenticated schedule/history checks. Authenticated requests use an authorization header observed from the app in memory. Existing-project UI checks verify the connected graph, schedule display and history; they do not create the whole pipeline.
+**Live existing-project suites:** follow the [login setup guide](ui-tests/README.md#save-a-session). These suites include schedule-dependent checks:
 
-Schedule helpers currently select the first enabled schedule. They require an enabled schedule to inspect; the last captured schedule 209 was paused. A missing enabled schedule is a prerequisite failure. Set `RHOMBUS_EXPECT_SCHEDULE_HISTORY=1` only after an automatic attempt to enable the history assertions. Historical empty-history failures must be distinguished from current prerequisites.
+```bash
+npx playwright install chromium
+npm run test:api
+npm run test:ui
+```
 
-The mutating [pipeline journey](ui-tests/pipeline-journey.spec.ts) is explicitly gated by `RHOMBUS_RUN_PROVISIONING_JOURNEY=1`; cloud settings alone do not enable it. It configures a separate journey project through the UI, verifies the captured schedule graph and pauses only its own diagnostic schedule. The live configuration run passed in 1.4 minutes; original schedule 209 remained paused. See [setup and CLI commands](ui-tests/README.md#configuration-mode) and the [curated result](observations/ui-journey.md).
+**Full UI setup journey:** after completing its [prerequisites](ui-tests/README.md#journey-prerequisites-and-isolation), explicitly enable it for a PowerShell session:
 
-Configuration mode does not establish an automatic baseline. Optional strict delivery mode requires actual S3 bytes, a new scheduled execution completing every expected node, a uniquely associated fresh GCS object and validation of its downloaded bytes. Its cloud observer remains live-unverified because the dedicated cloud browser was unavailable; the nine offline matching tests passed. Setup-stage errors and observation errors are kept separate from scheduler evidence.
+```powershell
+$env:RHOMBUS_RUN_PROVISIONING_JOURNEY = '1'
+$env:RHOMBUS_JOURNEY_VERIFY_DELIVERY = '0'
+npm run test:journey -- --workers=1
+Remove-Item Env:RHOMBUS_RUN_PROVISIONING_JOURNEY
+Remove-Item Env:RHOMBUS_JOURNEY_VERIFY_DELIVERY
+```
 
-Additional checks on 3 October passed: the original connected-canvas check, three unauthenticated direct API tests, all 12 validator tests and the saved real-output replay. The existing-project enabled-schedule checks were not rerun against paused schedule 209.
+For the additional automatic-delivery check, follow the [delivery-check prerequisites and command](ui-tests/README.md#strict-delivery-mode). To run all Playwright files together, use `npm run test:all -- --workers=1`; the journey still requires explicit enablement. Skipped checks provide no passing evidence.
 
 ## Cleaning and cloud validation
 

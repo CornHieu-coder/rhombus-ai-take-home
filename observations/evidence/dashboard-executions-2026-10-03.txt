@@ -1,0 +1,163 @@
+- alert
+- button "Rhombus AI Logo":
+  - img "Rhombus AI Logo"
+- button:
+  - img
+- button "Dashboard":
+  - img
+  - text: Dashboard
+- button "New Project":
+  - img
+  - img
+  - text: New Project
+- button "Search":
+  - img
+  - text: Search
+- text: All Projects (1)
+- link "Rhombus QA Take Home":
+  - /url: /workflow/4266
+  - img
+  - text: Rhombus QA Take Home
+  - button:
+    - img
+- text: N [email redacted]
+- tablist:
+  - tab "Overview":
+    - img
+    - text: Overview
+  - tab "Executions" [selected]:
+    - img
+    - text: Executions
+  - tab "Schedules":
+    - img
+    - text: Schedules
+- tabpanel "Executions":
+  - text: Executions Recent pipeline runs and outcome trends
+  - button "Overview (100%) 10"
+  - button "Successes (80%) 8"
+  - button "Failures (20%) 2"
+  - application: 10/1, 21:13 10/2, 21:21 10/2, 21:29 10/2, 23:49 10/3, 00:33 10/3, 00:35 10/3, 00:35 10/3, 00:48 10/3, 00:56 10/3, 00:58 0s 2s 4s 6s 8s
+  - table:
+    - rowgroup:
+      - row "Execution Trigger Project Started Duration Status Nodes":
+        - columnheader "Execution"
+        - columnheader "Trigger"
+        - columnheader "Project"
+        - columnheader "Started"
+        - columnheader "Duration"
+        - columnheader "Status"
+        - columnheader "Nodes"
+    - rowgroup:
+      - 'row "Execution #16461 manual Rhombus QA Take Home 10/3/2026, 12:58:43 AM 1.4s Failure 1 nodes"':
+        - 'cell "Execution #16461"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/3/2026, 12:58:43 AM"
+        - cell "1.4s"
+        - cell "Failure"
+        - cell "1 nodes"
+      - 'row "Execution #16460 manual Rhombus QA Take Home 10/3/2026, 12:56:40 AM 3.2s Success 3 nodes"':
+        - 'cell "Execution #16460"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/3/2026, 12:56:40 AM"
+        - cell "3.2s"
+        - cell "Success"
+        - cell "3 nodes"
+      - 'row "Execution #16459 manual Rhombus QA Take Home 10/3/2026, 12:48:07 AM 3.4s Success 3 nodes"':
+        - 'cell "Execution #16459"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/3/2026, 12:48:07 AM"
+        - cell "3.4s"
+        - cell "Success"
+        - cell "3 nodes"
+      - 'row "Execution #16457 manual Rhombus QA Take Home 10/3/2026, 12:35:46 AM 3.6s Success 3 nodes"':
+        - 'cell "Execution #16457"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/3/2026, 12:35:46 AM"
+        - cell "3.6s"
+        - cell "Success"
+        - cell "3 nodes"
+      - 'row "Execution #16456 manual Rhombus QA Take Home 10/3/2026, 12:35:20 AM 4.8s Success 3 nodes"':
+        - 'cell "Execution #16456"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/3/2026, 12:35:20 AM"
+        - cell "4.8s"
+        - cell "Success"
+        - cell "3 nodes"
+      - 'row "Execution #16455 manual Rhombus QA Take Home 10/3/2026, 12:33:47 AM 3.4s Success 3 nodes"':
+        - 'cell "Execution #16455"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/3/2026, 12:33:47 AM"
+        - cell "3.4s"
+        - cell "Success"
+        - cell "3 nodes"
+      - 'row "Execution #16454 manual Rhombus QA Take Home 10/2/2026, 11:49:52 PM 3.6s Success 3 nodes"':
+        - 'cell "Execution #16454"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/2/2026, 11:49:52 PM"
+        - cell "3.6s"
+        - cell "Success"
+        - cell "3 nodes"
+      - 'row "Execution #16418 manual Rhombus QA Take Home 10/2/2026, 9:29:35 PM 4.8s Success 3 nodes"':
+        - 'cell "Execution #16418"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/2/2026, 9:29:35 PM"
+        - cell "4.8s"
+        - cell "Success"
+        - cell "3 nodes"
+      - 'row "Execution #16417 manual Rhombus QA Take Home 10/2/2026, 9:21:48 PM 3.0s Failure 1 nodes"':
+        - 'cell "Execution #16417"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/2/2026, 9:21:48 PM"
+        - cell "3.0s"
+        - cell "Failure"
+        - cell "1 nodes"
+      - 'row "Execution #16281 manual Rhombus QA Take Home 10/1/2026, 9:13:04 PM 4.6s Success 3 nodes"':
+        - 'cell "Execution #16281"'
+        - cell "manual"
+        - cell "Rhombus QA Take Home":
+          - link "Rhombus QA Take Home":
+            - /url: /workflow/4266?tab=schedule
+        - cell "10/1/2026, 9:13:04 PM"
+        - cell "4.6s"
+        - cell "Success"
+        - cell "3 nodes"
+  - text: Rows per page
+  - combobox "Rows per page": "10"
+  - paragraph: 1-10 of 13
+  - navigation "pagination":
+    - list:
+      - listitem:
+        - button "Go to first page" [disabled]
+      - listitem:
+        - button "Go to previous page" [disabled]
+      - listitem:
+        - button "Go to next page"
+      - listitem:
+        - button "Go to last page"

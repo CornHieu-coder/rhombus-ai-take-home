@@ -1,0 +1,264 @@
+{
+  "captured_at": "2026-10-03T00:02:13.973Z",
+  "started_at": "2026-10-03T00:02:02.575Z",
+  "display_timezone": "Australia/Sydney",
+  "project_id": 4266,
+  "procedure": "Open project, click Dashboard, then Executions; read global and project-specific execution APIs. No Run click or schedule change.",
+  "dashboard_url": "https://rhombusai.com/dashboard",
+  "global_history_request": {
+    "method": "GET",
+    "path": "/api/dataset/analyzer/v2/pipeline/executions/all",
+    "status": 200,
+    "total": 13,
+    "page": 1,
+    "page_size": 20,
+    "returned_records": 13
+  },
+  "trigger_counts": {
+    "manual": 13
+  },
+  "records_with_schedule_id": 0,
+  "executions": [
+    {
+      "id": 16461,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T14:58:43.297Z",
+      "completed_at": "2026-10-02T14:58:44.675Z",
+      "success": false,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db"
+      ],
+      "failed_node": "llm_03f157e42ac84feecb57b32d8c64dba3",
+      "total_duration_seconds": 1.3628251552581787
+    },
+    {
+      "id": 16460,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T14:56:40.756Z",
+      "completed_at": "2026-10-02T14:56:44.028Z",
+      "success": true,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db",
+        "llm_03f157e42ac84feecb57b32d8c64dba3",
+        "output_56476ae598111bf801df686a4946d047"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 3.2429189682006836
+    },
+    {
+      "id": 16459,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T14:48:07.166Z",
+      "completed_at": "2026-10-02T14:48:10.602Z",
+      "success": true,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db",
+        "llm_03f157e42ac84feecb57b32d8c64dba3",
+        "output_56476ae598111bf801df686a4946d047"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 3.4091269969940186
+    },
+    {
+      "id": 16457,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T14:35:46.649Z",
+      "completed_at": "2026-10-02T14:35:50.285Z",
+      "success": true,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db",
+        "llm_03f157e42ac84feecb57b32d8c64dba3",
+        "output_56476ae598111bf801df686a4946d047"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 3.611623764038086
+    },
+    {
+      "id": 16456,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T14:35:20.702Z",
+      "completed_at": "2026-10-02T14:35:25.544Z",
+      "success": true,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db",
+        "llm_03f157e42ac84feecb57b32d8c64dba3",
+        "output_56476ae598111bf801df686a4946d047"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 4.820512056350708
+    },
+    {
+      "id": 16455,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T14:33:47.263Z",
+      "completed_at": "2026-10-02T14:33:50.707Z",
+      "success": true,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db",
+        "llm_03f157e42ac84feecb57b32d8c64dba3",
+        "output_56476ae598111bf801df686a4946d047"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 3.418720006942749
+    },
+    {
+      "id": 16454,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T13:49:52.935Z",
+      "completed_at": "2026-10-02T13:49:56.560Z",
+      "success": true,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db",
+        "llm_03f157e42ac84feecb57b32d8c64dba3",
+        "output_56476ae598111bf801df686a4946d047"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 3.5971131324768066
+    },
+    {
+      "id": 16418,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T11:29:35.013Z",
+      "completed_at": "2026-10-02T11:29:39.844Z",
+      "success": true,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db",
+        "llm_03f157e42ac84feecb57b32d8c64dba3",
+        "output_56476ae598111bf801df686a4946d047"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 4.8086535930633545
+    },
+    {
+      "id": 16417,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-02T11:21:48.120Z",
+      "completed_at": "2026-10-02T11:21:51.127Z",
+      "success": false,
+      "completed_nodes": [
+        "input_071b4ee2cb631e77a9c79e8e019216db"
+      ],
+      "failed_node": "llm_06a93bffafa205e8d483321c1339f0c8",
+      "total_duration_seconds": 2.990060806274414
+    },
+    {
+      "id": 16281,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-01T11:13:04.988Z",
+      "completed_at": "2026-10-01T11:13:09.635Z",
+      "success": true,
+      "completed_nodes": [
+        "input_9909264e336f41c205f0a38fe47cef8e",
+        "llm_node_1",
+        "output_1693c6661275bbd6e3bb227bc8eb3628"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 4.614518642425537
+    },
+    {
+      "id": 16207,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-01T06:35:21.330Z",
+      "completed_at": "2026-10-01T06:35:24.510Z",
+      "success": true,
+      "completed_nodes": [
+        "input_9909264e336f41c205f0a38fe47cef8e",
+        "llm_node_1",
+        "output_1693c6661275bbd6e3bb227bc8eb3628"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 3.142692804336548
+    },
+    {
+      "id": 16206,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-10-01T06:34:34.967Z",
+      "completed_at": "2026-10-01T06:34:52.412Z",
+      "success": false,
+      "completed_nodes": [
+        "input_9909264e336f41c205f0a38fe47cef8e",
+        "llm_node_1"
+      ],
+      "failed_node": "output_1693c6661275bbd6e3bb227bc8eb3628",
+      "total_duration_seconds": 17.418368577957153
+    },
+    {
+      "id": 16150,
+      "project_id": 4266,
+      "project_name": "Rhombus QA Take Home",
+      "schedule_id": null,
+      "trigger": "manual",
+      "started_at": "2026-09-30T12:18:04.545Z",
+      "completed_at": "2026-09-30T12:18:05.195Z",
+      "success": true,
+      "completed_nodes": [
+        "input_9909264e336f41c205f0a38fe47cef8e"
+      ],
+      "failed_node": null,
+      "total_duration_seconds": 0.6215977668762207
+    }
+  ],
+  "schedules_request_status": 200,
+  "schedules": [
+    {
+      "id": 209,
+      "project_id": 4266,
+      "enabled": false,
+      "frequency": "hourly",
+      "cron_expression": "16 * * * *",
+      "next_run_at": "2026-10-02T15:16:00Z",
+      "last_run_at": null,
+      "created_at": "2026-10-02T15:06:58.765Z"
+    }
+  ],
+  "schedule_histories": [
+    {
+      "id": 209,
+      "http_status": 200,
+      "history": {
+        "executions": [],
+        "total": 0,
+        "page": 1,
+        "page_size": 20
+      }
+    }
+  ],
+  "ui_page_scope": "Screenshot shows the first 10 records and pagination 1-10 of 13. The global API returned all 13.",
+  "limits": "Records are the API-reported classifications, not proof of whether the scheduler attempted dispatch. Schedule 209 is paused; this read-only check is not a new automatic trigger test. GCS delivery relies on the prior controlled observations."
+}

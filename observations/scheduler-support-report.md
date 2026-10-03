@@ -1,10 +1,10 @@
-# Scheduled pipeline produces neither history nor GCS delivery
+# Bug report: scheduled pipeline produces neither history nor GCS delivery
 
 ## Impact
 
 **High, provisional:** a recurring baseline delivery cannot be verified. Earlier user-confirmed scheduled attempts displayed generic Success messages without an execution record or fresh GCS object. Controlled later observations returned empty histories and no new object. The scheduled baseline and drift exercises remain pending.
 
-This report is prepared for Rhombus investigation; it has not been sent to support.
+The user sent this issue and its evidence to Rhombus on 3 October 2026 at 02:19 Sydney time. After support requested a Dashboard check, the new results below were added for the follow-up.
 
 ## Identifiers and configuration
 
@@ -34,6 +34,20 @@ Three manual baseline outputs with matching runtime configuration now pass order
 ## Expected
 
 An automatic trigger runs the saved graph, writes a fresh valid five-row GCS CSV and creates a retrievable execution record. A failed trigger or node should expose a failure status and error. Rhombus's [scheduling documentation](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) describes execution records and captured pipeline configuration for scheduled runs.
+
+## Dashboard check requested by support — 3 October 2026
+
+At **10:02 Sydney time** (`00:02Z`), Playwright opened **Dashboard → Executions**, as requested. Executions are visible there, and the global history API returns **13 records**. All 13 belong to project 4266, have `trigger=manual`, and have `schedule_id=null`. The API returned all 13 records on one page; the UI screenshot displays the first 10 with pagination `1-10 of 13`.
+
+- Global endpoint: `GET /api/dataset/analyzer/v2/pipeline/executions/all`, HTTP 200, `total=13`, `page_size=100`.
+- Current schedule 209 history: HTTP 200, `total=0`, `executions=[]`.
+- Schedule 209 remains paused, with `last_run_at=null` and the old `next_run_at=2026-10-02T15:16:00Z`.
+- The global records include successful manual baseline runs **16454, 16456 and 16457**, and manual drift records **16459** (added column, Success), **16460** (changed type, Success), and **16461** (missing amount, Failure). These IDs correlate by project, manual trigger and timestamps with the previously captured runs; the earlier asynchronous task IDs are separate identifiers.
+- [Selected API evidence](evidence/dashboard-executions-2026-10-03.json), [redacted Dashboard screenshot](evidence/dashboard-executions-2026-10-03.png), [visible table transcript](evidence/dashboard-executions-2026-10-03.txt).
+
+**Conclusion:** the Dashboard provides manual execution history, but the returned records do not establish any successful automatic run. This read-only check did not change schedules or click Run. Current paused time is not counted as a failed automatic trigger; the earlier enabled observation windows remain the reproduction evidence. GCS was not newly queried during this Dashboard check.
+
+The required successful automatic baseline and scheduled drift cases remain incomplete. The follow-up asks Rhombus to investigate the scheduling bug and explicitly confirm a working environment or an acceptable fallback for the take-home.
 
 ## Investigation needed from Rhombus
 

@@ -1,6 +1,8 @@
-# Email draft — not sent
+# Original support email template
 
-**To:** Rhombus AI take-home contact (address needed)
+The user sent the scheduling issue report on 3 October 2026 at 02:19 Sydney time. This file retains the original proposed email. The [support report](scheduler-support-report.md) now includes the subsequent Dashboard check requested by Rhombus.
+
+**To:** Rhombus AI take-home contact (original email thread)
 
 **Subject:** Take-home blocker: scheduled pipeline has no history or GCS export — project 4266
 

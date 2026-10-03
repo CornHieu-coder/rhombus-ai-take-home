@@ -1,9 +1,11 @@
 # Semantic drift: day and month swap
 
+**Submission scope, 3 October 2026:** this scheduled case and its chatbot repair/recovery were not run because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The procedure below is an unexecuted plan, not observed behavior. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+
 - **Dataset:** [`semantic-day-month.csv`](../datasets/semantic-day-month.csv)
 - **Change:** The `order_date` header and slash-separated string shape stay the same, but dates change from MM/DD/YYYY to DD/MM/YYYY. `05/04/2026` means 5 April, not 4 May.
 - **Expected:** A safe pipeline should detect ambiguity or flag the format change. The canonical GCS date for order `1001` remains `2026-04-05`.
-- **Observed run, status, GCS object:** Pending live access.
+- **Observed run, status, GCS object:** Not run; blocked by the missing successful automatic baseline.
 - **Logs:** Pending. Save logs or the schedule-history CSV in [`evidence/`](evidence/).
 - **Chatbot diagnosis and proposed fix:** Pending. Ask the chatbot to inspect the result without first revealing the new date convention; then capture its proposed fix.
 - **Did the fix work?** Pending. Apply any fix through the AI builder and validate the next output.

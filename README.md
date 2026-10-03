@@ -1,6 +1,14 @@
 # Rhombus AI pipeline drift test repository
 
-This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, Playwright UI tests, direct backend API tests, a data validator, and one observation record per drift case. An earlier manual export failed baseline validation; the corrected manual CSV now passes all evaluated baseline checks. A user-confirmed scheduled run reported Success without a history entry or new GCS output. **A successful scheduled ETL baseline and drift cases remain pending.** Outcomes below distinguish observed results from pending tests.
+This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Storage cleaning pipeline. It includes eight source datasets, Playwright UI tests, direct backend API tests, a data validator, and reproducible scheduler evidence. Manual baseline controls produced valid GCS exports, but controlled automatic checks produced no execution history or fresh GCS object within the recorded windows. **The scheduled baseline and scheduled drift coverage are blocked, not passed.**
+
+## Submission scope after Rhombus's guidance
+
+On **3 October 2026 at 14:08 Sydney time** (`04:08Z`), Rhombus replied that manual drift results need not be submitted and asked for an explanation of how the scheduler issue prevented progress, in the README or another appropriate file. This submission therefore focuses on the [scheduler failure report](observations/scheduler-support-report.md), its controls, reproduction steps, evidence and assessment impact. The private correspondence is retained outside this public repository.
+
+The exercise requires a successful automatic baseline before testing source changes on later scheduled runs. That baseline was never verified: the edited schedule and a fresh schedule both returned empty history and unchanged GCS listings. Without it, we cannot assess scheduled handling of drift, scheduled recovery after a chatbot repair, or the next schedule execution. The [detailed observation](observations/baseline-scheduled.md) records the failed checks and their limits. Manual baseline controls establish that the manual cleaning/export path works; they do not establish that the scheduler dispatched work.
+
+No further manual drift runs are planned for this submission. Previously captured manual case files remain as historical records and are not offered as replacements for the scheduled exercise. Rhombus's reply gives a documentation route around the blocker; it does not confirm a scheduler fix or explicitly waive the other repository, automation, validator or video deliverables.
 
 ## Current status and findings
 
@@ -9,19 +17,19 @@ This repository tests a scheduled Amazon S3 → Rhombus AI → Google Cloud Stor
 | Direct backend API tests | 4 passed, 1 failed on 2026-10-02: authenticated schedule configuration passes; history regression fails with total=0 |
 | Validator unit tests | 12 passed locally on 2026-10-02, including numeric serialization and wrong-amount regressions |
 | Manual baseline run | Actual S3 baseline bytes match the repository. Three manual outputs with matching runtime configuration pass all seven checks, including ordered determinism. [Evidence and analysis](observations/baseline-manual.md) |
-| Schedule and scheduled baseline | Controlled edited and fresh schedules leave empty history and no new GCS output. The user later replaced them with schedule 209, tried minute 16 and paused it. Cause and repair pending. [Observation](observations/baseline-scheduled.md), [prepared backend investigation report](observations/scheduler-support-report.md) |
+| Schedule and scheduled baseline | Blocked: controlled edited and fresh schedules leave empty history and no new GCS output. The user later replaced them with schedule 209, tried minute 16 and paused it. Cause unconfirmed. [Observation](observations/baseline-scheduled.md), [reviewed scheduler failure report](observations/scheduler-support-report.md) |
 | Support-requested Dashboard check | On 3 October at 10:02 Sydney time, Dashboard/global API returns 13 records, all manual with no schedule ID. Schedule 209 history remains empty. This clarifies where manual records are stored and leaves automatic delivery unverified. [Evidence](observations/evidence/dashboard-executions-2026-10-03.json) |
 | Authenticated UI tests | 1 passed, 2 failed on 2026-10-02: connected canvas passes; Next run and history regressions fail |
 | Full provisioning journey | Scaffold only; skipped in the live run, locators not verified |
-| Drifted scheduled runs and evidence | Not run |
-| Supplementary manual drift runs | Three completed: added column passes, changed type is correctly filtered with a new-input alert, missing amount fails with contradictory Success logging. Four original cases and chatbot diagnoses/repairs remain pending. |
+| Drifted scheduled runs and evidence | Blocked by the missing automatic baseline; document the gap per Rhombus's 3 October guidance |
+| Manual drift results | Historical only; Rhombus says these need not be submitted. No additional manual cases planned |
 | Demo video | Pending; add link after recording a real walkthrough |
 
-Three preliminary findings:
+Three main observed issues, without assigning a backend root cause:
 
-1. An earlier manual pipeline execution reported Success while its downloaded output failed the baseline cleaning contract: nine rows remained where five were expected. The corrected manual download now passes the baseline validator. The original mismatch's cause remains unverified. See the [baseline observation](observations/baseline-manual.md).
-2. A user-confirmed automatic execution reported Success while its schedule history remained empty and no new GCS output appeared. Controlled comparisons after editing the original schedule and creating a fresh one also return zero history records and unchanged GCS listings, while a manual control produces a valid export. The [scheduled baseline observation](observations/baseline-scheduled.md) records the comparison; scheduler and worker logs are needed to identify the cause.
-3. A manual missing-column run produces a `cleaned_orders` failure and a generic `Pipeline execution completed successfully.` message at the same visible time, with no fresh GCS export in the bounded check. The [drop-column observation](observations/schema-drop-column.md) preserves both messages and the actual incompatible source. Async process HTTP 200 means task acceptance, so it cannot substitute for a worker success result.
+1. **Automatic delivery could not be verified.** Edited schedule 202 and fresh schedule 208 produced no new GCS object within bounded, independently refreshed checks, while a manual control produced a valid export. This prevented the required scheduled baseline and later drift exercise. [Reproduction and controls](observations/scheduler-support-report.md#reproduction-and-controls).
+2. **Scheduled history provided no diagnostic record.** Schedule-specific APIs returned HTTP 200 with zero records. Dashboard showed 13 records, all classified as manual with no schedule ID. Earlier user-confirmed automatic attempts displayed generic Success logs, whose trigger and executed nodes cannot be independently established from the crops. [Dashboard check and limits](observations/scheduler-support-report.md#dashboard-check-requested-by-support--3-october-2026).
+3. **Schedule monitoring and chatbot advice did not resolve the blocker.** `last_run_at` stayed null and `next_run_at` stopped advancing after observed boundaries. The UI displayed no Next run value when the timestamp was stale, but rendered a future timestamp after an edit. The chatbot promised that disabling sampling would restore delivery despite stating its access limits; later checks did not verify that promise. [Detailed investigation](observations/baseline-scheduled.md).
 
 ## Cleaning contract
 
@@ -111,41 +119,52 @@ python data-validation/validate.py --scenario baseline --source s3://SOURCE_BUCK
 
 Add `--repeat-output gs://...` twice to compare three executions of the same input and configuration for determinism. If a run produced no export, replace `--output ...` with `--output-missing`. The validator returns exit code 0 for passed checks and 2 for a data-validation failure. It checks input and output schema, row counts, all cleaning rules, newly invalid values, both semantic drift meanings, and repeated output consistency. `passed: null` means a check was not evaluated, such as determinism without three outputs.
 
-## Drift run procedure
+## Original drift procedure — blocked
 
 For each case, use the same S3 key configured in the pipeline. Restore the baseline and confirm a successful scheduled run. Replace that object with the case dataset before the next scheduled trigger and choose **Refresh access** in the S3 source. Record the execution ID, time, status, output URI or lack of output, relevant node logs, and the exported schedule-history CSV. Ask the chatbot to diagnose the exact error; apply any proposed repair using the AI builder and verify it on a later run. Run the data validator against the S3 and GCS objects from each run. Restore baseline between cases to isolate effects. [Scheduling documentation](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) describes execution history, failure nodes, and the effect of saved pipeline changes on later runs.
 
+This is the procedure specified by the original exercise, not an instruction to continue running cases for this submission. Scheduling remained unresolved, and Rhombus subsequently directed the submission toward documenting that blocker.
+
 ### Continuing while scheduled delivery is unresolved
 
-The take-home says a clear, reproducible write-up of a failure is a strong result. The scheduler failure is therefore evidence to report, while the successful scheduled baseline remains an unmet requirement. Three manual baseline outputs establish determinism, and three manual drift cases are completed below. The remaining fallback work is still pending.
+Follow Rhombus's 3 October guidance: submit the scheduler report and explain the assessment coverage it prevented. No additional manual drift results are needed. The three manual baseline controls already establish cleaning/export correctness and determinism under the captured configuration.
 
-1. The user sent the [scheduler bug report](observations/scheduler-support-report.md) to the take-home contact. Their requested Dashboard check now shows 13 manual records and no scheduled records. Follow up with this result and ask for a working scheduling environment or explicit guidance on an acceptable fallback.
-2. Repeat the unchanged baseline manually under one saved pipeline configuration until three actual outputs are available. Validate each and compare them for determinism. Preserve timestamps and cloud objects, and label the triggers manual.
-3. Replace the same S3 object with each of the four individual schema changes, the combined change, and the two semantic changes. Refresh the source in Rhombus, click Run and retrieve any fresh GCS export. Restore the baseline and original AI-built cleaning configuration between cases.
-4. For each manual case, record the source change, node outcome or error, actual output or missing delivery, validator result, chatbot diagnosis, proposed repair and the result of a manual repeat. Apply transformation repairs through the AI Builder only. A baseline export cannot substitute for a missing drift output.
-5. Keep scheduled delivery and behavior after a scheduled repair marked **unverified because scheduling is unresolved**. Manual results are supplementary evidence and do not satisfy those scheduled requirements. After Rhombus resolves scheduling, establish the automatic baseline and repeat the cases through real automatic triggers.
-6. Complete the remaining UI journey automation and demo video using observed behavior, including failures and unfinished coverage. The current provisioning scaffold is still unverified; these planned steps are not completed results.
+Schedule 209 was paused by the user and remains paused in the last verified capture. The source was restored to the baseline and its bytes verified after the prior probes. No fresh automatic run or live cloud change was made for this documentation update.
 
-The user authenticated the dedicated test browser in AWS S3. Playwright overwrites the same test key and downloads it again to verify exact case bytes. Baseline is restored between cases and after a stopped probe. The current local CLI has no configured AWS profile. Schedule 209 is paused by the user; no later schedule toggle was sent by the read-only watcher. The user sent the scheduling issue report on 3 October at 02:19 Sydney time. The subsequent Dashboard check and outstanding backend questions are recorded in the support report; no successful automatic baseline or approved manual fallback has been established.
+## Remaining submission checklist
 
-| Drift case | Change | Pipeline stopped? | Chatbot fix worked? | Severity |
+| Deliverable from the original exercise | Verified state | Remaining action |
+| --- | --- | --- |
+| Public GitHub repository with the requested folders and datasets | Present | Final check of setup commands, links and redaction |
+| Reproducible findings, severity, evidence, chatbot attempt and limitations | Scheduler report and supporting captures present | Submit the report as the explanation of blocked progress; keep the cause unconfirmed |
+| At least one Playwright UI journey through source, AI pipeline, destination, schedule and result | Existing-project checks ran; full provisioning journey is an unverified scaffold | Verify the provisioning locators and runnable steps; record the scheduling step as blocked rather than inventing success |
+| At least two direct backend tests, including a negative case, with status/body assertions | Implemented and run; dated results include the missing-history failure | Preserve commands and results; no additional API cases are required to meet the minimum |
+| Validator for schema, row count, cleaning, invalid values, semantic drift and determinism | Implemented; actual manual baseline controls and three-output determinism verified | Demonstrate it on the actual saved baseline exports; scheduled output and live semantic coverage remain blocked |
+| Summary, three main issues and usability feedback in README | Present, updated around the scheduler blocker | Final review before submission |
+| Short demo video linked from README | Not recorded | Record the real pipeline, schedule/history evidence, backend tests and validator; add the video URL |
+
+Rhombus did not explicitly waive the UI journey or video. Those remain the main unfinished deliverables outside scheduling. Historical manual case files and unrun templates are retained for traceability; their run/repair prompts describe the original procedure, not new work requested under the revised submission scope.
+
+## Scheduled drift coverage summary
+
+All seven cases below were blocked by the missing automatic baseline. These rows report scheduled coverage only; previous manual artifacts are historical and are not submitted as scheduled results. No per-case data defect or severity is inferred from an unrun scheduled case.
+
+| Case | Prepared source change | Pipeline stopped? | Chatbot fix worked? | Severity |
 | --- | --- | --- | --- | --- |
-| [Drop column](observations/schema-drop-column.md) | Remove `amount_usd` | Yes, manual; contradictory Success log | Pending | Medium schema failure; high status-reporting defect |
-| [Rename column](observations/schema-rename-column.md) | `customer_email` → `email` | Not observed | Not observed | Pending |
-| [Change type](observations/schema-change-type.md) | One numeric amount becomes words | No, manual; correct four-row export | Pending diagnosis; filtering follows contract | Low observability gap |
-| [Add column](observations/schema-add-column.md) | Add `coupon_code` | No, manual; correct five-row export | No repair needed; diagnosis pending | No data defect observed |
-| [Combined](observations/schema-combined.md) | Drop, rename, type change, add | Not observed | Not observed | Pending |
-| [Cents](observations/semantic-cents.md) | USD values become cents | Not observed | Not observed | Pending |
-| [Day/month](observations/semantic-day-month.md) | Date interpretation switches | Not observed | Not observed | Pending |
-
-Severity should be assigned from observed impact: **critical** for silent materially wrong data, **high** for unannounced data loss or a stuck schedule, **medium** for a clear recoverable run failure, and **low** for clear, actionable warning without incorrect output. Do not infer severity from the dataset name alone.
+| [Drop column](observations/schema-drop-column.md) | Remove `amount_usd` | Not evaluated: scheduler blocker | Not evaluated | Not assessed |
+| [Rename column](observations/schema-rename-column.md) | `customer_email` → `email` | Not evaluated: scheduler blocker | Not evaluated | Not assessed |
+| [Change type](observations/schema-change-type.md) | Numeric amount becomes words | Not evaluated: scheduler blocker | Not evaluated | Not assessed |
+| [Add column](observations/schema-add-column.md) | Add `coupon_code` | Not evaluated: scheduler blocker | Not evaluated | Not assessed |
+| [Combined](observations/schema-combined.md) | Drop, rename, type change and add | Not evaluated: scheduler blocker | Not evaluated | Not assessed |
+| [Cents](observations/semantic-cents.md) | USD amounts become cents | Not evaluated: scheduler blocker | Not evaluated | Not assessed |
+| [Day/month](observations/semantic-day-month.md) | Switch date interpretation | Not evaluated: scheduler blocker | Not evaluated | Not assessed |
 
 ## Usability feedback
 
 The public documentation is helpful: it distinguishes Analysis from `/pipeline` mode and explains that creating nodes does not run them automatically. The source, destination, and scheduling guides also give concrete steps and permissions, which made the test procedure possible to specify.
 
-The manual run exposed a usability issue: the log reported a successful execution while the downloaded output failed the cleaning contract. A later automatic run reported Success without a visible history record or new GCS export. A data-quality summary, explicit export result, and execution link in the log would make these outcomes easier to investigate. The chatbot accurately stated its access limits, then promised that disabling sampling would restore GCS writes without inspecting scheduler logs or credentials. That explanation needs verification. The [captured exchange](observations/evidence/baseline-schedule-chatbot-2026-10-02.md) preserves both the limits and the promise. The [scheduling guide](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) also says backend error text is available in exported history CSV rather than the table.
+The earlier user-confirmed automatic attempts showed generic Success logs without a visible schedule-history record or fresh export; the crops alone do not independently identify the trigger or prove node execution. Later controlled checks provided no schedule record to diagnose. An explicit trigger type, execution link, export result and a clear explanation of a stale Next run value would make these outcomes easier to investigate. Dashboard exposes manual records, which should be distinguishable from evidence of automatic delivery. The chatbot accurately stated its access limits, then promised that disabling sampling would restore GCS writes without inspecting scheduler logs or credentials; later observations did not verify that promise. The [captured exchange](observations/evidence/baseline-schedule-chatbot-2026-10-02.md) preserves both the limits and the promise. The [scheduling guide](https://doc.rhombusai.com/docs/getting-started/basic-concepts/scheduling/) also says backend error text is available in exported history CSV rather than the table.
 
 ## Demo video
 
-Pending a short recording of the authenticated UI journey, API suite, and validator against real S3/GCS objects. Add the public video URL here after recording.
+Pending a short recording showing the configured S3 → AI-built cleaning → GCS pipeline, the recorded scheduler failure, the actual Dashboard classifications, direct backend tests and validator results for saved real baseline CSVs. Explain which scheduled and drift steps were blocked, and distinguish recorded evidence from current live observations. Add the public video URL here after recording. No additional manual drift demonstration is needed under Rhombus's guidance.

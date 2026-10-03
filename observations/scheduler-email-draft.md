@@ -1,6 +1,6 @@
 # Original support email template
 
-The user sent the scheduling issue report on 3 October 2026 at 02:19 Sydney time. This file retains the original proposed email. The [support report](scheduler-support-report.md) now includes the subsequent Dashboard check requested by Rhombus.
+The user sent the scheduling issue report on 3 October 2026 at 02:19 Sydney time and subsequently sent the requested Dashboard findings in the same thread. This file retains the original proposed email; it is not a pending request to send. Rhombus's 14:08 Sydney reply says manual drift results need not be submitted and asks for documentation of how scheduling prevented progress. See the current [support report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home); the historical request for fallback guidance below has been answered.
 
 **To:** Rhombus AI take-home contact (original email thread)
 

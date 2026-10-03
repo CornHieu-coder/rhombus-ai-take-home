@@ -1,5 +1,7 @@
 # Schema drift: add coupon_code
 
+**Submission scope, 3 October 2026:** scheduled drift and later scheduled repair/recovery were not evaluated because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The manual record below is historical; no further manual case work is planned. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+
 - **Dataset:** [`schema-add-column.csv`](../datasets/schema-add-column.csv)
 - **Change:** Add `coupon_code` while preserving the six contracted columns and nine records.
 - **Expected:** The run may continue, but the output should retain the six-column contract and five cleaned rows. The new field should be visible as source drift rather than silently added to GCS output.

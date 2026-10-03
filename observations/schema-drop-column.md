@@ -1,5 +1,7 @@
 # Schema drift: drop amount_usd
 
+**Submission scope, 3 October 2026:** scheduled drift and later scheduled repair/recovery were not evaluated because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The manual record below is historical; no further manual case work is planned. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+
 - **Dataset:** [`schema-drop-column.csv`](../datasets/schema-drop-column.csv)
 - **Change:** Remove `amount_usd` while keeping the same nine records.
 - **Expected:** The run should reject the incompatible source before export, name the missing column, and keep the schedule enabled for the next trigger. No new GCS output should be mistaken for a successful run.

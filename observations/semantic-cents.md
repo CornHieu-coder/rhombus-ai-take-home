@@ -1,9 +1,11 @@
 # Semantic drift: dollars become cents
 
+**Submission scope, 3 October 2026:** this scheduled case and its chatbot repair/recovery were not run because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The procedure below is an unexecuted plan, not observed behavior. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+
 - **Dataset:** [`semantic-cents.csv`](../datasets/semantic-cents.csv)
 - **Change:** The `amount_usd` header and numeric type stay the same, but values now represent cents. For example, `1995` means USD 19.95.
 - **Expected:** A safe pipeline should detect or be told about the unit change; the canonical GCS amount for order `1001` is `19.95`. Treating `1995` as dollars is a semantic failure.
-- **Observed run, status, GCS object:** Pending live access.
+- **Observed run, status, GCS object:** Not run; blocked by the missing successful automatic baseline.
 - **Logs:** Pending. Save logs or the schedule-history CSV in [`evidence/`](evidence/).
 - **Chatbot diagnosis and proposed fix:** Pending. Ask the chatbot to interpret the unchanged schema and record whether it identifies the unit shift without being told.
 - **Did the fix work?** Pending. If a fix is proposed, apply it through the AI builder and validate the next output.

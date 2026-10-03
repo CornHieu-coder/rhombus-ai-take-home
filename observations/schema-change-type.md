@@ -1,5 +1,7 @@
 # Schema drift: change amount type
 
+**Submission scope, 3 October 2026:** scheduled drift and later scheduled repair/recovery were not evaluated because the required automatic baseline could not be established. Rhombus advised documenting that blocker and said manual drift results need not be submitted. The manual record below is historical; no further manual case work is planned. See the [scheduler report](scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
+
 - **Dataset:** [`schema-change-type.csv`](../datasets/schema-change-type.csv)
 - **Change:** Order `1006` has `amount_usd=one hundred twenty` instead of a numeric value. The header is unchanged.
 - **Expected:** The run should flag a new invalid numeric value and explain whether that row was rejected or the run stopped. A four-row export without a clear data-quality signal is a loss of an otherwise valid baseline order.

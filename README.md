@@ -32,16 +32,22 @@ Three main findings, which may share a backend cause:
 
 The take-home requires browser automation of **S3 connection → AI-built pipeline → GCS destination → scheduling**, runnable from the command line, with no fixed sleeps and assertions on real outcomes. We use Playwright, direct API tests and an independent data validator.
 
-### What the tests prove
+## What the tests prove
 
-| Category | Where it runs | What it checks |
-| --- | --- | --- |
-| Data validator | Local/offline with saved CSVs | Checks columns, row counts, cleaning and repeat consistency against an independent expected result. Unit tests also cover cents and day/month interpretation. |
-| Existing-project UI tests | Live Rhombus application | Inspect an already configured project's nodes, connections, S3 source, CSV destination, next-run display and history. They do not build the pipeline or validate exports. |
-| API tests | Live Rhombus endpoints | Check HTTP status and JSON responses, including expected signed-out authentication failures and signed-in schedule/history checks. They do not build the pipeline. |
-| Full Playwright journey | Live Rhombus application; separate test project | Connects or selects S3 input, builds the pipeline and generates code through AI Builder, saves GCS settings, then creates and checks an enabled schedule containing that pipeline. |
+| Test | What it does |
+| --- | --- |
+| **Data validation** | Checks that Rhombus produced the right cleaned CSV: correct columns, correct number of rows, correct cleaning, and the same result across repeated runs. It also tests the validator's handling of the two semantic-drift cases. This uses saved CSV files, so it can run without logging into Rhombus or the cloud. |
+| **Existing-project UI tests** | Open the Rhombus project that was already set up and check that the pipeline is still there, the nodes are connected correctly, the schedule shows a next run, and schedule history appears. These tests only inspect the existing project; they do not rebuild the pipeline or check the actual GCS file. |
+| **API tests** | Call Rhombus’s backend directly instead of clicking through the website. They check that the server returns the expected status and data, including that unauthenticated requests are rejected and that schedule information and history behave as expected. They do not build the pipeline. |
+| **Full Playwright journey** | Automates the main customer flow required by the take-home: choose the S3 input, use AI Builder to create the cleaning step, configure GCS output, and create an enabled schedule. |
 
-The journey changes the test project, so it runs only when explicitly enabled. Cleanup pauses its own schedule and preserves the original project's settings. Login and cloud prerequisites are in the [setup guide](ui-tests/README.md).
+The full Playwright journey changes Rhombus settings, so it only runs when explicitly enabled. It uses a separate test project so it does not interfere with the original project or its evidence. After the test finishes, it pauses the schedule it created.
+
+### Important limitation
+
+The full Playwright journey proves that the required pipeline can be configured through the live Rhombus UI. Creating an enabled schedule does not by itself prove that Rhombus automatically ran the pipeline and delivered a new file to GCS.
+
+Automatic scheduled delivery is documented separately in the [scheduler findings](observations/scheduler-support-report.md). In the recorded observation windows, a successful scheduled baseline was not established, so the README must not imply that automatic delivery passed.
 
 ### Verified results and limits
 

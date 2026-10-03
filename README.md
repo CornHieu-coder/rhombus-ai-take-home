@@ -18,7 +18,7 @@ Live results below are dated observations, not claims about the current service.
 | Scheduled baseline | Blocked in the recorded windows. Last verified schedule 209 was paused by the user. [Reproduction, evidence and limits](observations/scheduler-support-report.md) |
 | API tests, 2 October | 4 passed; history assertion failed with `total=0` |
 | Existing-project UI tests, 2 October | Canvas check passed; Next run and history checks failed |
-| Complete UI journey | Unverified scaffold, skipped in the captured run; requires further work |
+| UI journey, 3 October | Live configuration journey passed: S3 selection, AI Builder/code generation, GCS settings and its own enabled schedule. Automatic delivery unevaluated. [Run and limits](observations/ui-journey.md) |
 | Scheduled drift and chatbot recovery | Not evaluated because the automatic baseline was unavailable |
 | Demo video | Not recorded; link must be added below |
 
@@ -36,6 +36,7 @@ Use Node.js 20+ and Python 3.10+. From the repository root:
 npm ci
 npx playwright install chromium
 npm run test:validator
+npm run test:journey-results
 python data-validation/validate.py --scenario baseline --source observations/evidence/baseline-source-fetched-2026-10-03.csv --output observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv --repeat-output observations/evidence/baseline-manual-repeat-1-2026-10-03.csv --repeat-output observations/evidence/baseline-manual-repeat-2-2026-10-03.csv
 ```
 
@@ -53,7 +54,11 @@ The API suite contains three unauthenticated direct requests, including negative
 
 Schedule helpers currently select the first enabled schedule. They require an enabled schedule to inspect; the last captured schedule 209 was paused. A missing enabled schedule is a prerequisite failure. Set `RHOMBUS_EXPECT_SCHEDULE_HISTORY=1` only after an automatic attempt to enable the history assertions. Historical empty-history failures must be distinguished from current prerequisites.
 
-The mutating [pipeline journey](ui-tests/pipeline-journey.spec.ts) is explicitly gated by `RHOMBUS_RUN_PROVISIONING_JOURNEY=1`; cloud settings alone do not enable it. `npm run test:journey` selects this scaffold. It remains unverified, can change the named project and schedule, and may wait up to 80 minutes. Its current result assertion does not prove a fresh successful run or actual GCS delivery. Verify and complete it before using it for the demo.
+The mutating [pipeline journey](ui-tests/pipeline-journey.spec.ts) is explicitly gated by `RHOMBUS_RUN_PROVISIONING_JOURNEY=1`; cloud settings alone do not enable it. It configures a separate journey project through the UI, verifies the captured schedule graph and pauses only its own diagnostic schedule. The live configuration run passed in 1.4 minutes; original schedule 209 remained paused. See [setup and CLI commands](ui-tests/README.md#configuration-mode) and the [curated result](observations/ui-journey.md).
+
+Configuration mode does not establish an automatic baseline. Optional strict delivery mode requires actual S3 bytes, a new scheduled execution completing every expected node, a uniquely associated fresh GCS object and validation of its downloaded bytes. Its cloud observer remains live-unverified because the dedicated cloud browser was unavailable; the nine offline matching tests passed. Setup-stage errors and observation errors are kept separate from scheduler evidence.
+
+Additional checks on 3 October passed: the original connected-canvas check, three unauthenticated direct API tests, all 12 validator tests and the saved real-output replay. The existing-project enabled-schedule checks were not rerun against paused schedule 209.
 
 ## Cleaning and cloud validation
 
@@ -94,13 +99,12 @@ The chatbot stated that it could not inspect scheduler logs or credentials, then
 - Actual exports are stored in the configured GCS bucket. Each run must be matched to its own object.
 - Playwright writes local diagnostics to `test-results/` and an HTML report to `playwright-report/`. Both are ignored; raw traces can contain credentials.
 - Reviewed public evidence is indexed in [observations/evidence/README.md](observations/evidence/README.md). The scheduler report links the captures needed to reproduce its findings.
-- **Planned after journey verification:** curate a summary at `observations/ui-journey.md` and redacted evidence under `observations/evidence/ui-journey/<run-id>/`. These artifacts have not been produced.
+- The [UI journey summary](observations/ui-journey.md) links its retained manifest, selected configuration fields, generated code and masked screenshots under `observations/evidence/ui-journey/<run-id>/`. Configuration verification and automatic delivery are separate outcomes.
 
 ## Remaining submission checklist
 
-1. Verify and complete the UI journey through S3 connection, AI-built pipeline, GCS destination and scheduling, with honest reporting of the unresolved scheduling result.
-2. Record and link the required short walkthrough of **UI tests, API tests and data validation**.
-3. Check the final commands, evidence links and publication redaction.
+1. Record and link the required short walkthrough of **UI tests, API tests and data validation** using the verified configuration journey, dated scheduler evidence and saved real-output replay.
+2. Check the final video link and submission contents.
 
 The hosted observability dashboard is an optional bonus. No additional manual drift runs are required under Rhombus's guidance.
 

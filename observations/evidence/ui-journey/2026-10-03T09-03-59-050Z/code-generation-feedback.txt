@@ -1,0 +1,1 @@
+Generate Python code for the existing ordered cleaning prompt exactly as written. Use input_df_1 as the input and assign output_df. Preserve all 12 rules and their order.

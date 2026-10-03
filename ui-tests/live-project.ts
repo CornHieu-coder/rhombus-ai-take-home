@@ -1,12 +1,12 @@
 import { expect, type Page } from '@playwright/test';
 
 // Authentication stays in memory. This request was observed in the real UI.
-export async function openProject(page: Page) {
+export async function openProject(page: Page, projectName = process.env.RHOMBUS_PROJECT_NAME!) {
   await page.addLocatorHandler(page.getByRole('dialog', { name: 'Ad Blocker Detected' }),
     async dialog => { await dialog.getByRole('button', { name: 'Continue Anyway' }).click(); });
   await page.goto('/');
   const project = page.getByRole('link', {
-    name: process.env.RHOMBUS_PROJECT_NAME!, exact: true,
+    name: projectName, exact: true,
   });
   await expect(project).toBeVisible({ timeout: 30_000 });
   const href = await project.getAttribute('href');
@@ -27,6 +27,13 @@ export async function openProject(page: Page) {
     headers: { Authorization: authorization },
     nodes: await response.json(),
   };
+}
+
+// Backend runtime names and React Flow node IDs are different identifiers.
+export function canvasNodeId(node: any): string {
+  const id = node.metadata?.node?.id || node.name;
+  if (!id) throw new Error('The pipeline node has no canvas identifier.');
+  return String(id);
 }
 
 export async function openSchedule(page: Page, projectId: string) {

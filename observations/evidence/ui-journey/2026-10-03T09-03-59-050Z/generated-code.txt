@@ -1,0 +1,52 @@
+# Start with input_df_1
+df = input_df_1.copy()
+
+# Step 1: Trim leading/trailing whitespace from all string/object columns
+for col in df.select_dtypes(include=['object']).columns:
+    df[col] = df[col].apply(lambda x: x.strip() if isinstance(x, str) else x)
+
+# Step 2: Lowercase the customer_email column
+df['customer_email'] = df['customer_email'].apply(lambda x: x.lower() if isinstance(x, str) else x)
+
+# Step 3: Remove duplicate order_id rows, keeping the first occurrence
+df = df.drop_duplicates(subset=['order_id'], keep='first')
+
+# Step 4: Fill missing customer_name values with the string 'Unknown'
+df['customer_name'] = df['customer_name'].fillna('Unknown')
+
+# Step 5: Remove rows where order_id is null/empty or customer_email is null/empty
+df = df[df['order_id'].notna()]
+df = df[df['customer_email'].notna()]
+df = df[df['customer_email'] != '']
+
+# Step 6: Remove rows where amount_usd is not a valid number or is <= 0
+df['amount_usd_numeric'] = pd.to_numeric(df['amount_usd'], errors='coerce')
+df = df[df['amount_usd_numeric'].notna()]
+df = df[df['amount_usd_numeric'] > 0]
+
+# Step 7: Remove rows where order_date cannot be parsed as a valid date
+df['order_date_parsed'] = pd.to_datetime(df['order_date'], errors='coerce')
+df = df[df['order_date_parsed'].notna()]
+
+# Step 8: Keep only rows where country (case-insensitive, trimmed) is one of: 'us', 'usa', 'united states'
+df['country_normalized'] = df['country'].str.strip().str.lower()
+valid_countries = ['us', 'usa', 'united states']
+df = df[df['country_normalized'].isin(valid_countries)]
+
+# Step 9: Standardize country to 'US'
+df['country'] = 'US'
+
+# Step 10: Round amount_usd to 2 decimal places as a float
+df['amount_usd'] = df['amount_usd_numeric'].round(2).astype(float)
+
+# Step 11: Format order_date as a string in YYYY-MM-DD format
+df['order_date'] = df['order_date_parsed'].dt.strftime('%Y-%m-%d')
+
+# Step 12: Output exactly these columns in this order
+output_df = df[['order_id', 'customer_email', 'customer_name', 'amount_usd', 'order_date', 'country']]
+
+# Create output_mask - mark newly created or modified columns as True
+output_mask = pd.DataFrame(False, index=output_df.index, columns=output_df.columns, dtype=bool)
+
+# Mark all columns as True since they were all processed during cleaning
+output_mask.loc[:, :] = True

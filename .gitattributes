@@ -2,3 +2,4 @@
 observations/evidence/*.csv -text
 observations/evidence/**/*.csv -text
 observations/evidence/historical-ai-generated-cleaning-code.txt -text
+observations/evidence/ui-journey/**/generated-code.txt -text

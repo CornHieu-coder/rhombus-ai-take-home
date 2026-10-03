@@ -35,8 +35,10 @@ Superseded previews, exploratory manual drift artifacts and the answered email d
 
 The [original emailed ZIP](https://raw.githubusercontent.com/CornHieu-coder/rhombus-ai-take-home/6bf3c96ea33285175eeef4715e38da267802ddb1/observations/evidence/rhombus-scheduler-evidence-2026-10-03.zip) remains unchanged at its historical commit. SHA-256: `d5327c7be6a54f59f4714ac7532e3659656e6ae49978c2b369944dfb199fc906`. It predates the Dashboard check and support guidance; use the current scheduler report for the submission.
 
-## Future journey evidence
+## UI journey configuration — 3 October
 
-No verified journey run has been recorded. After verification, publish only reviewed summaries, redacted screenshots, relevant selected log/API fields and actual CSV/validation pairs under `ui-journey/<run-id>/`. Keep browser state, service-account keys, HAR files and raw Playwright traces in ignored local locations. Local `test-results/` and `playwright-report/` are generated diagnostics, not public evidence.
+The [journey summary](../ui-journey.md) explains the live passing CLI configuration run, assertions, cleanup and limits. Its [manifest](ui-journey/2026-10-03T09-03-59-050Z/manifest.json) records all five passed steps, project 5252, destination 58 and schedule 215. The exact created schedule was paused before its next-run boundary; original schedule 209 remained paused.
 
-Planned contents: `manifest.json` with run times, step outcomes, project/schedule/execution IDs, source/output object identifiers and hashes; an actual `input.csv` snapshot; `output.csv` only if retrieved from that run; `validation.json`; selected sanitized responses and redacted screenshots. No output or success record should be fabricated for a blocked step.
+The run directory retains selected graph/schedule fields, prompt and generated code, and five masked screenshots. It has **no verified scheduled output or validation JSON** because automatic delivery was not evaluated. The code-generation canvas's output error occurred before GCS configuration and is described in the summary; it is not another scheduler finding.
+
+Browser state, keys, failed setup iterations, HAR files and raw traces stay ignored. Local `test-results/` and `playwright-report/` may be replaced by later runs; these curated captures are retained separately.

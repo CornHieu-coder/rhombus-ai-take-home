@@ -5,6 +5,7 @@
   "scripts": {
     "test:ui": "playwright test ui-tests/existing-project.spec.ts",
     "test:journey": "playwright test ui-tests/pipeline-journey.spec.ts",
+    "test:journey-results": "node --test ui-tests/journey-result.test.mjs",
     "test:api": "playwright test api-tests",
     "test:all": "playwright test",
     "test:validator": "python -m unittest discover -s data-validation/tests -v",

@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    {
+      "runtime_name": "input_d99debfd55494ac7e452be0a6a002b66",
+      "canvas_id": "1791017531045",
+      "type": "input",
+      "inputs": [],
+      "outputs": [
+        "input_d99debfd55494ac7e452be0a6a002b66_df",
+        "input_d99debfd55494ac7e452be0a6a002b66_mask"
+      ],
+      "source_type": "s3",
+      "sampling_enabled": true
+    },
+    {
+      "runtime_name": "llm_node_1",
+      "canvas_id": "llm_node_1",
+      "type": "llm",
+      "inputs": [
+        "input_d99debfd55494ac7e452be0a6a002b66_df",
+        "input_d99debfd55494ac7e452be0a6a002b66_mask"
+      ],
+      "outputs": [
+        "llm_node_1_df",
+        "llm_node_1_mask"
+      ],
+      "code_sha256": "8625ef23feeabf2b556952d659d6b66821f4c84e8da7af3e1b979ee967141268",
+      "prompt_sha256": "77c36d561acbdfe8177a9bdd86ee4d2fb91ae124e1c323433f3e272e61433a21"
+    },
+    {
+      "runtime_name": "output_node_1",
+      "canvas_id": "output_node_1",
+      "type": "output",
+      "inputs": [
+        "llm_node_1_df",
+        "llm_node_1_mask"
+      ],
+      "outputs": [
+        "output_node_1_df",
+        "output_node_1_mask"
+      ],
+      "destination_id": 58,
+      "format_type": "csv"
+    }
+  ]
+}

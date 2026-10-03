@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { openProject, openSchedule } from './live-project';
+import { canvasNodeId, openProject, openSchedule } from './live-project';
 
 test.beforeEach(() => {
   test.skip(!process.env.RHOMBUS_STORAGE_STATE || !process.env.RHOMBUS_PROJECT_NAME,
@@ -15,7 +15,7 @@ test('existing canvas connects the S3 input, AI cleaning, and cloud output', asy
   expect(cleaning).toBeDefined();
   expect(output).toBeDefined();
   for (const node of [input, cleaning, output]) {
-    await expect(page.getByTestId(`rf__node-${node.name}`)).toBeVisible();
+    await expect(page.getByTestId(`rf__node-${canvasNodeId(node)}`)).toBeVisible();
   }
   expect(input.metadata.node.data.transformationParams.source_type).toBe('s3');
   expect(cleaning.inputs).toEqual(expect.arrayContaining(input.outputs));

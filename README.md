@@ -65,36 +65,23 @@ The original schedule was later paused by the user. Tests that require an enable
 
 A separate, stricter delivery check was also developed to verify that a newly created schedule completes a new execution, delivers a fresh GCS file and passes data validation. This is our additional testing approach, not a separate requirement from the take-home. Its logic for identifying the correct run and file was tested locally, but the full live delivery check has not been verified, so this submission does not claim that automatic delivery passed.
 
-### Commands
+## How to run
 
-Use Node.js 20+ and Python 3.10+, and run from the repository root.
-
-**Local checks; no Rhombus login or cloud credentials required:**
+Use Node.js 20+ and Python 3.10+. From the repository root, install the Node dependencies once:
 
 ```bash
 npm ci
-npm run test:validator
-npm run test:journey-results
-python data-validation/validate.py --scenario baseline --source observations/evidence/baseline-source-fetched-2026-10-03.csv --output observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv --repeat-output observations/evidence/baseline-manual-repeat-1-2026-10-03.csv --repeat-output observations/evidence/baseline-manual-repeat-2-2026-10-03.csv
 ```
 
-`test:validator` tests the validator itself; the Python command checks the saved real exports. `test:journey-results` runs the extra offline matching tests.
+### UI tests — `/ui-tests/` (live Rhombus)
 
-**Live signed-out API tests; no login or test browser required:**
-
-```bash
-npx playwright test api-tests/backend.spec.ts --workers=1
-```
-
-**Live existing-project suites:** follow the [login setup guide](ui-tests/README.md#save-a-session). These suites include schedule-dependent checks:
+Prepare your Rhombus login, S3 input and GCS access using the [setup guide](ui-tests/README.md#journey-prerequisites-and-isolation). The **S3 → AI Builder → GCS → schedule** test waits for actual responses and checks saved results. Install its browser:
 
 ```bash
 npx playwright install chromium
-npm run test:api
-npm run test:ui
 ```
 
-**Full UI setup journey:** after completing its [prerequisites](ui-tests/README.md#journey-prerequisites-and-isolation), explicitly enable it for a PowerShell session:
+Explicitly enable the journey in PowerShell because it changes a separate test project:
 
 ```powershell
 $env:RHOMBUS_RUN_PROVISIONING_JOURNEY = '1'
@@ -104,25 +91,80 @@ Remove-Item Env:RHOMBUS_RUN_PROVISIONING_JOURNEY
 Remove-Item Env:RHOMBUS_JOURNEY_VERIFY_DELIVERY
 ```
 
-For the additional automatic-delivery check, follow the [delivery-check prerequisites and command](ui-tests/README.md#strict-delivery-mode). To run all Playwright files together, use `npm run test:all -- --workers=1`; the journey still requires explicit enablement. Skipped checks provide no passing evidence.
+The journey passed live on 3 October, proving UI setup and schedule creation, **not automatic delivery**. It pauses its own schedule afterward. [Recorded result](observations/ui-journey.md).
 
-## Cleaning and cloud validation
-
-The [baseline control record](observations/baseline-manual.md#prompt-and-expected-result) preserves the original builder prompt and the saved ordered cleaning prompt. The nine-row baseline yields five orders: `1001, 1002, 1006, 1007, 1008`. Output columns are exactly `order_id, customer_email, customer_name, amount_usd, order_date, country`.
-
-Amounts are compared numerically: `42.5` equals `42.50`, while incorrect values and extra nonzero decimal precision fail. The cents case requires cents-to-USD conversion; the day/month case requires DD/MM/YYYY interpretation. Their intended meanings are encoded in the validator, with no claim of live semantic coverage.
-
-For direct cloud reads, install `data-validation/requirements.txt` in a Python virtual environment. S3 reads use boto3's default credential chain; GCS reads use Google Application Default Credentials. `RHOMBUS_GCS_SERVICE_ACCOUNT_JSON_PATH` configures the Rhombus destination UI, not validator authentication.
+To inspect the original project instead of rebuilding a pipeline:
 
 ```bash
+npm run test:ui
+```
+
+These inspect the existing pipeline, next-run display and history. The original schedule is paused; schedule checks need it enabled. History checks run only when explicitly enabled after an automatic attempt. See [prerequisites](ui-tests/README.md#existing-project-checks). Skips are not passes.
+
+### API tests — `/api-tests/` (live Rhombus)
+
+Run three direct tests of returned status and data, including negative tests that expect protected requests to be rejected. No login or browser is needed:
+
+```bash
+npx playwright test api-tests/backend.spec.ts --workers=1
+```
+
+All three passed live. For the complete suite, including checks of an existing schedule, complete the [login setup](ui-tests/README.md#save-a-session) and run:
+
+```bash
+npm run test:api
+```
+
+Schedule checks need an enabled hourly schedule. History checks also need explicit enablement after an automatic attempt; see [prerequisites](ui-tests/README.md#existing-project-checks). The historical history test failed because no records were returned.
+
+### Data validation — `/data-validation/` (local saved files)
+
+The validator compares input and output columns, row counts, cleaning, repeat consistency and semantic meaning. Test the validator itself:
+
+```bash
+npm run test:validator
+```
+
+All 12 local tests passed. Compare the actual downloaded S3 input with three real manual GCS exports:
+
+```bash
+python data-validation/validate.py --scenario baseline --source observations/evidence/baseline-source-fetched-2026-10-03.csv --output observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv --repeat-output observations/evidence/baseline-manual-repeat-1-2026-10-03.csv --repeat-output observations/evidence/baseline-manual-repeat-2-2026-10-03.csv
+```
+
+No login, cloud credentials or extra Python packages are needed. All seven checks passed: nine input rows became five correct rows, and all outputs matched. This validates the original manual baseline, **not scheduled delivery or the new journey's code**. [Files and results](observations/baseline-manual.md).
+
+Local semantic tests check cents-to-dollars conversion and day/month dates. Live scheduled handling remains unverified.
+
+<details>
+<summary>Check a fresh S3/GCS pair directly (requires cloud access)</summary>
+
+Install the cloud packages in a Python virtual environment and configure AWS credentials and Google Application Default Credentials for the validator. Logging into Rhombus or setting its GCS destination key does not authenticate this script.
+
+```bash
+python -m pip install -r data-validation/requirements.txt
 python data-validation/validate.py --scenario baseline --source s3://SOURCE_BUCKET/baseline.csv --output gs://DEST_BUCKET/OUTPUT_FROM_THIS_RUN.csv --report data-validation/reports/baseline.json
 ```
 
-The validator checks source/output schema, new invalid values, existence, row count, cleaning and repeat consistency. Add `--repeat-output` for each further same-input, same-configuration run. Exit 0 means evaluated checks passed; exit 2 means validation failed. `passed: null` means unevaluated. `--output-missing` records a reported absence and does not query GCS.
+Replace the example paths with the input and output from the same run. To check repeat consistency, add two `--repeat-output` arguments for further runs with the same input and unchanged pipeline. With one output, consistency remains unevaluated. The report distinguishes failed checks from unevaluated checks.
+
+</details>
+
+<details>
+<summary>Additional checks we created</summary>
+
+```bash
+npm run test:journey-results
+```
+
+These nine local tests check our logic for rejecting old or unrelated runs and files. They passed, but do not test Rhombus's scheduler. Our [additional automatic-delivery check](ui-tests/README.md#strict-delivery-mode) remains unverified live. Both are our implementation choices, not separate take-home requirements.
+
+</details>
 
 ## Scheduled drift coverage summary
 
-All seven datasets are retained. Scheduled execution, per-case logs, chatbot repairs and schedule recovery were **not evaluated** because a successful automatic baseline was unavailable.
+[`/datasets/`](datasets/) holds the baseline and seven drift variants. Each case links to its `/observations/` write-up of the change, expectation and blocked coverage.
+
+Without a successful scheduled baseline, these scheduled outcomes, chatbot repairs and recovery could not be assessed. Rhombus advised documenting the blocker instead of submitting manual drift results. [Findings and support guidance](observations/scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
 
 | Case | Change | Pipeline stopped? | Chatbot fix worked? | Severity |
 | --- | --- | --- | --- | --- |
@@ -134,26 +176,29 @@ All seven datasets are retained. Scheduled execution, per-case logs, chatbot rep
 | [Cents](observations/semantic-cents.md) | Amounts become cents | Not evaluated | Not evaluated | Not assessed |
 | [Day/month](observations/semantic-day-month.md) | Date meaning becomes DD/MM/YYYY | Not evaluated | Not evaluated | Not assessed |
 
-## Usability feedback
-
-The source, destination and scheduling guides helped specify the workflow. However, empty scheduled history and stale Next run values provided little information for investigating missing delivery. Explicit trigger type, an execution link, node outcomes and export details would make verification easier. Dashboard exposed manual records, but these did not establish automatic delivery.
-
-The chatbot stated that it could not inspect scheduler logs or credentials, then promised disabling sampling would restore exports. Later checks did not verify that promise. Advice should reflect those access limits and provide a concrete verification step. The [captured exchange](observations/evidence/baseline-schedule-chatbot-2026-10-02.md) preserves its wording.
-
 ## Results and evidence storage
 
-- Actual exports are stored in the configured GCS bucket. Each run must be matched to its own object.
-- Playwright writes local diagnostics to `test-results/` and an HTML report to `playwright-report/`. Both are ignored; raw traces can contain credentials.
-- Reviewed public evidence is indexed in [observations/evidence/README.md](observations/evidence/README.md). The scheduler report links the captures needed to reproduce its findings.
-- The [UI journey summary](observations/ui-journey.md) links its retained manifest, selected configuration fields, generated code and masked screenshots under `observations/evidence/ui-journey/<run-id>/`. Configuration verification and automatic delivery are separate outcomes.
+The [evidence index](observations/evidence/README.md) links screenshots, logs and downloaded CSVs for the [UI journey](observations/ui-journey.md), [manual validation](observations/baseline-manual.md) and [scheduler findings](observations/scheduler-support-report.md).
+
+Temporary results in `test-results/` and `playwright-report/` can be replaced by later runs. Reviewed evidence under `/observations/` preserves the findings.
+
+## Usability feedback
+
+The connection and scheduling guides explained the workflow, and Dashboard helped find manual runs. Empty schedule history and stale Next run values gave little help with missing delivery. Each automatic attempt should show whether it started, which steps ran, where the output went and any error.
+
+The chatbot could not inspect scheduler logs or credentials, but promised disabling sampling would restore exports. Later checks did not verify that promise. Suggestions should state those access limits and explain how to confirm whether a change worked. [Captured exchange](observations/evidence/baseline-schedule-chatbot-2026-10-02.md).
 
 ## Remaining submission checklist
 
-1. Record and link the required short walkthrough of **UI tests, API tests and data validation** using the verified configuration journey, dated scheduler evidence and saved real-output replay.
-2. Check the final video link and submission contents.
+1. Record the required walkthrough and add its link below.
+2. Check access to the video and repository links, and the accuracy of the reported coverage.
 
-The hosted observability dashboard is an optional bonus. No additional manual drift runs are required under Rhombus's guidance.
+No further manual drift results are required under Rhombus's support guidance.
 
 ## Demo video
 
-**Not recorded.** Add the video URL here after showing the verified UI journey, dated scheduler evidence, direct backend tests and saved real-output validation. Explain blocked scheduled coverage and distinguish historical captures from the current paused schedule.
+**Not recorded; link pending.** The required short walkthrough should show UI tests, API tests and real-file validation, and explain the blocker. Identify manual exports and historical scheduler evidence clearly.
+
+## Optional dashboard
+
+A hosted observability dashboard is an optional bonus. No dashboard link is included in this submission.

@@ -162,9 +162,9 @@ Temporary results in `test-results/` and `playwright-report/` can be replaced by
 
 ## Usability feedback
 
-The connection and scheduling guides explained the workflow, and Dashboard helped find manual runs. Empty schedule history and stale Next run values gave little help with missing delivery. Each automatic attempt should show whether it started, which steps ran, where the output went and any error.
+The most enjoyable part was using AI Builder to turn plain-English instructions into a visual pipeline. It was satisfying to see the workflow take shape from a description of what I wanted to achieve. The canvas helped me understand how the steps fitted together, and the data previews were useful for checking whether the cleaning matched my intentions. Being able to describe a change and then inspect its effect made the process feel interactive and approachable.
 
-The chatbot could not inspect scheduler logs or credentials, but promised disabling sampling would restore exports. Later checks did not verify that promise. Suggestions should state those access limits and explain how to confirm whether a change worked. [Captured exchange](observations/evidence/baseline-schedule-chatbot-2026-10-02.md).
+The most frustrating part was knowing what to do when the platform appeared to finish but I could not confirm that the expected result had been delivered. Moving between logs, execution history and cloud storage made troubleshooting slower and left me unsure whether to wait or change something. To make the platform more useful and efficient, I would suggest clearer guidance through unfinished setup steps and a single place to see a run’s progress, result and any problem that needs attention. The chatbot could also make recovery easier by explaining what it has confirmed, what remains uncertain and how to check whether its suggestion worked. These improvements would reduce repeated checking and help me resolve problems with fewer steps.
 
 ## Remaining submission checklist
 

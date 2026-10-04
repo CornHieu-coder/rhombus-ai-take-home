@@ -14,13 +14,22 @@ The source and exports below are actual downloaded cloud files. The [expected-ou
 
 ## Prompt and expected result
 
-The expected orders are `1001, 1002, 1006, 1007, 1008`. Emails are lowercase; order 1006's missing name becomes `Unknown`; countries are `US`; dates are YYYY-MM-DD. Output columns must be in this order:
+The baseline starts with **9 rows**. The correct cleaned CSV should contain **5 orders**: `1001`, `1002`, `1006`, `1007` and `1008`.
+
+In those five rows:
+
+- Emails should be lowercase.
+- Missing customer names should become `Unknown`.
+- Country should be `US` in every row.
+- Dates should use the `YYYY-MM-DD` format.
+
+The final CSV should contain exactly these six columns, in this order:
 
 ~~~text
 order_id, customer_email, customer_name, amount_usd, order_date, country
 ~~~
 
-Amounts are compared by numeric value, so `42.5` and `42.50` match. Wrong values and extra nonzero decimal precision are rejected.
+Amounts are compared as numbers, so `42.5` and `42.50` are treated as equal.
 
 <details>
 <summary>Exact original and saved cleaning prompts</summary>

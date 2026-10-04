@@ -6,11 +6,11 @@ This page preserves the earlier report URL and gives the shared procedure for fu
 
 ## Shared procedure for a future drift check
 
-1. Use a dedicated test project and schedule. Preserve the original source bytes, pipeline settings and existing schedule states. Before changing data, establish a successful automatic baseline: a scheduled execution record and a fresh GCS file that passes validation.
-2. Upload one case file to the **same S3 object key already selected by the pipeline**, confirming its bytes. Keep the selected source and pipeline unchanged for the first check. Allow the automatic trigger without clicking Run.
-3. Record the observation window, execution ID, trigger time, status, node logs and schedule-history CSV when available. Independently refresh GCS and save the actual input and any new output. Run the case's validation command against those files.
-4. Give the chatbot the captured result and save its exact advice. Each case explains the information a repair needs. Apply any repair through AI Builder, record the saved changes, then assess a later automatic run for correct output and continued scheduling.
-5. Restore the preserved baseline bytes and settings before another case and verify another automatic baseline. When finished, restore the original schedules' prior states.
+1. Start from a working scheduled baseline. Confirm that the normal baseline file produces a scheduled execution and a valid new GCS output.
+2. Replace the baseline CSV in the same S3 location with one drift-case file. Do not change the pipeline yet. Wait for the next automatic scheduled run; do not click Run manually.
+3. Record what happened: execution status, logs, schedule history and any new GCS output. Validate the actual output file against the drift case.
+4. Give the chatbot the real error or result and save its response. If it suggests a fix, apply it through AI Builder and check a later scheduled run to see whether the output is correct and scheduling still works.
+5. Restore the original baseline file and pipeline settings before testing the next drift case, and confirm that the scheduled baseline works again.
 
 ## Validation and reporting
 

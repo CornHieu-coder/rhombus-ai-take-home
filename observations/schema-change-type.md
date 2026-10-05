@@ -24,3 +24,14 @@ python data-validation/validate.py --scenario schema-change-type --source ACTUAL
 ```
 
 For missing output and repeated runs, follow the [shared reporting rules](baseline-scheduled.md#validation-and-reporting).
+
+
+## Local review addendum: controlled type fixture, 5 October 2026
+
+The original file and the prepared original expectation above are preserved. Its baseline already contains `not-a-number` for order `1004`: default `pandas.read_csv` in pandas 3.0.0 infers `amount_usd` as `str` in both the original baseline and original type variant. This original case tests a newly invalid value, not a numeric-to-string column dtype transition.
+
+A separate [controlled numeric baseline](../datasets/controlled-schema-baseline.csv) changes only order `1004`'s invalid amount to synthetic `64.00`. Its [controlled type variant](../datasets/controlled-schema-change-type.csv) changes only order `1006` from `120.00` to `one hundred twenty`. Local pandas inference was `float64` for the controlled baseline and `str` for the type variant. This verifies a local parser dtype transition; it is not evidence of Rhombus ingestion or scheduled behaviour.
+
+Under the existing cleaning rules, this controlled baseline would retain six orders and the controlled type variant would retain five (`1001, 1002, 1004, 1007, 1008`). These expectations belong to the new family and do not replace the original four-row expectation above. The files are prepared only: no upload, automatic run, export, chatbot repair or recovery was performed. A future assessment first needs a successful automatic baseline from the controlled family.
+
+The [dataset family guide](../datasets/README.md) explains provenance, consistent individual/combined variants, the optional pandas dependency and the local reproduction command. The existing validator scenario labels still refer to the original family; the new fixture tests do not claim an actual pipeline result.

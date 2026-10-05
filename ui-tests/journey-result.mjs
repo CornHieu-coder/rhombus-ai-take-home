@@ -8,6 +8,59 @@ function sameId(actual, expected) {
   return actual !== null && actual !== undefined && String(actual) === String(expected);
 }
 
+/** A parseable timestamp alone does not establish a future next run. */
+export function assessNextRun(nextRunAt, { now }) {
+  const next = timestamp(nextRunAt);
+  const current = timestamp(now);
+  if (!Number.isFinite(next) || !Number.isFinite(current)) {
+    return { state: 'invalid', reason: 'Valid next-run and observation timestamps are required.' };
+  }
+  if (next <= current) {
+    return { state: 'stale', reason: 'An active schedule must report a next-run timestamp after the observation time.' };
+  }
+  return { state: 'future', reason: 'The reported next-run timestamp is after the observation time.' };
+}
+
+/** History opt-in requires a stated observation window, never an inferred default. */
+export function assessHistoryWindow(windowStart, now) {
+  const iso = typeof windowStart === 'string' ? windowStart.trim() : '';
+  const start = timestamp(iso);
+  const current = timestamp(now);
+  const isoFormat = /^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
+  const date = timestamp(iso.slice(0, 10) + 'T00:00:00Z');
+  if (!isoFormat.test(iso) || !Number.isFinite(start) || !Number.isFinite(date)
+      || new Date(date).toISOString().slice(0, 10) !== iso.slice(0, 10)) {
+    return { valid: false, reason: 'Set RHOMBUS_SCHEDULE_HISTORY_SINCE to a valid ISO timestamp with a timezone (for example, 2026-10-05T00:00:00Z).' };
+  }
+  if (!Number.isFinite(current) || start > current) {
+    return { valid: false, reason: 'The history window start must not be after a valid observation time.' };
+  }
+  return { valid: true, reason: 'An explicit history window start and observation time are valid.' };
+}
+
+/** Establish only an automatic attempt's presence, independent of its outcome. */
+export function assessScheduleHistory(executions, { projectId, scheduleId, windowStart, now }) {
+  const window = assessHistoryWindow(windowStart, now);
+  if (!window.valid) return { state: 'invalid', executions: [], reason: window.reason };
+  if (projectId === null || projectId === undefined || String(projectId).trim() === ''
+      || scheduleId === null || scheduleId === undefined || String(scheduleId).trim() === ''
+      || !Array.isArray(executions)) {
+    return { state: 'invalid', executions: [], reason: 'A project ID, schedule ID and executions array are required to correlate history.' };
+  }
+  const start = timestamp(windowStart.trim());
+  const current = timestamp(now);
+  const matching = executions.filter(run => {
+    const started = timestamp(run?.started_at);
+    return run && run.id !== null && run.id !== undefined && String(run.id).trim() !== ''
+      && sameId(run.project_id, projectId) && sameId(run.schedule_id, scheduleId)
+      && ['scheduled', 'schedule'].includes(run.trigger)
+      && Number.isFinite(started) && started >= start && started <= current;
+  });
+  return matching.length > 0
+    ? { state: 'present', executions: matching, reason: 'An automatic attempt for this project and schedule started within the explicit observation window.' }
+    : { state: 'missing', executions: [], reason: 'No traceable automatic attempt for this project and schedule started within the explicit observation window.' };
+}
+
 /** Assess only observed execution fields; a newer incomplete run blocks older success. */
 export function assessScheduledExecution(executions, {
   projectId, scheduleId, createdAt, baselineIds = [], expectedNodeNames, now,

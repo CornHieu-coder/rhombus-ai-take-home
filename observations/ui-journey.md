@@ -54,9 +54,17 @@ This explicitly enables the test that changes a separate Rhombus project. It che
 
 - This run proves UI setup, not automatic scheduled delivery.
 - No fresh scheduled GCS export from this journey was validated. The S3 input was checked through its listing and preview, without independently downloading its contents.
-- This run did not validate the generated code against a fresh output or prove every cleaning rule. A later review found that blank `order_id` values may not be explicitly removed.
+- This run did not validate the generated code against a fresh output or prove every cleaning rule. The local check below confirms that its saved code retains a whitespace-only `order_id`.
 - The [original manual baseline validation](baseline-manual.md) belongs to the original pipeline; it does not validate this newly generated pipeline.
 - Scheduled drift testing still requires a successful automatic baseline, which was not established in the [recorded scheduler investigation](scheduler-support-report.md).
+
+## Local cleaning check — 5 October 2026
+
+A new [two-row fixture](../data-validation/tests/fixtures/whitespace-order-id-source.csv) contains one whitespace-only order ID and one valid order. The correct result is [only the valid order](../data-validation/tests/fixtures/whitespace-order-id-expected.csv). This expectation is independent of Rhombus's saved code.
+
+An offline test replayed the [unmodified saved code](evidence/ui-journey/2026-10-03T09-03-59-050Z/generated-code.txt) using pandas. It trimmed the first ID to an empty string but retained the row, because its required-ID check only removes null values. The validator rejected that output's row count and cleaning result. This confirms an omission in that code artifact locally; it is not a new live pipeline run.
+
+Run `npm run test:validator` to reproduce the independent check. Replaying the saved code additionally requires pandas; that one test skips if pandas is absent. The captured code has not been repaired or replaced. A real repair must be requested through AI Builder, followed by validation of a fresh export; automatic delivery would still need separate verification.
 
 <a id="other-verification-in-this-session"></a>
 

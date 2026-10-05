@@ -9,11 +9,11 @@ These are recorded results from 2–3 October 2026, not a fresh assessment of th
 | Required work | What was verified |
 | --- | --- |
 | UI automation — live Rhombus | Playwright completed the setup journey on 3 October, including an enabled schedule. This proves setup, **not automatic delivery**. [Evidence](observations/ui-journey.md). |
-| Direct API tests — live Rhombus | Three tests passed, including rejection of protected requests without a login. The history test failed because scheduled records were missing. [Results](observations/ui-journey.md#other-verification-in-this-session), [history findings](observations/scheduler-support-report.md#chatbot-diagnosis-and-automated-checks). |
+| Direct API tests — live Rhombus | The historical summary reports three backend tests passed, including rejection of protected requests without a login. The history test failed because scheduled records were missing. No standalone API-suite transcript was retained. [Retained history response](observations/evidence/baseline-schedule-playwright-2026-10-02.json), [dated test summary](observations/scheduler-support-report.md#chatbot-diagnosis-and-automated-checks). |
 | Data validation — local saved files | Twelve validator tests passed. Three real manual GCS exports matched and passed checks against actual S3 input, validating the original manual baseline. [Evidence](observations/baseline-manual.md). |
 | Scheduled baseline and drift | No successful automatic baseline was established. Scheduled drift, chatbot fixes and recovery remain unassessed. [Blocker](observations/scheduler-support-report.md). |
 
-Code: [`/ui-tests/`](ui-tests/), [`/api-tests/`](api-tests/) and [`/data-validation/`](data-validation/). Data: the baseline and seven drift variants in [`/datasets/`](datasets/). Case write-ups and evidence: [`/observations/`](observations/).
+Code: [`/ui-tests/`](ui-tests/), [`/api-tests/`](api-tests/) and [`/data-validation/`](data-validation/). Data: the original baseline and seven drift variants, plus a separately prepared [controlled schema family](datasets/README.md), in [`/datasets/`](datasets/). Case write-ups and evidence: [`/observations/`](observations/).
 
 Start with [How to run](#how-to-run) for commands, or [Verified results and limits](#verified-results-and-limits) for evidence and coverage. The [demo video](#demo-video) is linked below; the hosted dashboard is optional.
 
@@ -42,6 +42,14 @@ The table above records the results. Three limits matter when reviewing them:
 - **Historical failures are separate from current prerequisites.** Controlled scheduling checks used enabled schedules. The original schedule was later paused, and tests requiring an enabled schedule were not rerun against that paused state.
 
 The [scheduler report](observations/scheduler-support-report.md) contains the observation windows and reproduction. The [UI result](observations/ui-journey.md) and [manual validation report](observations/baseline-manual.md) identify the evidence for the passed work. Extra checks we created are described separately below; they are not additional take-home requirements.
+
+### Local review fixes — 5 October 2026
+
+The current local suites pass **42 validator tests** and **17 tests of our schedule-checking logic**. The validator now rejects malformed CSVs, keeps useful results when a repeat file cannot be read, and flags newly lost valid orders separately from correct output filtering. Two matching outputs establish repeat consistency; one output leaves it unevaluated.
+
+A focused local replay detects the saved journey code's failure to remove a whitespace-only order ID. The historical code remains unchanged; repairing the actual pipeline still requires AI Builder and validation of a new export. [Check and limits](observations/ui-journey.md#local-cleaning-check--5-october-2026).
+
+The additional schema fixtures demonstrate a numeric-to-text column change locally and combine the same individual changes. They remain **prepared, not executed in Rhombus**. No live tests were rerun during this review; scheduled baseline, drift and recovery remain blocked or unassessed.
 
 ## How to run
 
@@ -77,7 +85,7 @@ To inspect the original project instead of rebuilding a pipeline:
 npm run test:ui
 ```
 
-These inspect the existing pipeline, next-run display and history. The original schedule is paused; schedule checks need it enabled. History checks run only when explicitly enabled after an automatic attempt. See [prerequisites](ui-tests/README.md#existing-project-checks). Skips are not passes.
+These inspect the existing pipeline, a future next-run time and history. The original schedule is paused; schedule checks need it enabled. History checks run only when explicitly enabled with an observation start time and require an automatic attempt within that window. See [prerequisites](ui-tests/README.md#existing-project-checks). History presence does not prove successful delivery. Skips are not passes.
 
 ### API tests — `/api-tests/` (live Rhombus)
 
@@ -87,13 +95,13 @@ Run three direct tests of returned status and data, including negative tests tha
 npx playwright test api-tests/backend.spec.ts --workers=1
 ```
 
-All three passed live. For the complete suite, including checks of an existing schedule, complete the [login setup](ui-tests/README.md#save-a-session) and run:
+The historical summary reports all three passed live; no standalone per-test transcript was retained. The [retained schedule/history response](observations/evidence/baseline-schedule-playwright-2026-10-02.json) supports the missing-history finding, rather than those three backend test results. For the complete suite, including checks of an existing schedule, complete the [login setup](ui-tests/README.md#save-a-session) and run:
 
 ```bash
 npm run test:api
 ```
 
-Schedule checks need an enabled hourly schedule. History checks also need explicit enablement after an automatic attempt; see [prerequisites](ui-tests/README.md#existing-project-checks). The historical history test failed because no records were returned.
+Schedule checks need an enabled hourly schedule with a future next run. History checks also need explicit enablement and an observation start time; they require a matching automatic attempt within that window. See [prerequisites](ui-tests/README.md#existing-project-checks). The historical history test failed because no records were returned.
 
 ### Data validation — `/data-validation/` (local saved files)
 
@@ -103,7 +111,9 @@ The validator compares input and output columns, row counts, cleaning, repeat co
 npm run test:validator
 ```
 
-All 12 local tests passed. Compare the actual downloaded S3 input with three real manual GCS exports:
+The current suite has 42 local tests. Three replay/inference tests use pandas and are skipped if it is absent; the remaining tests and saved baseline comparison need only Python's standard library. See the [local validation guide](data-validation/README.md) for supported date formats and report limits.
+
+Determinism validation is required and can compare **at least two outputs** from the same input and unchanged pipeline. The three-run comparison below supplies stronger bonus evidence; three runs are not the minimum requirement. Compare the actual downloaded S3 input with three real manual GCS exports:
 
 ```bash
 python data-validation/validate.py --scenario baseline --source observations/evidence/baseline-source-fetched-2026-10-03.csv --output observations/evidence/baseline-manual-control-output-2026-10-02-2349.csv --repeat-output observations/evidence/baseline-manual-repeat-1-2026-10-03.csv --repeat-output observations/evidence/baseline-manual-repeat-2-2026-10-03.csv
@@ -123,7 +133,7 @@ python -m pip install -r data-validation/requirements.txt
 python data-validation/validate.py --scenario baseline --source s3://SOURCE_BUCKET/baseline.csv --output gs://DEST_BUCKET/OUTPUT_FROM_THIS_RUN.csv --report data-validation/reports/baseline.json
 ```
 
-Replace the example paths with the input and output from the same run. To check repeat consistency, add two `--repeat-output` arguments for further runs with the same input and unchanged pipeline. With one output, consistency remains unevaluated. The report distinguishes failed checks from unevaluated checks.
+Replace the example paths with the input and output from the same run. To check repeat consistency, add at least one `--repeat-output` argument for a further run with the same input and unchanged pipeline. Two repeat arguments provide the optional three-run comparison. With one output, consistency remains unevaluated. The report distinguishes failed checks from unevaluated checks.
 
 </details>
 
@@ -134,13 +144,15 @@ Replace the example paths with the input and output from the same run. To check 
 npm run test:journey-results
 ```
 
-These nine local tests check our logic for rejecting old or unrelated runs and files. They passed, but do not test Rhombus's scheduler. Our [additional automatic-delivery check](ui-tests/README.md#strict-delivery-mode) remains unverified live. Both are our implementation choices, not separate take-home requirements.
+These 17 local tests check our logic for rejecting old or unrelated runs and files, stale next-run times and history outside the stated observation window. They passed, but do not test Rhombus's scheduler. Our [additional automatic-delivery check](ui-tests/README.md#strict-delivery-mode) remains unverified live. Both are our implementation choices, not separate take-home requirements.
 
 </details>
 
 ## Scheduled drift coverage summary
 
 [`/datasets/`](datasets/) holds the baseline and seven drift variants. Each case links to its `/observations/` write-up of the change, expectation and blocked coverage. They share one [future scheduled-check procedure](observations/baseline-scheduled.md), which has not been completed.
+
+Those original files are preserved. The original type case introduces another invalid amount but does not change the inferred column type, because the baseline already contains text. The original combined file also differs from the individual variants. The [controlled schema family](datasets/README.md) addresses both design limits for a future exercise; it has not been uploaded or run.
 
 Without a successful scheduled baseline, these scheduled outcomes, chatbot repairs and recovery could not be assessed. Rhombus advised documenting the blocker instead of submitting manual drift results. [Findings and support guidance](observations/scheduler-support-report.md#support-guidance-and-effect-on-the-take-home).
 
@@ -166,12 +178,6 @@ The most enjoyable part was using AI Builder to turn plain-English instructions 
 
 The most frustrating part was knowing what to do when the platform appeared to finish but I could not confirm that the expected result had been delivered. Moving between logs, execution history and cloud storage made troubleshooting slower and left me unsure whether to wait or change something. To make the platform more useful and efficient, I would suggest clearer guidance through unfinished setup steps and a single place to see a run’s progress, result and any problem that needs attention. The chatbot could also make recovery easier by explaining what it has confirmed, what remains uncertain and how to check whether its suggestion worked. These improvements would reduce repeated checking and help me resolve problems with fewer steps.
 
-## Remaining submission checklist
-
-1. Check access to the video and repository links, and the accuracy of the reported coverage.
-
-No further manual drift results are required under Rhombus's support guidance.
-
 ## Demo video
 
 [Watch the Rhombus AI demo video on YouTube](https://youtu.be/o38C0_ANh-o).
@@ -180,4 +186,4 @@ The submission's [verified results and limits](#verified-results-and-limits) dis
 
 ## Optional dashboard
 
-A hosted observability dashboard is an optional bonus. No dashboard link is included in this submission.
+A hosted observability dashboard is an optional bonus. Determinism validation remains required; the exact three-run comparison is stronger bonus evidence. No dashboard link is included in this submission.

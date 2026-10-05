@@ -16,4 +16,4 @@ This page preserves the earlier report URL and gives the shared procedure for fu
 
 Each case supplies its own expected result and command. A failed cloud listing or download does not establish that output is absent. Use `--output-missing` only for absence observed within a recorded window; the flag records that observation and does not query GCS.
 
-A passing CSV comparison alone does not identify the trigger as automatic. Keep the execution record and associated object evidence with it. To check repeat consistency, add two `--repeat-output` arguments for later runs using the same input and configuration. Report checks left unevaluated separately from failures.
+A passing CSV comparison alone does not identify the trigger as automatic. Keep the execution record and associated object evidence with it. Determinism validation is required and can compare at least two outputs using the same input and configuration: supply at least one `--repeat-output` argument. Two repeat arguments provide stronger optional three-run evidence; three runs are not the minimum requirement. Report checks left unevaluated separately from failures.

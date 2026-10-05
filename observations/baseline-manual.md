@@ -8,7 +8,7 @@ These were runs started with the Run button, not scheduled triggers. They establ
 
 ## What was checked
 
-The validator independently calculates the expected cleaned rows from the input, then compares the export's columns, row count and values. It also checks repeat consistency: **the same input and configuration should produce the same output across repeated runs**. Here, it compared three outputs, including row order.
+The validator independently calculates the expected cleaned rows from the input, then compares the export's columns, row count and values. It also checks repeat consistency: **the same input and configuration should produce the same output across repeated runs**. Determinism validation is required and can compare at least two outputs. Here, the three-output comparison, including row order, supplies stronger bonus evidence; three runs are not the minimum requirement.
 
 The source and exports below are actual downloaded cloud files. The [expected-output fixture](../data-validation/tests/fixtures/expected-baseline-output.csv) is used only to test the validator itself; it is not a Rhombus export.
 
@@ -89,7 +89,7 @@ No Rhombus login, cloud credentials or extra Python packages are needed. This re
 
 A passing report means the evaluated checks passed. In this three-output comparison, all seven checks were evaluated and passed. A check marked `null` in another report was not evaluated; for example, one export alone cannot establish repeat consistency.
 
-To repeat the cloud experiment, use the original baseline and unchanged pipeline, start three manual runs with scheduling paused, and download each resulting GCS object. Save the source, trigger times and file names, then supply the exports to the validator as above.
+To repeat the cloud experiment, use the original baseline and unchanged pipeline, start at least two manual runs with scheduling paused, and download each resulting GCS object. Save the source, trigger times and file names, then supply one export as `--output` and at least one further export as `--repeat-output`. A third run is optional and reproduces the stronger comparison shown above.
 
 ## Limits
 

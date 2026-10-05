@@ -93,7 +93,7 @@ On **3 October 2026 at 14:08 Sydney time** (`04:08Z`), Rhombus advised that manu
 | Test at least two semantic changes and validate outputs | Datasets and validator cases exist; live scheduled semantic handling was not evaluated |
 | Ask the chatbot to diagnose/fix each issue and check scheduling afterward | Sampling suggestion was applied to the baseline issue, but repeats did not verify recovery; per-drift repairs and recovery were not evaluated |
 
-This report documents that gap. Manual controls verify the comparison path; no further manual drift runs are planned for submission. The reply provides a documentation route for the blocked exercise. It does not confirm a fix, identify a backend cause or explicitly waive UI automation, API tests, the validator or the video. The [README checklist](../README.md#remaining-submission-checklist) records the remaining work.
+This report documents that gap. Manual controls verify the comparison path; no further manual drift runs are planned for submission. The reply provides a documentation route for the blocked exercise. It does not confirm a fix, identify a backend cause or explicitly waive UI automation, API tests, the validator or the video. The [README's verified results and limits](../README.md#verified-results-and-limits) summarise the submitted evidence.
 
 ## Reproduce a future check
 
@@ -128,6 +128,6 @@ The account did not expose those internal logs. No scheduled execution ID was re
 
 A successful automatic baseline needs a scheduled execution ID/status, evidence of the three nodes completing, a fresh associated GCS object and a passing validator result. These are repair acceptance criteria, not an additional attempt required before submitting the documented blocker under Rhombus's guidance.
 
-## Remaining submission work
+## Submission status
 
-The later [UI setup test passed](ui-journey.md); automatic delivery remained untested in that run. Remaining work is recording the required short walkthrough of UI tests, API tests and validation, adding its link, and checking the final submission against the [README checklist](../README.md#remaining-submission-checklist).
+The later [UI setup test passed](ui-journey.md); automatic delivery remained untested in that run. The demo is recorded and linked in the [README](../README.md#demo-video). The [verified results and limits](../README.md#verified-results-and-limits) distinguish the completed work from the scheduling blocker and unassessed scheduled drift and recovery.

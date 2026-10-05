@@ -24,3 +24,10 @@ python data-validation/validate.py --scenario schema-drop-column --source ACTUAL
 ```
 
 For missing output and repeated runs, follow the [shared reporting rules](baseline-scheduled.md#validation-and-reporting).
+
+
+## Local review addendum: compatible drop fixture, 5 October 2026
+
+The original `amount_usd` drop case and its expectations above are preserved. The separate [controlled drop fixture](../datasets/controlled-schema-drop-column.csv) instead removes only `country` from the [controlled numeric baseline](../datasets/controlled-schema-baseline.csv). Retaining `amount_usd` allows the same drop to be combined with an observable amount type change. The missing country still requires an explicit error or upstream provenance under the six-column output contract.
+
+This controlled fixture retains all nine rows and remaining values and is prepared only. No upload, Rhombus execution, scheduled result, chatbot repair or recovery was performed. See the [dataset family guide](../datasets/README.md) for the consistent controlled combined case and local checks; original validator scenario labels retain their original meaning.

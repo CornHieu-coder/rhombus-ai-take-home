@@ -1,0 +1,3 @@
+order_id,customer_email,customer_name,amount_usd,order_date,country
+   ,blank@example.com,Blank ID,5.00,04/05/2026,US
+2001,valid@example.com,Valid ID,10.00,04/06/2026,US

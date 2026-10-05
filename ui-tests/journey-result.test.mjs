@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { assessScheduledExecution, findFreshOutput } from './journey-result.mjs';
+import {
+  assessHistoryWindow, assessNextRun, assessScheduleHistory, assessScheduledExecution, findFreshOutput,
+} from './journey-result.mjs';
 
 const options = {
   projectId: 4266,
@@ -138,4 +140,94 @@ test('missing metadata or invalid correlation boundaries remain unverified', () 
   ]) {
     assert.equal(findFreshOutput([], [valid], { ...outputOptions, ...override }).object, undefined);
   }
+});
+
+test('next-run checks reject parseable stale timestamps and the current-time boundary', () => {
+  for (const nextRunAt of ['2026-10-03T04:59:00Z', options.now]) {
+    assert.equal(assessNextRun(nextRunAt, { now: options.now }).state, 'stale');
+  }
+  assert.equal(assessNextRun('2026-10-03T05:11:00Z', { now: options.now }).state, 'future');
+});
+
+test('next-run checks require valid next-run and observation timestamps', () => {
+  for (const nextRunAt of [undefined, null, '', 'not-a-date']) {
+    assert.equal(assessNextRun(nextRunAt, { now: options.now }).state, 'invalid');
+  }
+  assert.equal(assessNextRun('2026-10-03T05:11:00Z', { now: 'invalid' }).state, 'invalid');
+});
+
+test('history windows require an explicit valid ISO timestamp with a timezone', () => {
+  for (const windowStart of [
+    undefined, null, '', 1791003600000, 'invalid', '2026-10-03',
+    '2026-10-03T05:00:00', '2026-02-30T05:00:00Z', '2026-10-03T05:11:00Z',
+  ]) {
+    assert.equal(assessHistoryWindow(windowStart, options.now).valid, false);
+  }
+  assert.equal(assessHistoryWindow(options.createdAt, 'invalid').valid, false);
+  for (const windowStart of [options.createdAt, '2026-10-03T15:00:00+10:00', options.now]) {
+    assert.equal(assessHistoryWindow(windowStart, options.now).valid, true);
+  }
+});
+
+const historyOptions = {
+  projectId: options.projectId,
+  scheduleId: options.scheduleId,
+  windowStart: options.createdAt,
+  now: options.now,
+};
+
+test('history presence correlates project, schedule, automatic trigger and inclusive start window', () => {
+  for (const trigger of ['scheduled', 'schedule']) {
+    for (const started_at of [options.createdAt, '2026-10-03T05:01:00Z', options.now]) {
+      const run = execution({ trigger, started_at });
+      const result = assessScheduleHistory([run], {
+        ...historyOptions, projectId: '4266', scheduleId: '300',
+      });
+      assert.equal(result.state, 'present');
+      assert.deepEqual(result.executions, [run]);
+    }
+  }
+});
+
+test('history filtering accepts the same trimmed window timestamp as prerequisite validation', () => {
+  const windowStart = ' 2026-10-03T05:00:00Z ';
+  const run = execution({ started_at: options.createdAt });
+  assert.equal(assessHistoryWindow(windowStart, options.now).valid, true);
+  const result = assessScheduleHistory([run], { ...historyOptions, windowStart });
+  assert.equal(result.state, 'present');
+  assert.deepEqual(result.executions, [run]);
+});
+
+test('old, future, manual, unrelated and untraceable records cannot satisfy history presence', () => {
+  for (const overrides of [
+    { started_at: '2026-10-03T04:59:59Z' }, { started_at: '2026-10-03T05:10:01Z' },
+    { started_at: undefined }, { started_at: 'invalid' },
+    { trigger: 'manual' }, { trigger: undefined }, { project_id: 999 },
+    { project_id: undefined }, { schedule_id: 301 }, { schedule_id: null },
+    { id: undefined }, { id: null }, { id: '' },
+  ]) {
+    const result = assessScheduleHistory([execution(overrides)], historyOptions);
+    assert.equal(result.state, 'missing');
+    assert.deepEqual(result.executions, []);
+  }
+  assert.equal(assessScheduleHistory([], historyOptions).state, 'missing');
+});
+
+test('missing history prerequisites cannot fall back to an old execution record', () => {
+  const oldRun = execution({ started_at: '2026-10-02T05:01:00Z' });
+  for (const overrides of [
+    { windowStart: undefined }, { windowStart: 'invalid' },
+    { windowStart: '2026-10-03T05:11:00Z' }, { now: 'invalid' },
+    { projectId: undefined }, { scheduleId: undefined },
+  ]) {
+    const result = assessScheduleHistory([oldRun], { ...historyOptions, ...overrides });
+    assert.equal(result.state, 'invalid');
+    assert.deepEqual(result.executions, []);
+  }
+});
+
+test('an in-window incomplete automatic attempt establishes history presence only', () => {
+  const run = execution({ completed_at: null, success: false, completed_nodes: [] });
+  assert.equal(assessScheduleHistory([run], historyOptions).state, 'present');
+  assert.equal(assessScheduledExecution([run], options).state, 'pending');
 });

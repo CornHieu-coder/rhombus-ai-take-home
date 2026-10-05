@@ -15,7 +15,7 @@ These are recorded results from 2–3 October 2026, not a fresh assessment of th
 
 Code: [`/ui-tests/`](ui-tests/), [`/api-tests/`](api-tests/) and [`/data-validation/`](data-validation/). Data: the baseline and seven drift variants in [`/datasets/`](datasets/). Case write-ups and evidence: [`/observations/`](observations/).
 
-Start with [How to run](#how-to-run) for commands, or [Verified results and limits](#verified-results-and-limits) for evidence and coverage. The required [demo video](#demo-video) is pending; the hosted dashboard is optional.
+Start with [How to run](#how-to-run) for commands, or [Verified results and limits](#verified-results-and-limits) for evidence and coverage. The [demo video](#demo-video) is linked below; the hosted dashboard is optional.
 
 ## Scheduling blocker and submission scope
 
@@ -168,14 +168,15 @@ The most frustrating part was knowing what to do when the platform appeared to f
 
 ## Remaining submission checklist
 
-1. Record the required walkthrough and add its link below.
-2. Check access to the video and repository links, and the accuracy of the reported coverage.
+1. Check access to the video and repository links, and the accuracy of the reported coverage.
 
 No further manual drift results are required under Rhombus's support guidance.
 
 ## Demo video
 
-**Not recorded; link pending.** The required short walkthrough should show UI tests, API tests and real-file validation, and explain the blocker. Identify manual exports and historical scheduler evidence clearly.
+[Watch the Rhombus AI demo video on YouTube](https://youtu.be/o38C0_ANh-o).
+
+The submission's [verified results and limits](#verified-results-and-limits) distinguish UI setup, manual-output validation and the scheduling blocker.
 
 ## Optional dashboard
 
